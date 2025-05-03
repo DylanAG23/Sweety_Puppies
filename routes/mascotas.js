@@ -6,7 +6,7 @@ const client = require('../baseDatos');
 // GET: Obtener todas las mascotas
 router.get('/', async (req, res) => {
   try {
-    const result = await client.query('SELECT * FROM mascota');
+    const result = await client.query('SELECT * FROM mascotas');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener mascotas', error: error.message });
@@ -18,7 +18,7 @@ router.get('/cliente/:cedula', async (req, res) => {
   const { cedula } = req.params;
   try {
     const result = await client.query(
-      'SELECT * FROM mascota WHERE cedula_cliente = $1',
+      'SELECT * FROM mascotas WHERE cedula_cliente = $1',
       [cedula]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'No se encontraron mascotas para esta cédula' });
@@ -33,7 +33,7 @@ router.get('/buscar', async (req, res) => {
   const { cedula, nombre } = req.query;
   try {
     const result = await client.query(
-      'SELECT * FROM mascota WHERE cedula_cliente = $1 AND nombre = $2',
+      'SELECT * FROM mascotas WHERE cedula_cliente = $1 AND nombre = $2',
       [cedula, nombre]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Mascota no encontrada con esa cédula y nombre' });
@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
   const { id_mascota, nombre, especie, raza, edad, peso, cedula_cliente } = req.body;
   try {
     await client.query(
-      'INSERT INTO mascota (id_mascota, nombre, especie, raza, edad, peso, cedula_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      'INSERT INTO mascotas (id_mascota, nombre, especie, raza, edad, peso, cedula_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)',
       [id_mascota, nombre, especie, raza, edad, peso, cedula_cliente]
     );
     res.status(201).json({ message: 'Mascota creada' });
@@ -63,7 +63,7 @@ router.put('/:id', async (req, res) => {
   const { nombre, especie, raza, edad, peso } = req.body;
   try {
     const result = await client.query(
-      'UPDATE mascota SET nombre=$1, especie=$2, raza=$3, edad=$4, peso=$5 WHERE id_mascota=$6',
+      'UPDATE mascotas SET nombre=$1, especie=$2, raza=$3, edad=$4, peso=$5 WHERE id_mascota=$6',
       [nombre, especie, raza, edad, peso, id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Mascota no encontrada' });
@@ -77,7 +77,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await client.query('DELETE FROM mascota WHERE id_mascota = $1', [id]);
+    const result = await client.query('DELETE FROM mascotas WHERE id_mascota = $1', [id]);
     if (result.rowCount === 0) return res.status(404).json({ message: 'Mascota no encontrada' });
     res.json({ message: 'Mascota eliminada' });
   } catch (error) {

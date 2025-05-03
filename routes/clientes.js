@@ -6,7 +6,7 @@ const client = require('../baseDatos');
 // GET: Obtener todos los clientes
 router.get('/', async (req, res) => {
   try {
-    const result = await client.query('SELECT * FROM cliente');
+    const result = await client.query('SELECT * FROM clientes');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener clientes', error: error.message });
@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.get('/:cedula', async (req, res) => {
   const { cedula } = req.params;
   try {
-    const result = await client.query('SELECT * FROM cliente WHERE cedula = $1', [cedula]);
+    const result = await client.query('SELECT * FROM clientes WHERE cedula = $1', [cedula]);
     if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
     res.json(result.rows[0]);
   } catch (error) {
@@ -27,11 +27,11 @@ router.get('/:cedula', async (req, res) => {
 
 // POST: Crear un cliente
 router.post('/', async (req, res) => {
-  const { cedula, nombre, telefono, direccion } = req.body;
+  const { cedula, nombre, telefono, direccion, email } = req.body;
   try {
     await client.query(
-      'INSERT INTO cliente (cedula, nombre, telefono, direccion) VALUES ($1, $2, $3, $4)',
-      [cedula, nombre, telefono, direccion]
+      'INSERT INTO clientes (cedula, nombre, telefono, direccion, email) VALUES ($1, $2, $3, $4, $5)',
+      [cedula, nombre, telefono, direccion, email]
     );
     res.status(201).json({ message: 'Cliente creado' });
   } catch (error) {
@@ -42,10 +42,10 @@ router.post('/', async (req, res) => {
 // PUT: Actualizar un cliente
 router.put('/:cedula', async (req, res) => {
   const { cedula } = req.params;
-  const { nombre, telefono, direccion } = req.body;
+  const { nombre, telefono, direccion, email } = req.body;
   try {
     const result = await client.query(
-      'UPDATE cliente SET nombre=$1, telefono=$2, direccion=$3 WHERE cedula=$4',
+      'UPDATE clientes SET nombre=$1, telefono=$2, direccion=$3, email=$4 WHERE cedula=$5',
       [nombre, telefono, direccion, cedula]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
@@ -59,7 +59,7 @@ router.put('/:cedula', async (req, res) => {
 router.delete('/:cedula', async (req, res) => {
   const { cedula } = req.params;
   try {
-    const result = await client.query('DELETE FROM cliente WHERE cedula = $1', [cedula]);
+    const result = await client.query('DELETE FROM clientes WHERE cedula = $1', [cedula]);
     if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
     res.json({ message: 'Cliente eliminado' });
   } catch (error) {
