@@ -1,13 +1,224 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sweety Puppies - Peluquería Canina</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Elementos del cursor personalizado -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
+  
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo">
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#servicios" class="animated-link">Servicios</a></li>
+        <li><a href="#clientes" class="animated-link">Clientes</a></li>
+        <li><a href="#mascotas" class="animated-link">Mascotas</a></li>
+        <li><a href="#contacto" class="animated-link">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-gradient">
+      <div class="hero-content">
+        <h1 class="animated-title">Glamour para cada pelaje</h1>
+        <p>Descubre el cambio de nuestros peluditos con amor y estilo</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="servicios" class="servicios scroll-reveal">
+    <div class="section-title">
+      <h2>Servicios</h2>
+    </div>
+    
+    <div class="servicio-card hover-effect">
+      <h3>Baño y Cepillado</h3>
+      <p>Para todas las razas y tipos de pelaje. Incluye shampoo especializado y secado suave.</p>
+    </div>
+    
+    <div class="servicio-card hover-effect">
+      <h3>Manto Corto</h3>
+      <p>Se necesita hacer un deslanado para quitar el pelo muerto de su muda anterior, para un mantenimiento en casa cepillar diario y venir a tu deslanado y bañito una vez al mes.</p>
+      <p class="ejemplos">Ej: pitbull, pug, beagle, bulldog, doberman, labrador, etc.</p>
+    </div>
+    
+    <div class="servicio-card hover-effect">
+      <h3>Deslanado</h3>
+      <p>Elimina el pelo muerto para evitar alergias y mantener el pelaje sano.</p>
+    </div>
+    
+    <div class="servicio-card hover-effect">
+      <h3>Corte de uñas</h3>
+      <p>Con cuidado profesional y sin estrés para tu mascota.</p>
+    </div>
+  </section>
+
+  <section id="tipos-pelaje" class="tipos-pelaje scroll-reveal">
+    <div class="pelaje-card">
+      <h2>¿Quieres conocer el tipo de pelaje que tiene tu peludito?</h2>
+      <p>Podemos ayudarte a determinar el mejor cuidado según el tipo de pelaje de tu mascota.</p>
+      <button class="btn-consulta bounce-effect">Consultar</button>
+    </div>
+  </section>
+
+  <section id="antes-despues" class="antes-despues">
+    <div class="section-title scroll-reveal">
+      <h2>Transformaciones</h2>
+    </div>
+    <p class="subtitle scroll-reveal">Acompáñanos a ver el cambio de nuestros peluditos</p>
+    
+    <div class="galeria-transformacion">
+      <div class="transformacion-set scroll-reveal-left">
+        <div class="foto-container antes">
+          <img src="img/mascota1.png" alt="Antes del corte" class="foto-transformacion">
+          <span class="etiqueta">ANTES</span>
+        </div>
+        <div class="foto-container despues">
+          <img src="img/mascota2.png" alt="Después del corte" class="foto-transformacion">
+          <span class="etiqueta">DESPUÉS</span>
+        </div>
+      </div>
+      
+      <div class="transformacion-set scroll-reveal-right">
+        <div class="foto-container antes">
+          <img src="img/mascota3.png" alt="Antes del corte" class="foto-transformacion">
+          <span class="etiqueta">ANTES</span>
+        </div>
+        <div class="foto-container despues">
+          <img src="img/mascota4.png" alt="Después del corte" class="foto-transformacion">
+          <span class="etiqueta">DESPUÉS</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="brand-signature scroll-reveal">
+      <img src="img/mascota7.png" alt="Hydra Groomers" class="brand-logo">
+    </div>
+  </section>
+
+  <section id="clientes" class="clientes scroll-reveal">
+    <div class="section-title">
+      <h2>Club de Clientes</h2>
+    </div>
+    <div class="cliente-info">
+      <p>Únete a nuestro programa de fidelidad y obtén descuentos especiales en cada visita.</p>
+      <div class="beneficios">
+        <div class="beneficio-card hover-effect">
+          <h4>Descuentos Exclusivos</h4>
+          <p>10% de descuento en todos los servicios después de 3 visitas</p>
+        </div>
+        <div class="beneficio-card hover-effect">
+          <h4>Citas Prioritarias</h4>
+          <p>Acceso preferencial para reservar horarios con alta demanda</p>
+        </div>
+      </div>
+      <button class="btn-registro bounce-effect">Registrarse</button>
+    </div>
+  </section>
+
+  <section id="mascotas" class="mascotas scroll-reveal">
+    <div class="section-title">
+      <h2>Nuestras Mascotas</h2>
+    </div>
+    <p class="subtitle">Conoce a algunos de nuestros clientes peludos más frecuentes</p>
+    <div class="galeria-mascotas">
+      <div class="mascota-card hover-effect">
+        <img src="img/mascota1.png" alt="Mascota 1" class="mascota-img">
+        <h4>Luna</h4>
+        <p>French Poodle - Cliente desde 2022</p>
+      </div>
+      <div class="mascota-card hover-effect">
+        <img src="img/mascota2.png" alt="Mascota 2" class="mascota-img">
+        <h4>Max</h4>
+        <p>Golden Retriever - Cliente desde 2023</p>
+      </div>
+      <div class="mascota-card hover-effect">
+        <img src="img/mascota3.png" alt="Mascota 3" class="mascota-img">
+        <h4>Coco</h4>
+        <p>Shih Tzu - Cliente desde 2021</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reserva" class="reserva scroll-reveal">
+    <div class="reserva-card">
+      <h2>Reserva tu cita para disfrutar de un baño con glamour.</h2>
+      <div class="reserva-info">
+        <span class="whatsapp-text">Agenda en WhatsApp</span>
+        <span class="whatsapp-numero">3058064242</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="nuevo-cliente" class="nuevo-cliente scroll-reveal">
+    <div class="section-title">
+      <h2>Agregar Nuevo Cliente</h2>
+    </div>
+    <form id="clienteForm" class="form-mejorado">  
+      <div class="form-group">
+        <input type="text" id="cedula" name="cedula" placeholder=" " required>
+        <label for="cedula" class="form-label">Cédula</label>
+        <span class="form-error">Por favor, introduce la cédula del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="nombre" name="nombre" placeholder=" " required>
+        <label for="nombre" class="form-label">Nombre</label>
+        <span class="form-error">Por favor, introduce el nombre del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="telefono" name="telefono" placeholder=" " required>
+        <label for="telefono" class="form-label">Teléfono</label>
+        <span class="form-error">Por favor, introduce el teléfono del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="direccion" name="direccion" placeholder=" " required>
+        <label for="direccion" class="form-label">Dirección</label>
+        <span class="form-error">Por favor, introduce la dirección del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="email" id="email" name="email" placeholder=" " required>
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <span class="form-error">Por favor, introduce un email válido</span>
+      </div>
+      <button type="submit" class="btn-enviar bounce-effect">Agregar Cliente</button>
+    </form>
+  </section>
+  
+  
+
+  <footer>
+    <div class="footer-logo">
+      <img src="img/logo.png" alt="Sweety Puppies Logo" class="footer-img">
+    </div>
+    <p>Peluquería canina. Glamour para cada peludo.</p>
+    <p class="copyright">© 2025 Sweety Puppies - Todos los derechos reservados</p>
+  </footer>
+
+  <!-- Botón volver arriba -->
+  <button id="btn-volver-arriba" class="btn-volver-arriba bounce-effect">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 15l-6-6-6 6"/>
+    </svg>
+  </button>
+
+  <div id="cursor-dot">
+    <img src="img/tijeras.png" alt="Tijeras" style="width: 20px; height: 20px;">
+  </div>
+  <div id="cursor-outline"></div>
+  
+  <!-- Cursor personalizado -->
+    <div id="cursor-tijeras"></div>
+
+  <!-- Script para las funcionalidades -->
+  <script src="js/mejoras.js"></script>
+</body>
 </html>

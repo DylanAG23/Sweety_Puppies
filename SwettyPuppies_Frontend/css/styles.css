@@ -1,0 +1,933 @@
+/* 
+   ESTILOS GENERALES
+   ================== 
+*/
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #fff0f9;
+  color: #000000;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.section-title h2 {
+  color: #9c0076;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.section-title h2:after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #000;
+  margin-top: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+
+/* 
+   CURSOR PERSONALIZADO
+   ==================== 
+*/
+
+/* Estilo general */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+/* Cursor personalizado tijeras */
+#cursor-tijeras {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  background-image: url('../img/tijeras.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  opacity: 50%;
+  
+}
+
+html {
+  cursor: none;
+}
+
+a, button, input[type="submit"], select {
+  cursor: pointer; /* o repite el url si quieres */
+}
+
+
+#cursor-dot, #cursor-outline {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+#cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #e95adb;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#cursor-outline {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #9c0076;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+/* Cambia el cursor en links y botones */
+.cursor-outline.hover {
+  background-color: rgba(156, 0, 118, 0.1);
+}
+
+/* 
+   HEADER Y NAVEGACIÓN
+   =================== 
+*/
+header.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 10px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(156, 0, 118, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 60px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #4b004b;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.nav-links a:hover {
+  color: #9c0076;
+}
+
+/* 
+   MICROINTERACCIONES
+   ================= 
+*/
+/* Efecto bounce en botones */
+.bounce-effect {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bounce-effect:hover {
+  transform: scale(1.05);
+}
+
+.bounce-effect:active {
+  transform: scale(0.95);
+}
+
+/* Efecto hover en tarjetas */
+.hover-effect {
+  transition: all 0.3s ease;
+}
+
+.hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(223, 90, 200, 0.3);
+}
+
+/* Links animados en navegación */
+.animated-link {
+  position: relative;
+}
+
+.animated-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: #9c0076;
+  transition: width 0.3s ease;
+}
+
+.animated-link:hover::after {
+  width: 100%;
+}
+
+/* Título con animación */
+.animated-title {
+  display: inline-block;
+  background: linear-gradient(to right, #9c0076, #e95adb);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shine 2s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* 
+   SECCIÓN HERO
+   ============ 
+*/
+.hero {
+  height: 400px;
+  position: relative;
+  text-align: center;
+  color: #000;
+  overflow: hidden;
+}
+
+.hero-gradient {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.8) 0%, rgba(55, 190, 167, 0.7) 30%, rgba(214, 122, 255, 0.7) 80%, rgba(255, 166, 225, 0.8) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  padding: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+/* 
+   SECCIÓN SERVICIOS
+   ================= 
+*/
+.servicios {
+  padding: 60px 20px;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 158, 215, 0.8) 40%, rgba(214, 122, 255, 0.7) 80%, rgba(255, 166, 225, 0.8) 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.servicio-card {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 35px;
+  margin: 30px auto;
+  border-radius: 15px;
+  max-width: 700px;
+  box-shadow: 0 5px 25px rgba(223, 90, 200, 0.25);
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+
+.servicio-card h3 {
+  color: #000;
+  margin-top: 0;
+  font-size: 2.3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  margin-bottom: 15px;
+}
+
+.servicio-card p {
+  font-size: 1.3rem;
+  line-height: 1.7;
+  font-weight: 500;
+  color: #000;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ejemplos {
+  font-style: italic;
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: #444;
+  font-weight: 500;
+}
+
+/* 
+   SECCIÓN TIPOS DE PELAJE
+   ======================= 
+*/
+.tipos-pelaje {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, rgba(255, 158, 215, 0.8), rgba(214, 122, 255, 0.7));
+  position: relative;
+  overflow: hidden;
+}
+
+.pelaje-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.pelaje-card h2 {
+  color: #000;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.btn-consulta {
+  background-color: #00bfb3;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+}
+
+.btn-consulta:hover {
+  background-color: #009d94;
+}
+
+/* 
+   SECCIÓN ANTES/DESPUÉS
+   ===================== 
+*/
+.antes-despues {
+  padding: 60px 20px;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 158, 215, 0.8) 40%, rgba(214, 122, 255, 0.7) 80%, rgba(255, 166, 225, 0.8) 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.galeria-transformacion {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 5;
+}
+
+.transformacion-set {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 300px;
+  position: relative;
+}
+
+.foto-container {
+  position: relative;
+  border: 5px solid #fff;
+  box-shadow: 0 0 15px rgba(156, 0, 118, 0.2);
+  margin-bottom: 15px;
+}
+
+.foto-transformacion {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.etiqueta {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: #e95adb;
+  color: white;
+  padding: 8px 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 1.2rem;
+  border-radius: 3px;
+}
+
+/* Corazones decorativos entre antes/después */
+.transformacion-set::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-image: url('corazon.png'); /* Corregido: añadida carpeta img/ */
+  background-size: contain;
+  background-repeat: no-repeat;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  opacity: 0.8;
+}
+
+.brand-signature {
+  margin-top: 30px;
+}
+
+.brand-logo {
+  height: 60px;
+}
+
+/* 
+   SECCIÓN CLIENTES
+   ================ 
+*/
+.clientes {
+  padding: 60px 20px;
+  background: linear-gradient(to right, #ffe6f2, #f2d6ff);
+  text-align: center;
+}
+
+.cliente-info {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.beneficios {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+
+.beneficio-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 250px;
+  box-shadow: 0 3px 10px rgba(156, 0, 118, 0.1);
+}
+
+.beneficio-card h4 {
+  color: #9c0076;
+  margin-top: 0;
+}
+
+.btn-registro {
+  background-color: #9c0076;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-registro:hover {
+  background-color: #cc0099;
+}
+
+/* 
+   SECCIÓN MASCOTAS
+   ================ 
+*/
+.mascotas {
+  padding: 60px 20px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.galeria-mascotas {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.mascota-card {
+  width: 250px;
+  background-color: #ffe0fb;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(223, 90, 200, 0.2);
+}
+
+.mascota-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-bottom: 3px solid #d88add;
+}
+
+.mascota-card h4 {
+  color: #9c0076;
+  margin: 15px 0 5px;
+}
+
+.mascota-card p {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+/* 
+   SECCIÓN RESERVA
+   ============== 
+*/
+.reserva {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #ff80bf, #b366ff);
+}
+
+.reserva-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.reserva-card h2 {
+  color: #000;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.reserva-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.whatsapp-text {
+  color: #00a884;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.whatsapp-numero {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #00a884;
+  margin-top: 5px;
+}
+
+/* 
+   FORMULARIO MEJORADO
+   ================== 
+*/
+.form-mejorado {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e6b3e6;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Corregido: asegura que el padding no aumente el ancho */
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group .form-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: #9c0076;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  background-color: transparent;
+  padding: 0 5px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #9c0076;
+  box-shadow: 0 0 8px rgba(156, 0, 118, 0.4);
+}
+
+.form-group.focused .form-label,
+.form-group.has-value .form-label,
+.form-group input:focus ~ .form-label,
+.form-group select:focus ~ .form-label,
+.form-group textarea:focus ~ .form-label,
+.form-group input:not(:placeholder-shown) ~ .form-label,
+.form-group select:valid ~ .form-label,
+.form-group textarea:not(:placeholder-shown) ~ .form-label {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  background-color: #fff0f9;
+  padding: 0 5px;
+}
+
+/* Ocultar placeholder nativo en inputs con labels flotantes */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: transparent;
+}
+
+/* Estilo para mensajes de error en formulario */
+.form-error {
+  display: none;
+  color: #e60073;
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.form-group.error input,
+.form-group.error textarea,
+.form-group.error select {
+  border-color: #e60073;
+}
+
+.form-group.error .form-label {
+  color: #e60073;
+}
+
+.form-group.error .form-error {
+  display: block;
+}
+
+/* Botón de envío del formulario */
+.btn-enviar {
+  background: linear-gradient(to right, #9c0076, #e95adb);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(156, 0, 118, 0.2);
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-enviar:hover {
+  background: linear-gradient(to right, #cc0099, #ff6ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(156, 0, 118, 0.3);
+}
+
+/* Animación para el botón de envío */
+.btn-enviar:after {
+  content: '→';
+  margin-left: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.btn-enviar:hover:after {
+  margin-left: 10px;
+  opacity: 1;
+}
+
+.btn-enviar.sent {
+  background: #00bfb3;
+}
+
+/* 
+   SECCIÓN CONTACTO
+   =============== 
+*/
+.contacto {
+  padding: 60px 20px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.contacto form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  margin: 30px auto;
+}
+
+/* 
+   SCROLL ANIMATIONS
+   ================= 
+*/
+/* ScrollyTelling - Animaciones al hacer scroll */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.scroll-reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.8s ease;
+}
+
+.scroll-reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.8s ease;
+}
+
+.scroll-reveal-left.active,
+.scroll-reveal-right.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+  
+/* 
+   BOTÓN VOLVER ARRIBA
+   ================== 
+*/
+.btn-volver-arriba {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #9c0076;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.btn-volver-arriba.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.btn-volver-arriba:hover {
+  background: #cc0099;
+}
+
+/* 
+   FOOTER
+   ====== 
+*/
+footer {
+  background-color: #f0d0f7;
+  text-align: center;
+  padding: 30px 20px;
+  font-size: 0.9em;
+}
+
+.footer-logo {
+  margin-bottom: 15px;
+}
+
+.footer-img {
+  height: 80px;
+}
+
+.copyright {
+  margin-top: 20px;
+  font-size: 0.8rem;
+  color: #7a007a;
+}
+
+/* 
+   ELEMENTOS DECORATIVOS
+   ==================== 
+*/
+/* Corazones flotantes (decoración) */
+.hearts {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.heart {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-image: url('../img/corazon.png'); /* Corregido: añadida carpeta img/ */
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+}
+
+.heart:nth-child(odd) {
+  background-image: url('../img/corazon.png'); /* Corregido: añadida carpeta img/ */
+}
+
+/* Animación para los corazones */
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-15px) rotate(5deg); opacity: 0.9; }
+  100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+}
+
+.heart {
+  animation: float 4s ease-in-out infinite;
+}
+
+.heart:nth-child(even) {
+  animation-delay: 2s;
+  animation-duration: 6s;
+}
+
+/* 
+   MEDIA QUERIES
+   ============= 
+*/
+@media (max-width: 768px) {
+  header.main-header {
+    flex-direction: column;
+    padding: 15px;
+  }
+  
+  .nav-links {
+    margin-top: 15px;
+    gap: 15px;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .servicio-card {
+    padding: 15px;
+  }
+  
+  .transformacion-set {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .beneficios {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .reserva-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 14px;
+  }
+  
+  .form-group .form-label {
+    font-size: 14px;
+  }
+  
+  .btn-volver-arriba {
+    width: 40px;
+    height: 40px;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .hero {
+    height: 300px;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .servicio-card h3 {
+    font-size: 1.5rem;
+  }
+}
