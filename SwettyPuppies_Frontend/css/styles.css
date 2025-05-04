@@ -42,69 +42,11 @@ h1, h2, h3, h4 {
   margin-bottom: 30px;
 }
 
-/* 
-   CURSOR PERSONALIZADO
-   ==================== 
-*/
-
 /* Estilo general */
 body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-}
-
-/* Cursor personalizado tijeras */
-#cursor-tijeras {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  background-image: url('../img/tijeras.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  opacity: 50%;
-  
-}
-
-html {
-  cursor: none;
-}
-
-a, button, input[type="submit"], select {
-  cursor: pointer; /* o repite el url si quieres */
-}
-
-
-#cursor-dot, #cursor-outline {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-#cursor-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #e95adb;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#cursor-outline {
-  width: 30px;
-  height: 30px;
-  border: 2px solid #9c0076;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-
-/* Cambia el cursor en links y botones */
-.cursor-outline.hover {
-  background-color: rgba(156, 0, 118, 0.1);
 }
 
 /* 

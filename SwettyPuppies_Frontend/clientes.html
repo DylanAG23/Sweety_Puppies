@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clientes - Sweety Puppies</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/clientes.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Elementos del cursor personalizado -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
+
+  <!-- Header y navegación -->
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo" />
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html#servicios" class="animated-link">Servicios</a></li>
+        <li><a href="clientes.html" class="animated-link">Clientes</a></li>
+        <li><a href="index.html#mascotas" class="animated-link">Mascotas</a></li>
+        <li><a href="index.html#citas" class="animated-link">Citas</a></li>
+        <li><a href="index.html#contacto" class="animated-link">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Formulario único para clientes -->
+  <section id="nuevo-cliente" class="nuevo-cliente">
+    <div class="section-title">
+      <h2>Agregar Nuevo Cliente</h2>
+    </div>
+    <form id="clienteForm" class="form-mejorado">  
+      <div class="form-group">
+        <input type="text" id="cedula" name="cedula" placeholder=" " required>
+        <label for="cedula" class="form-label">Cédula</label>
+        <span class="form-error">Por favor, introduce la cédula del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="nombre" name="nombre" placeholder=" " required>
+        <label for="nombre" class="form-label">Nombre</label>
+        <span class="form-error">Por favor, introduce el nombre del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="telefono" name="telefono" placeholder=" " required>
+        <label for="telefono" class="form-label">Teléfono</label>
+        <span class="form-error">Por favor, introduce el teléfono del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="text" id="direccion" name="direccion" placeholder=" " required>
+        <label for="direccion" class="form-label">Dirección</label>
+        <span class="form-error">Por favor, introduce la dirección del cliente</span>
+      </div>
+      <div class="form-group">
+        <input type="email" id="email" name="email" placeholder=" " required>
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <span class="form-error">Por favor, introduce un email válido</span>
+      </div>
+      <button type="submit" class="btn-enviar bounce-effect">Agregar Cliente</button>
+    </form>
+  </section>
+
+  <!-- Footer igual al del index -->
+  <footer class="main-footer">
+    <p>&copy; 2025 Sweety Puppies. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/cliente_front.js"></script>
+</body>
+</html>
