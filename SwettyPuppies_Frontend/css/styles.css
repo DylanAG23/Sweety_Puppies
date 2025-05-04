@@ -306,50 +306,6 @@ header.main-header {
 }
 
 /* 
-   SECCIÓN TIPOS DE PELAJE
-   ======================= 
-*/
-.tipos-pelaje {
-  padding: 40px 20px;
-  background: linear-gradient(135deg, rgba(255, 158, 215, 0.8), rgba(214, 122, 255, 0.7));
-  position: relative;
-  overflow: hidden;
-}
-
-.pelaje-card {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 30px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 15px;
-  text-align: center;
-}
-
-.pelaje-card h2 {
-  color: #000;
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.btn-consulta {
-  background-color: #00bfb3;
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 25px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 20px;
-  text-transform: uppercase;
-  transition: background-color 0.3s ease;
-}
-
-.btn-consulta:hover {
-  background-color: #009d94;
-}
-
-/* 
    SECCIÓN ANTES/DESPUÉS
    ===================== 
 */
@@ -403,125 +359,6 @@ header.main-header {
   letter-spacing: 2px;
   font-size: 1.2rem;
   border-radius: 3px;
-}
-
-/* Corazones decorativos entre antes/después */
-.transformacion-set::after {
-  content: '';
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background-image: url('corazon.png'); /* Corregido: añadida carpeta img/ */
-  background-size: contain;
-  background-repeat: no-repeat;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  opacity: 0.8;
-}
-
-.brand-signature {
-  margin-top: 30px;
-}
-
-.brand-logo {
-  height: 60px;
-}
-
-/* 
-   SECCIÓN CLIENTES
-   ================ 
-*/
-.clientes {
-  padding: 60px 20px;
-  background: linear-gradient(to right, #ffe6f2, #f2d6ff);
-  text-align: center;
-}
-
-.cliente-info {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.beneficios {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 30px 0;
-  flex-wrap: wrap;
-}
-
-.beneficio-card {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  width: 250px;
-  box-shadow: 0 3px 10px rgba(156, 0, 118, 0.1);
-}
-
-.beneficio-card h4 {
-  color: #9c0076;
-  margin-top: 0;
-}
-
-.btn-registro {
-  background-color: #9c0076;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-registro:hover {
-  background-color: #cc0099;
-}
-
-/* 
-   SECCIÓN MASCOTAS
-   ================ 
-*/
-.mascotas {
-  padding: 60px 20px;
-  background-color: #fff;
-  text-align: center;
-}
-
-.galeria-mascotas {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-top: 40px;
-  flex-wrap: wrap;
-}
-
-.mascota-card {
-  width: 250px;
-  background-color: #ffe0fb;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(223, 90, 200, 0.2);
-}
-
-.mascota-img {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-  border-bottom: 3px solid #d88add;
-}
-
-.mascota-card h4 {
-  color: #9c0076;
-  margin: 15px 0 5px;
-}
-
-.mascota-card p {
-  font-size: 0.9rem;
-  margin-bottom: 15px;
 }
 
 /* 
@@ -703,24 +540,6 @@ header.main-header {
 
 .btn-enviar.sent {
   background: #00bfb3;
-}
-
-/* 
-   SECCIÓN CONTACTO
-   =============== 
-*/
-.contacto {
-  padding: 60px 20px;
-  background-color: #fff;
-  text-align: center;
-}
-
-.contacto form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  max-width: 500px;
-  margin: 30px auto;
 }
 
 /* 
