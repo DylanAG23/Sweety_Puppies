@@ -43,19 +43,33 @@ router.get('/buscar', async (req, res) => {
   }
 });
 
-// POST: Crear una mascota
+// POST: Crear una mascota solo si la cédula del cliente existe
 router.post('/', async (req, res) => {
   const { id_mascota, nombre, tamano, sexo, edad, temperamento, cedula_cliente } = req.body;
+
   try {
+    // Verificar si la cédula existe en la tabla clientes
+    const clienteResult = await client.query(
+      'SELECT cedula FROM clientes WHERE cedula = $1',
+      [cedula_cliente]
+    );
+
+    if (clienteResult.rowCount === 0) {
+      return res.status(400).json({ message: 'La cédula del cliente no está registrada' });
+    }
+
+    // Si la cédula existe, insertar la mascota
     await client.query(
       'INSERT INTO mascotas (id_mascota, nombre, tamano, sexo, edad, temperamento, cedula_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)',
       [id_mascota, nombre, tamano, sexo, edad, temperamento, cedula_cliente]
     );
-    res.status(201).json({ message: 'Mascota creada' });
+
+    res.status(201).json({ message: 'Mascota creada exitosamente' });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear mascota', error: error.message });
   }
 });
+
 
 // PUT: Actualizar una mascota por ID
 router.put('/:id', async (req, res) => {
@@ -63,8 +77,8 @@ router.put('/:id', async (req, res) => {
   const { nombre, tamano, sexo, edad, temperamento, cedula_cliente } = req.body;
   try {
     const result = await client.query(
-      'UPDATE mascotas SET nombre=$1, tamano=$2, sexo=$3, edad=$4, temperamento=$5, cedula_cliente=$6 WHERE id_mascota=$6',
-      [nombre, tamano, sexo, edad, temperamento, cedula_cliente]
+      'UPDATE mascotas SET nombre=$1, tamano=$2, sexo=$3, edad=$4, temperamento=$5, cedula_cliente=$6 WHERE id_mascota=$7',
+      [nombre, tamano, sexo, edad, temperamento, cedula_cliente, id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Mascota no encontrada' });
     res.json({ message: 'Mascota actualizada' });

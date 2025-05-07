@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clientes - Sweety Puppies</title>
+  <title>Mascotas - Sweety Puppies</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <link rel="stylesheet" href="css/clientes.css" />
+  <link rel="stylesheet" href="css/mascotas.css" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -25,13 +25,200 @@
         <li><a href="clientes.html" class="animated-link">Clientes</a></li>
         <li><a href="mascotas.html" class="animated-link">Mascotas</a></li>
         <li><a href="servicios.html" class="animated-link">Servicios</a></li>
-        <li><a href="citas.html" class="animated-link">citas</a></li>
+        <li><a href="citas.html" class="animated-link">Citas</a></li>
       </ul>
     </nav>
   </header>
 
+  <!-- Gestión de mascotas -->
+  <section id="gestionar-mascotas" class="gestionar-mascotas">
+    <div class="section-title">
+      <h2>Gestión de Mascotas</h2>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="buscar">Buscar</button>
+      <button class="tab-btn" data-tab="nuevo">Nueva Mascota</button>
+      <button class="tab-btn" data-tab="listado">Listado Completo</button>
+    </div>
 
-  
+    <div id="buscar-tab" class="tab-content active">
+      <form id="buscarMascotaForm" class="form-mejorado">
+        <div class="form-group">
+          <input type="text" id="buscarCedulaCliente" name="buscarCedulaCliente" placeholder=" " required>
+          <label for="buscarCedulaCliente" class="form-label">Cédula del Cliente</label>
+          <span class="form-error">Por favor, introduce la cédula del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="buscarNombreMascota" name="buscarNombreMascota" placeholder=" ">
+          <label for="buscarNombreMascota" class="form-label">Nombre de la Mascota (Opcional)</label>
+          <span class="form-error">Introduce un nombre válido</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-buscar-mascota bounce-effect">Buscar Mascota</button>
+        </div>
+      </form>
+
+      <div class="resultados-container">
+        <h3>Resultados de búsqueda</h3>
+        <div id="resultados-busqueda" class="tabla-container">
+          <!-- Aquí se mostrarán los resultados -->
+          <p class="sin-resultados">Utiliza el formulario para buscar mascotas</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario para añadir nueva mascota -->
+    <div id="nuevo-tab" class="tab-content">
+      <form id="mascotaForm" class="form-mejorado">
+        <div class="form-group">
+          <input type="text" id="id_mascota" name="id_mascota" placeholder=" " required>
+          <label for="id_mascota" class="form-label">ID Mascota</label>
+          <span class="form-error">Por favor, introduce el ID de la mascota</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="nombre" name="nombre" placeholder=" " required>
+          <label for="nombre" class="form-label">Nombre</label>
+          <span class="form-error">Por favor, introduce el nombre de la mascota</span>
+        </div>
+        <div class="form-group">
+          <select id="tamano" name="tamano" required>
+            <option value="" disabled selected></option>
+            <option value="pequeño">Pequeño</option>
+            <option value="mediano">Mediano</option>
+            <option value="grande">Grande</option>
+          </select>
+          <label for="tamano" class="form-label">Tamaño</label>
+          <span class="form-error">Por favor, selecciona el tamaño de la mascota</span>
+        </div>
+        <div class="form-group">
+          <select id="sexo" name="sexo" required>
+            <option value="" disabled selected></option>
+            <option value="macho">Macho</option>
+            <option value="hembra">Hembra</option>
+          </select>
+          <label for="sexo" class="form-label">Sexo</label>
+          <span class="form-error">Por favor, selecciona el sexo de la mascota</span>
+        </div>
+        <div class="form-group">
+          <input type="number" id="edad" name="edad" placeholder=" " required min="0">
+          <label for="edad" class="form-label">Edad (años)</label>
+          <span class="form-error">Por favor, introduce la edad de la mascota</span>
+        </div>
+        <div class="form-group">
+          <textarea id="temperamento" name="temperamento" placeholder=" " required></textarea>
+          <label for="temperamento" class="form-label">Temperamento</label>
+          <span class="form-error">Por favor, describe el temperamento de la mascota</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="cedula_cliente" name="cedula_cliente" placeholder=" " required>
+          <label for="cedula_cliente" class="form-label">Cédula del Cliente</label>
+          <span class="form-error">Por favor, introduce la cédula del cliente</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Agregar Mascota</button>
+          <button type="reset" class="btn-secundario">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de mascotas -->
+    <div id="listado-tab" class="tab-content">
+      <div class="tabla-container">
+        <table id="tabla-mascotas" class="tabla-mascotas">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Tamaño</th>
+              <th>Sexo</th>
+              <th>Edad</th>
+              <th>Temperamento</th>
+              <th>Cédula Cliente</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-mascotas">
+            <!-- Aquí se cargarán las mascotas dinámicamente -->
+          </tbody>
+        </table>
+        <p id="sin-mascotas" class="sin-resultados">No hay mascotas registradas</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal para editar mascota -->
+  <div id="modal-editar" class="modal">
+    <div class="modal-content">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Editar Mascota</h2>
+      <form id="editarForm" class="form-mejorado">
+        <input type="hidden" id="editar-id">
+        <div class="form-group">
+          <input type="text" id="editar-nombre" name="editar-nombre" placeholder=" " required>
+          <label for="editar-nombre" class="form-label">Nombre</label>
+          <span class="form-error">Por favor, introduce el nombre de la mascota</span>
+        </div>
+        <div class="form-group">
+          <select id="editar-tamano" name="editar-tamano" required>
+            <option value="" disabled></option>
+            <option value="pequeño">Pequeño</option>
+            <option value="mediano">Mediano</option>
+            <option value="grande">Grande</option>
+          </select>
+          <label for="editar-tamano" class="form-label">Tamaño</label>
+          <span class="form-error">Por favor, selecciona el tamaño de la mascota</span>
+        </div>
+        <div class="form-group">
+          <select id="editar-sexo" name="editar-sexo" required>
+            <option value="" disabled></option>
+            <option value="macho">Macho</option>
+            <option value="hembra">Hembra</option>
+          </select>
+          <label for="editar-sexo" class="form-label">Sexo</label>
+          <span class="form-error">Por favor, selecciona el sexo de la mascota</span>
+        </div>
+        <div class="form-group">
+          <input type="number" id="editar-edad" name="editar-edad" placeholder=" " required min="0">
+          <label for="editar-edad" class="form-label">Edad (años)</label>
+          <span class="form-error">Por favor, introduce la edad de la mascota</span>
+        </div>
+        <div class="form-group">
+          <textarea id="editar-temperamento" name="editar-temperamento" placeholder=" " required></textarea>
+          <label for="editar-temperamento" class="form-label">Temperamento</label>
+          <span class="form-error">Por favor, describe el temperamento de la mascota</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="editar-cedula_cliente" name="editar-cedula_cliente" placeholder=" " required>
+          <label for="editar-cedula_cliente" class="form-label">Cédula del Cliente</label>
+          <span class="form-error">Por favor, introduce la cédula del cliente</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Guardar Cambios</button>
+          <button type="button" class="btn-secundario cerrar-modal-btn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para confirmar eliminación -->
+  <div id="modal-eliminar" class="modal">
+    <div class="modal-content modal-small">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Confirmar Eliminación</h2>
+      <p>¿Estás seguro que deseas eliminar la mascota <span id="mascota-a-eliminar"></span>?</p>
+      <div class="buttons-container">
+        <button id="confirmar-eliminar" class="btn-eliminar bounce-effect">Eliminar</button>
+        <button class="btn-secundario cerrar-modal-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificaciones -->
+  <div id="toast" class="toast">
+    <div class="toast-content">
+      <span id="toast-mensaje"></span>
+    </div>
+  </div>
 
   <!-- Footer igual al del index -->
   <footer class="main-footer">
@@ -39,6 +226,7 @@
   </footer>
 
   <!-- Scripts -->
-  <script src=""></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/mascota_front.js"></script>
 </body>
 </html>
