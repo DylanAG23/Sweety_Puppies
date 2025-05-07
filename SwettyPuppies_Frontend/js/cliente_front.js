@@ -382,7 +382,6 @@ async function handleEditarCliente(e) {
   
   // Recopilar datos del cliente
   const clienteActualizado = {
-    cedula: cedula,
     nombre: document.getElementById('editar-nombre').value.trim(),
     telefono: document.getElementById('editar-telefono').value.trim(),
     direccion: document.getElementById('editar-direccion').value.trim(),
@@ -396,6 +395,8 @@ async function handleEditarCliente(e) {
   submitBtn.disabled = true;
   
   try {
+    console.log('Enviando actualización:', clienteActualizado);
+    
     // Enviar actualización a la API
     const response = await fetch(`${API_URL}/${cedula}`, {
       method: 'PUT',
@@ -406,7 +407,8 @@ async function handleEditarCliente(e) {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
+      console.error('Error de API:', response.status, response.statusText);
+      const errorData = await response.json().catch(() => ({}));
       
       // Verificar si es un error de cédula duplicada
       if (errorData.error && errorData.error.includes('duplicate key')) {
@@ -419,10 +421,13 @@ async function handleEditarCliente(e) {
       throw new Error('Error al actualizar el cliente');
     }
     
-    // Actualizar en la lista local
+    // Actualizar en la lista local con los nuevos datos
     const clienteIndex = clientes.findIndex(c => c.cedula === cedula);
     if (clienteIndex !== -1) {
-      clientes[clienteIndex] = clienteActualizado;
+      clientes[clienteIndex] = {
+        cedula: cedula,
+        ...clienteActualizado
+      };
     }
     
     // Cambiar estado del botón
