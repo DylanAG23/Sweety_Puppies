@@ -44,14 +44,17 @@
     <div id="buscar-tab" class="tab-content active">
       <form id="buscarMascotaForm" class="form-mejorado">
         <div class="form-group">
-          <input type="text" id="buscarCedulaCliente" name="buscarCedulaCliente" placeholder=" " required>
+          <input type="text" id="buscarCedulaCliente" name="buscarCedulaCliente" placeholder=" ">
           <label for="buscarCedulaCliente" class="form-label">Cédula del Cliente</label>
           <span class="form-error">Por favor, introduce la cédula del cliente</span>
         </div>
         <div class="form-group">
           <input type="text" id="buscarNombreMascota" name="buscarNombreMascota" placeholder=" ">
-          <label for="buscarNombreMascota" class="form-label">Nombre de la Mascota (Opcional)</label>
+          <label for="buscarNombreMascota" class="form-label">Nombre de la Mascota</label>
           <span class="form-error">Introduce un nombre válido</span>
+        </div>
+        <div class="form-instructions">
+          <p>Puedes buscar por cédula, nombre o ambos campos</p>
         </div>
         <div class="buttons-container">
           <button type="submit" class="btn-buscar-mascota bounce-effect">Buscar Mascota</button>

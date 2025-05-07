@@ -246,28 +246,29 @@ async function handleBuscarMascota() {
   const cedula = document.getElementById('buscarCedulaCliente').value.trim();
   const nombre = document.getElementById('buscarNombreMascota').value.trim();
   
-  if (cedula === '') {
-    mostrarError('buscarCedulaCliente', 'Ingresa la cédula del cliente');
+  // Verificar que al menos un campo tenga valor
+  if (cedula === '' && nombre === '') {
+    mostrarToast('Debes ingresar al menos un criterio de búsqueda', 'error');
     return;
   }
   
   try {
-    let endpoint = '';
-    let response;
+    let url = new URL(`${API_URL}/buscar`, window.location.origin);
+    let params = new URLSearchParams();
     
-    // Si tenemos nombre y cédula, buscar por ambos
-    if (nombre !== '') {
-      console.log(`Buscando mascota con cédula: ${cedula} y nombre: ${nombre}`);
-      endpoint = `${API_URL}/buscar?cedula=${encodeURIComponent(cedula)}&nombre=${encodeURIComponent(nombre)}`;
-      response = await fetch(endpoint);
-    } else {
-      // Si solo tenemos cédula, buscar por cédula
-      console.log(`Buscando mascotas para cédula: ${cedula}`);
-      endpoint = `${API_URL}/cliente/${encodeURIComponent(cedula)}`;
-      response = await fetch(endpoint);
+    // Agregar parámetros si existen
+    if (cedula !== '') {
+      params.append('cedula', cedula);
     }
     
-    console.log(`Endpoint utilizado: ${endpoint}`);
+    if (nombre !== '') {
+      params.append('nombre', nombre);
+    }
+    
+    url.search = params.toString();
+    console.log(`Buscando con URL: ${url.toString()}`);
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       if (response.status === 404) {
