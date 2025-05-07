@@ -45,11 +45,11 @@ router.get('/buscar', async (req, res) => {
 
 // POST: Crear una mascota
 router.post('/', async (req, res) => {
-  const { id_mascota, nombre, especie, raza, edad, peso, cedula_cliente } = req.body;
+  const { id_mascota, nombre, tamano, sexo, edad, temperamento, cedula_cliente } = req.body;
   try {
     await client.query(
-      'INSERT INTO mascotas (id_mascota, nombre, especie, raza, edad, peso, cedula_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-      [id_mascota, nombre, especie, raza, edad, peso, cedula_cliente]
+      'INSERT INTO mascotas (id_mascota, nombre, tamano, sexo, edad, temperamento, cedula_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [id_mascota, nombre, tamano, sexo, edad, temperamento, cedula_cliente]
     );
     res.status(201).json({ message: 'Mascota creada' });
   } catch (error) {
@@ -60,11 +60,11 @@ router.post('/', async (req, res) => {
 // PUT: Actualizar una mascota por ID
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombre, especie, raza, edad, peso } = req.body;
+  const { nombre, tamano, sexo, edad, temperamento, cedula_cliente } = req.body;
   try {
     const result = await client.query(
-      'UPDATE mascotas SET nombre=$1, especie=$2, raza=$3, edad=$4, peso=$5 WHERE id_mascota=$6',
-      [nombre, especie, raza, edad, peso, id]
+      'UPDATE mascotas SET nombre=$1, tamano=$2, sexo=$3, edad=$4, temperamento=$5, cedula_cliente=$6 WHERE id_mascota=$6',
+      [nombre, tamano, sexo, edad, temperamento, cedula_cliente]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Mascota no encontrada' });
     res.json({ message: 'Mascota actualizada' });
