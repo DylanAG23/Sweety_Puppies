@@ -30,40 +30,155 @@
     </nav>
   </header>
 
-  <!-- Formulario único para clientes -->
-  <section id="nuevo-cliente" class="nuevo-cliente">
+  <!-- Búsqueda de clientes -->
+  <section id="buscar-cliente" class="buscar-cliente">
     <div class="section-title">
-      <h2>Agregar Nuevo Cliente</h2>
+      <h2>Gestión de Clientes</h2>
     </div>
-    <form id="clienteForm" class="form-mejorado">  
-      <div class="form-group">
-        <input type="text" id="cedula" name="cedula" placeholder=" " required>
-        <label for="cedula" class="form-label">Cédula</label>
-        <span class="form-error">Por favor, introduce la cédula del cliente</span>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="buscar">Buscar</button>
+      <button class="tab-btn" data-tab="nuevo">Nuevo Cliente</button>
+      <button class="tab-btn" data-tab="listado">Listado Completo</button>
+    </div>
+
+    <div id="buscar-tab" class="tab-content active">
+      <form id="buscarForm" class="form-mejorado">  
+        <div class="form-group">
+          <input type="text" id="buscarTermino" name="buscarTermino" placeholder=" " required>
+          <label for="buscarTermino" class="form-label">Cédula o Nombre</label>
+          <span class="form-error">Por favor, introduce un término de búsqueda</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Buscar Cliente</button>
+        </div>
+      </form>
+
+      <div class="resultados-container">
+        <h3>Resultados de búsqueda</h3>
+        <div id="resultados-busqueda" class="tabla-container">
+          <!-- Aquí se mostrarán los resultados -->
+          <p class="sin-resultados">Utiliza el formulario para buscar clientes</p>
+        </div>
       </div>
-      <div class="form-group">
-        <input type="text" id="nombre" name="nombre" placeholder=" " required>
-        <label for="nombre" class="form-label">Nombre</label>
-        <span class="form-error">Por favor, introduce el nombre del cliente</span>
+    </div>
+
+    <!-- Formulario para añadir nuevo cliente -->
+    <div id="nuevo-tab" class="tab-content">
+      <form id="clienteForm" class="form-mejorado">  
+        <div class="form-group">
+          <input type="text" id="cedula" name="cedula" placeholder=" " required>
+          <label for="cedula" class="form-label">Cédula</label>
+          <span class="form-error">Por favor, introduce la cédula del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="nombre" name="nombre" placeholder=" " required>
+          <label for="nombre" class="form-label">Nombre</label>
+          <span class="form-error">Por favor, introduce el nombre del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="telefono" name="telefono" placeholder=" " required>
+          <label for="telefono" class="form-label">Teléfono</label>
+          <span class="form-error">Por favor, introduce el teléfono del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="direccion" name="direccion" placeholder=" " required>
+          <label for="direccion" class="form-label">Dirección</label>
+          <span class="form-error">Por favor, introduce la dirección del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" name="email" placeholder=" " required>
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <span class="form-error">Por favor, introduce un email válido</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Agregar Cliente</button>
+          <button type="reset" class="btn-secundario">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de clientes -->
+    <div id="listado-tab" class="tab-content">
+      <div class="tabla-container">
+        <table id="tabla-clientes" class="tabla-clientes">
+          <thead>
+            <tr>
+              <th>Cédula</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Email</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-clientes">
+            <!-- Aquí se cargarán los clientes dinámicamente -->
+          </tbody>
+        </table>
+        <p id="sin-clientes" class="sin-resultados">No hay clientes registrados</p>
       </div>
-      <div class="form-group">
-        <input type="text" id="telefono" name="telefono" placeholder=" " required>
-        <label for="telefono" class="form-label">Teléfono</label>
-        <span class="form-error">Por favor, introduce el teléfono del cliente</span>
-      </div>
-      <div class="form-group">
-        <input type="text" id="direccion" name="direccion" placeholder=" " required>
-        <label for="direccion" class="form-label">Dirección</label>
-        <span class="form-error">Por favor, introduce la dirección del cliente</span>
-      </div>
-      <div class="form-group">
-        <input type="email" id="email" name="email" placeholder=" " required>
-        <label for="email" class="form-label">Correo Electrónico</label>
-        <span class="form-error">Por favor, introduce un email válido</span>
-      </div>
-      <button type="submit" class="btn-enviar bounce-effect">Agregar Cliente</button>
-    </form>
+    </div>
   </section>
+
+  <!-- Modal para editar cliente -->
+  <div id="modal-editar" class="modal">
+    <div class="modal-content">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Editar Cliente</h2>
+      <form id="editarForm" class="form-mejorado">
+        <input type="hidden" id="editar-id">
+        <div class="form-group">
+          <input type="text" id="editar-cedula" name="editar-cedula" placeholder=" " required>
+          <label for="editar-cedula" class="form-label">Cédula</label>
+          <span class="form-error">Por favor, introduce la cédula del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="editar-nombre" name="editar-nombre" placeholder=" " required>
+          <label for="editar-nombre" class="form-label">Nombre</label>
+          <span class="form-error">Por favor, introduce el nombre del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="editar-telefono" name="editar-telefono" placeholder=" " required>
+          <label for="editar-telefono" class="form-label">Teléfono</label>
+          <span class="form-error">Por favor, introduce el teléfono del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="text" id="editar-direccion" name="editar-direccion" placeholder=" " required>
+          <label for="editar-direccion" class="form-label">Dirección</label>
+          <span class="form-error">Por favor, introduce la dirección del cliente</span>
+        </div>
+        <div class="form-group">
+          <input type="email" id="editar-email" name="editar-email" placeholder=" " required>
+          <label for="editar-email" class="form-label">Correo Electrónico</label>
+          <span class="form-error">Por favor, introduce un email válido</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Guardar Cambios</button>
+          <button type="button" class="btn-secundario cerrar-modal-btn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para confirmar eliminación -->
+  <div id="modal-eliminar" class="modal">
+    <div class="modal-content modal-small">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Confirmar Eliminación</h2>
+      <p>¿Estás seguro que deseas eliminar al cliente <span id="cliente-a-eliminar"></span>?</p>
+      <div class="buttons-container">
+        <button id="confirmar-eliminar" class="btn-eliminar bounce-effect">Eliminar</button>
+        <button class="btn-secundario cerrar-modal-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificaciones -->
+  <div id="toast" class="toast">
+    <div class="toast-content">
+      <span id="toast-mensaje"></span>
+    </div>
+  </div>
 
   <!-- Footer igual al del index -->
   <footer class="main-footer">

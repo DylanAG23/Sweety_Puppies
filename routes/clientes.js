@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
       'INSERT INTO clientes (cedula, nombre, telefono, direccion, email) VALUES ($1, $2, $3, $4, $5)',
       [cedula, nombre, telefono, direccion, email]
     );
-    res.status(201).json({ message: 'Cliente creado' });
+    res.status(201).json({ message: 'Cliente creado', cedula, nombre, telefono, direccion, email });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear cliente', error: error.message });
   }
@@ -46,10 +46,10 @@ router.put('/:cedula', async (req, res) => {
   try {
     const result = await client.query(
       'UPDATE clientes SET nombre=$1, telefono=$2, direccion=$3, email=$4 WHERE cedula=$5',
-      [nombre, telefono, direccion, cedula, email]
+      [nombre, telefono, direccion, email, cedula]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
-    res.json({ message: 'Cliente actualizado' });
+    res.json({ message: 'Cliente actualizado', cedula, nombre, telefono, direccion, email });
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar cliente', error: error.message });
   }
