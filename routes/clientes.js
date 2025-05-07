@@ -46,7 +46,7 @@ router.put('/:cedula', async (req, res) => {
   try {
     const result = await client.query(
       'UPDATE clientes SET nombre=$1, telefono=$2, direccion=$3, email=$4 WHERE cedula=$5',
-      [nombre, telefono, direccion, cedula]
+      [nombre, telefono, direccion, cedula, email]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
     res.json({ message: 'Cliente actualizado' });
