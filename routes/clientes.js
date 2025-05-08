@@ -1,9 +1,53 @@
-// routes/cliente.js
 const express = require('express');
 const router = express.Router();
 const client = require('../baseDatos');
 
-// GET: Obtener todos los clientes
+/**
+ * @swagger
+ * tags:
+ *   name: Clientes
+ *   description: Operaciones relacionadas con los clientes
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Cliente:
+ *       type: object
+ *       required:
+ *         - cedula
+ *         - nombre
+ *       properties:
+ *         cedula:
+ *           type: string
+ *           description: Número de cédula del cliente
+ *         nombre:
+ *           type: string
+ *         telefono:
+ *           type: string
+ *         direccion:
+ *           type: string
+ *         email:
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /clientes:
+ *   get:
+ *     summary: Obtener todos los clientes
+ *     tags: [Clientes]
+ *     responses:
+ *       200:
+ *         description: Lista de todos los clientes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Cliente'
+ */
 router.get('/', async (req, res) => {
   try {
     const result = await client.query('SELECT * FROM clientes');
@@ -13,7 +57,29 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET: Obtener cliente por cédula
+/**
+ * @swagger
+ * /clientes/{cedula}:
+ *   get:
+ *     summary: Obtener un cliente por cédula
+ *     tags: [Clientes]
+ *     parameters:
+ *       - in: path
+ *         name: cedula
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Cédula del cliente
+ *     responses:
+ *       200:
+ *         description: Datos del cliente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Cliente'
+ *       404:
+ *         description: Cliente no encontrado
+ */
 router.get('/:cedula', async (req, res) => {
   const { cedula } = req.params;
   try {
@@ -25,7 +91,24 @@ router.get('/:cedula', async (req, res) => {
   }
 });
 
-// POST: Crear un cliente
+/**
+ * @swagger
+ * /clientes:
+ *   post:
+ *     summary: Crear un nuevo cliente
+ *     tags: [Clientes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Cliente'
+ *     responses:
+ *       201:
+ *         description: Cliente creado exitosamente
+ *       500:
+ *         description: Error al crear cliente
+ */
 router.post('/', async (req, res) => {
   const { cedula, nombre, telefono, direccion, email } = req.body;
   try {
@@ -39,7 +122,30 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT: Actualizar un cliente
+/**
+ * @swagger
+ * /clientes/{cedula}:
+ *   put:
+ *     summary: Actualizar un cliente por cédula
+ *     tags: [Clientes]
+ *     parameters:
+ *       - in: path
+ *         name: cedula
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Cliente'
+ *     responses:
+ *       200:
+ *         description: Cliente actualizado
+ *       404:
+ *         description: Cliente no encontrado
+ */
 router.put('/:cedula', async (req, res) => {
   const { cedula } = req.params;
   const { nombre, telefono, direccion, email } = req.body;
@@ -55,7 +161,24 @@ router.put('/:cedula', async (req, res) => {
   }
 });
 
-// DELETE: Eliminar un cliente
+/**
+ * @swagger
+ * /clientes/{cedula}:
+ *   delete:
+ *     summary: Eliminar un cliente por cédula
+ *     tags: [Clientes]
+ *     parameters:
+ *       - in: path
+ *         name: cedula
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Cliente eliminado
+ *       404:
+ *         description: Cliente no encontrado
+ */
 router.delete('/:cedula', async (req, res) => {
   const { cedula } = req.params;
   try {

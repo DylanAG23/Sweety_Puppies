@@ -2,7 +2,50 @@ const express = require('express');
 const router = express.Router();
 const client = require('../baseDatos');
 
-// GET: Obtener todos los servicios
+/**
+ * @swagger
+ * tags:
+ *   name: Servicios
+ *   description: Endpoints para gestionar los servicios ofrecidos
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Servicio:
+ *       type: object
+ *       required:
+ *         - id_servicio
+ *         - nombre
+ *         - precio
+ *       properties:
+ *         id_servicio:
+ *           type: integer
+ *         nombre:
+ *           type: string
+ *         descripcion:
+ *           type: string
+ *         precio:
+ *           type: number
+ */
+
+/**
+ * @swagger
+ * /servicios:
+ *   get:
+ *     summary: Obtener todos los servicios
+ *     tags: [Servicios]
+ *     responses:
+ *       200:
+ *         description: Lista de servicios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Servicio'
+ */
 router.get('/', async (req, res) => {
   try {
     const result = await client.query('SELECT * FROM servicios');
@@ -12,7 +55,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET: Obtener un servicio por ID
+/**
+ * @swagger
+ * /servicios/{id}:
+ *   get:
+ *     summary: Obtener un servicio por ID
+ *     tags: [Servicios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del servicio
+ *     responses:
+ *       200:
+ *         description: Servicio encontrado
+ *       404:
+ *         description: Servicio no encontrado
+ */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -24,7 +85,24 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST: Crear un nuevo servicio
+/**
+ * @swagger
+ * /servicios:
+ *   post:
+ *     summary: Crear un nuevo servicio
+ *     tags: [Servicios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Servicio'
+ *     responses:
+ *       201:
+ *         description: Servicio creado exitosamente
+ *       500:
+ *         description: Error al crear servicio
+ */
 router.post('/', async (req, res) => {
   const { id_servicio, nombre, descripcion, precio } = req.body;
   try {
@@ -38,7 +116,30 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT: Actualizar un servicio por ID
+/**
+ * @swagger
+ * /servicios/{id}:
+ *   put:
+ *     summary: Actualizar un servicio por ID
+ *     tags: [Servicios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Servicio'
+ *     responses:
+ *       200:
+ *         description: Servicio actualizado
+ *       404:
+ *         description: Servicio no encontrado
+ */
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { nombre, descripcion, precio } = req.body;
@@ -54,7 +155,24 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE: Eliminar un servicio por ID
+/**
+ * @swagger
+ * /servicios/{id}:
+ *   delete:
+ *     summary: Eliminar un servicio por ID
+ *     tags: [Servicios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Servicio eliminado exitosamente
+ *       404:
+ *         description: Servicio no encontrado
+ */
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

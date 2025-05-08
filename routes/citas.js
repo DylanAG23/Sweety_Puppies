@@ -2,7 +2,56 @@ const express = require('express');
 const router = express.Router();
 const client = require('../baseDatos');
 
-// GET: Obtener todas las citas
+/**
+ * @swagger
+ * tags:
+ *   name: Citas
+ *   description: Endpoints para gestionar las citas de mascotas
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Cita:
+ *       type: object
+ *       required:
+ *         - id_cita
+ *         - fecha
+ *         - hora
+ *         - id_servicio
+ *         - id_mascota
+ *       properties:
+ *         id_cita:
+ *           type: integer
+ *         fecha:
+ *           type: string
+ *           format: date
+ *         hora:
+ *           type: string
+ *           format: time
+ *         id_servicio:
+ *           type: integer
+ *         id_mascota:
+ *           type: integer
+ */
+
+/**
+ * @swagger
+ * /citas:
+ *   get:
+ *     summary: Obtener todas las citas
+ *     tags: [Citas]
+ *     responses:
+ *       200:
+ *         description: Lista de citas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Cita'
+ */
 router.get('/', async (req, res) => {
   try {
     const result = await client.query('SELECT * FROM citas');
@@ -12,7 +61,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET: Obtener cita por ID
+/**
+ * @swagger
+ * /citas/{id}:
+ *   get:
+ *     summary: Obtener una cita por ID
+ *     tags: [Citas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID de la cita
+ *     responses:
+ *       200:
+ *         description: Cita encontrada
+ *       404:
+ *         description: Cita no encontrada
+ */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -24,7 +91,24 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST: Crear una nueva cita
+/**
+ * @swagger
+ * /citas:
+ *   post:
+ *     summary: Crear una nueva cita
+ *     tags: [Citas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Cita'
+ *     responses:
+ *       201:
+ *         description: Cita creada exitosamente
+ *       500:
+ *         description: Error del servidor
+ */
 router.post('/', async (req, res) => {
   const { id_cita, fecha, hora, id_servicio, id_mascota } = req.body;
   try {
@@ -38,7 +122,30 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT: Actualizar una cita
+/**
+ * @swagger
+ * /citas/{id}:
+ *   put:
+ *     summary: Actualizar una cita por ID
+ *     tags: [Citas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Cita'
+ *     responses:
+ *       200:
+ *         description: Cita actualizada
+ *       404:
+ *         description: Cita no encontrada
+ */
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { fecha, hora, id_servicio, id_mascota } = req.body;
@@ -54,7 +161,24 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE: Eliminar una cita
+/**
+ * @swagger
+ * /citas/{id}:
+ *   delete:
+ *     summary: Eliminar una cita por ID
+ *     tags: [Citas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Cita eliminada exitosamente
+ *       404:
+ *         description: Cita no encontrada
+ */
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {

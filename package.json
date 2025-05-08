@@ -5,7 +5,9 @@
     "express": "^5.1.0",
     "mysql2": "^3.14.0",
     "pg": "^8.15.1",
-    "postgres": "^3.4.5"
+    "postgres": "^3.4.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "name": "parcialbd",
   "version": "1.0.0",
