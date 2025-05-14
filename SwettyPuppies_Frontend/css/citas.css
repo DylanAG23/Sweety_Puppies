@@ -1,0 +1,136 @@
+/* 
+   SECCIÓN DE CITAS
+   ================ 
+*/
+
+/* Contenedor principal para gestión de citas */
+.gestionar-cita {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+}
+
+/* Filtro de fecha */
+.fecha-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.fecha-filter label {
+  font-weight: 600;
+  color: #9c0076;
+  margin-right: 5px;
+}
+
+.fecha-filter input[type="date"] {
+  padding: 8px 12px;
+  border: 2px solid #e6b3e6;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.fecha-filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Botones pequeños */
+.btn-secundario.small {
+  padding: 8px 15px;
+  font-size: 14px;
+}
+
+/* Tabla de citas */
+.tabla-citas {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  margin-top: 15px;
+}
+
+.tabla-citas th,
+.tabla-citas td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.tabla-citas th {
+  background-color: #9c0076;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.tabla-citas tr:hover {
+  background-color: #fff0f9;
+}
+
+.tabla-citas .btn-accion {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.tabla-citas .btn-editar {
+  color: #9c0076;
+}
+
+.tabla-citas .btn-eliminar-icon {
+  color: #e60073;
+}
+
+.tabla-citas .btn-accion:hover {
+  transform: scale(1.2);
+}
+
+/* Mensaje para cuando no hay resultados */
+.sin-resultados {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Contenedor para los resultados */
+.resultados-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: 30px auto;
+  box-shadow: 0 0 15px rgba(156, 0, 118, 0.1);
+}
+
+.resultados-container h3 {
+  color: #9c0076;
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f2f2f2;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .fecha-filter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tabla-citas th, 
+  .tabla-citas td {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .tabla-citas {
+    font-size: 14px;
+  }
+}

@@ -40,21 +40,28 @@ const client = require('../baseDatos');
  * @swagger
  * /citas:
  *   get:
- *     summary: Obtener todas las citas
+ *     summary: Obtener todas las citas con detalles de servicio, mascota y cliente
  *     tags: [Citas]
  *     responses:
  *       200:
- *         description: Lista de citas
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Cita'
+ *         description: Lista de citas con detalles
  */
 router.get('/', async (req, res) => {
   try {
-    const result = await client.query('SELECT * FROM citas');
+    // Consulta con JOIN para obtener detalles de servicios, mascotas y clientes
+    const result = await client.query(`
+      SELECT c.*, 
+             s.nombre AS nombre_servicio, 
+             s.precio AS precio_servicio,
+             m.nombre AS nombre_mascota, 
+             cl.cedula AS cedula_cliente,
+             cl.nombre AS nombre_cliente
+      FROM citas c
+      LEFT JOIN servicios s ON c.id_servicio = s.id_servicio
+      LEFT JOIN mascotas m ON c.id_mascota = m.id_mascota
+      LEFT JOIN clientes cl ON m.id_cliente = cl.cedula
+      ORDER BY c.fecha DESC, c.hora ASC
+    `);
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener citas', error: error.message });
@@ -65,7 +72,7 @@ router.get('/', async (req, res) => {
  * @swagger
  * /citas/{id}:
  *   get:
- *     summary: Obtener una cita por ID
+ *     summary: Obtener una cita por ID con detalles completos
  *     tags: [Citas]
  *     parameters:
  *       - in: path
@@ -76,20 +83,77 @@ router.get('/', async (req, res) => {
  *         description: ID de la cita
  *     responses:
  *       200:
- *         description: Cita encontrada
+ *         description: Cita encontrada con detalles
  *       404:
  *         description: Cita no encontrada
  */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await client.query('SELECT * FROM citas WHERE id_cita = $1', [id]);
+    const result = await client.query(`
+      SELECT c.*, 
+             s.nombre AS nombre_servicio, 
+             s.precio AS precio_servicio,
+             m.nombre AS nombre_mascota, 
+             cl.cedula AS cedula_cliente,
+             cl.nombre AS nombre_cliente
+      FROM citas c
+      LEFT JOIN servicios s ON c.id_servicio = s.id_servicio
+      LEFT JOIN mascotas m ON c.id_mascota = m.id_mascota
+      LEFT JOIN clientes cl ON m.id_cliente = cl.cedula
+      WHERE c.id_cita = $1
+    `, [id]);
+    
     if (result.rowCount === 0) return res.status(404).json({ message: 'Cita no encontrada' });
     res.json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener cita', error: error.message });
   }
 });
+
+/**
+ * @swagger
+ * /citas/fecha/{fecha}:
+ *   get:
+ *     summary: Obtener citas por fecha con detalles completos
+ *     tags: [Citas]
+ *     parameters:
+ *       - in: path
+ *         name: fecha
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: true
+ *         description: Fecha de las citas (YYYY-MM-DD)
+ *     responses:
+ *       200:
+ *         description: Citas encontradas para la fecha indicada
+ */
+router.get('/fecha/:fecha', async (req, res) => {
+  const { fecha } = req.params;
+  try {
+    const result = await client.query(`
+      SELECT c.*, 
+             s.nombre AS nombre_servicio, 
+             s.precio AS precio_servicio,
+             m.nombre AS nombre_mascota, 
+             cl.cedula AS cedula_cliente,
+             cl.nombre AS nombre_cliente
+      FROM citas c
+      LEFT JOIN servicios s ON c.id_servicio = s.id_servicio
+      LEFT JOIN mascotas m ON c.id_mascota = m.id_mascota
+      LEFT JOIN clientes cl ON m.id_cliente = cl.cedula
+      WHERE c.fecha = $1
+      ORDER BY c.hora ASC
+    `, [fecha]);
+    
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener citas por fecha', error: error.message });
+  }
+});
+
+// Resto de los endpoints para crear, actualizar y eliminar permanecen igual
 
 /**
  * @swagger

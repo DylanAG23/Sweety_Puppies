@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clientes - Sweety Puppies</title>
+  <title>Citas - Sweety Puppies</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/clientes.css" />
+  <link rel="stylesheet" href="css/citas.css" /> <!-- Añadido nuevo archivo CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -25,20 +26,162 @@
         <li><a href="clientes.html" class="animated-link">Clientes</a></li>
         <li><a href="mascotas.html" class="animated-link">Mascotas</a></li>
         <li><a href="servicios.html" class="animated-link">Servicios</a></li>
-        <li><a href="citas.html" class="animated-link">citas</a></li>
+        <li><a href="citas.html" class="animated-link">Citas</a></li>
       </ul>
     </nav>
   </header>
 
+  <!-- Gestión de citas -->
+  <section id="gestionar-cita" class="gestionar-cita">
+    <div class="section-title">
+      <h2>Gestión de Citas</h2>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="buscar">Buscar</button>
+      <button class="tab-btn" data-tab="nueva">Nueva Cita</button>
+      <button class="tab-btn" data-tab="listado">Listado Completo</button>
+    </div>
 
-  
+    <div id="buscar-tab" class="tab-content active">
+      <form id="buscarForm" class="form-mejorado">  
+        <div class="form-group">
+          <input type="text" id="buscarTermino" name="buscarTermino" placeholder=" " required>
+          <label for="buscarTermino" class="form-label">ID de cita o Fecha (YYYY-MM-DD)</label>
+          <span class="form-error">Por favor, introduce un término de búsqueda</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Buscar Cita</button>
+        </div>
+      </form>
 
-  <!-- Footer igual al del index -->
-  <footer class="main-footer">
-    <p>&copy; 2025 Sweety Puppies. Todos los derechos reservados.</p>
-  </footer>
+      <div class="resultados-container">
+        <h3>Resultados de búsqueda</h3>
+        <div id="resultados-busqueda" class="tabla-container">
+          <p class="sin-resultados">Utiliza el formulario para buscar citas</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="nueva-tab" class="tab-content">
+      <form id="citaForm" class="form-mejorado">  
+        <div class="form-group">
+          <input type="number" id="id_cita" name="id_cita" placeholder=" " required>
+          <label for="id_cita" class="form-label">ID Cita</label>
+          <span class="form-error">Por favor, introduce el ID de la cita</span>
+        </div>
+        <div class="form-group">
+          <input type="date" id="fecha" name="fecha" placeholder=" " required>
+          <label for="fecha" class="form-label">Fecha</label>
+          <span class="form-error">Por favor, selecciona una fecha</span>
+        </div>
+        <div class="form-group">
+          <input type="time" id="hora" name="hora" placeholder=" " required>
+          <label for="hora" class="form-label">Hora</label>
+          <span class="form-error">Por favor, selecciona una hora</span>
+        </div>
+        <div class="form-group">
+          <select id="id_servicio" name="id_servicio" required>
+            <option value="" disabled selected>Selecciona un servicio</option>
+          </select>
+          <span class="form-error">Por favor, selecciona un servicio</span>
+        </div>
+        <div class="form-group">
+          <select id="id_mascota" name="id_mascota" required>
+            <option value="" disabled selected>Selecciona una mascota</option>
+          </select>
+          <span class="form-error">Por favor, selecciona una mascota</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Agendar Cita</button>
+          <button type="reset" class="btn-secundario">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="listado-tab" class="tab-content">
+      <div class="fecha-filter">
+        <label for="filtro-fecha">Filtrar por fecha:</label>
+        <input type="date" id="filtro-fecha" name="filtro-fecha">
+        <div class="fecha-filter-buttons">
+          <button id="aplicar-filtro" class="btn-secundario small">Aplicar</button>
+          <button id="limpiar-filtro" class="btn-secundario small">Mostrar Todas</button>
+        </div>
+      </div>
+      <div class="tabla-container">
+        <table id="tabla-citas" class="tabla-citas">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Servicio</th>
+              <th>Mascota</th>
+              <th>Cliente</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-citas"></tbody>
+        </table>
+        <p id="sin-citas" class="sin-resultados">No hay citas registradas</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal para editar cita -->
+  <div id="editarModal" class="modal">
+    <div class="modal-content">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Editar Cita</h2>
+      <form id="editarForm" class="form-mejorado">
+        <input type="hidden" id="editar_id_cita" name="editar_id_cita">
+        <div class="form-group">
+          <input type="date" id="editar_fecha" name="editar_fecha" placeholder=" " required>
+          <label for="editar_fecha" class="form-label">Fecha</label>
+          <span class="form-error">Por favor, selecciona una fecha</span>
+        </div>
+        <div class="form-group">
+          <input type="time" id="editar_hora" name="editar_hora" placeholder=" " required>
+          <label for="editar_hora" class="form-label">Hora</label>
+          <span class="form-error">Por favor, selecciona una hora</span>
+        </div>
+        <div class="form-group">
+          <select id="editar_id_servicio" name="editar_id_servicio" required>
+            <option value="" disabled selected>Selecciona un servicio</option>
+          </select>
+          <span class="form-error">Por favor, selecciona un servicio</span>
+        </div>
+        <div class="form-group">
+          <select id="editar_id_mascota" name="editar_id_mascota" required>
+            <option value="" disabled selected>Selecciona una mascota</option>
+          </select>
+          <span class="form-error">Por favor, selecciona una mascota</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar">Guardar Cambios</button>
+          <button type="button" class="btn-secundario cerrar-modal-btn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para confirmar eliminación -->
+  <div id="eliminarModal" class="modal">
+    <div class="modal-content modal-small">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Confirmar Eliminación</h2>
+      <p>¿Estás seguro de que deseas eliminar esta cita? Esta acción no se puede deshacer.</p>
+      <input type="hidden" id="eliminar_id_cita">
+      <div class="buttons-container">
+        <button id="confirmarEliminar" class="btn-eliminar">Eliminar</button>
+        <button class="btn-secundario cerrar-modal-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast para notificaciones -->
+  <div id="toast" class="toast">Operación realizada con éxito</div>
 
   <!-- Scripts -->
-  <script src=""></script>
+  <script src="js/citas_front.js"></script>
 </body>
 </html>
