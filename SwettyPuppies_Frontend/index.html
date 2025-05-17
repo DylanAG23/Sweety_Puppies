@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sweety Puppies - Peluquería Canina</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/servicios-estilos.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -40,27 +41,7 @@
     <div class="section-title">
       <h2>Servicios</h2>
     </div>
-    
-    <div class="servicio-card hover-effect">
-      <h3>Baño y Cepillado</h3>
-      <p>Para todas las razas y tipos de pelaje. Incluye shampoo especializado y secado suave.</p>
-    </div>
-    
-    <div class="servicio-card hover-effect">
-      <h3>Manto Corto</h3>
-      <p>Se necesita hacer un deslanado para quitar el pelo muerto de su muda anterior, para un mantenimiento en casa cepillar diario y venir a tu deslanado y bañito una vez al mes.</p>
-      <p class="ejemplos">Ej: pitbull, pug, beagle, bulldog, doberman, labrador, etc.</p>
-    </div>
-    
-    <div class="servicio-card hover-effect">
-      <h3>Deslanado</h3>
-      <p>Elimina el pelo muerto para evitar alergias y mantener el pelaje sano.</p>
-    </div>
-    
-    <div class="servicio-card hover-effect">
-      <h3>Corte de uñas</h3>
-      <p>Con cuidado profesional y sin estrés para tu mascota.</p>
-    </div>
+    <!-- Los servicios se cargarán dinámicamente aquí -->
   </section>
 
 
@@ -77,7 +58,6 @@
         </div>
         <div class="foto-container despues">
           <img src="img/mascota2.png" alt="Después del corte" class="foto-transformacion">
-
         </div>
       </div>
       
@@ -128,9 +108,23 @@
   <div id="cursor-outline"></div>
   
   <!-- Cursor personalizado -->
-    <div id="cursor-tijeras"></div>
+  <div id="cursor-tijeras"></div>
 
   <!-- Script para las funcionalidades -->
   <script src="js/mejoras.js"></script>
+  
+  <!-- Script para cargar servicios dinámicamente -->
+  <script>
+    // Script temporal para verificar si hay errores de carga
+    console.log('Script inline cargado');
+    
+    // Verificar si hay errores de conexión o API
+    window.addEventListener('error', function(e) {
+      console.error('Error detectado:', e.message);
+    });
+  </script>
+  
+  <!-- Cargar el script principal de servicios -->
+  <script src="js/servicios-dinamicos.js"></script>
 </body>
 </html>

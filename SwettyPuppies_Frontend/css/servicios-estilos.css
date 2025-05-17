@@ -1,0 +1,224 @@
+/* Estilos adicionales para la sección de servicios dinámica */
+
+/* Estilo para el botón de reserva */
+.btn-reservar {
+  background: linear-gradient(to right, #9c0076, #e95adb);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  box-shadow: 0 3px 10px rgba(156, 0, 118, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-reservar:hover {
+  background: linear-gradient(to right, #cc0099, #ff6ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(156, 0, 118, 0.3);
+}
+
+/* Estilo para el precio */
+.precio {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #9c0076;
+  margin-top: 15px;
+}
+
+/* Hacer toda la tarjeta clickeable */
+.servicio-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 35px;
+  margin: 30px auto;
+  border-radius: 15px;
+  max-width: 700px;
+  box-shadow: 0 5px 25px rgba(223, 90, 200, 0.25);
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+
+/* Grid de servicios */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Efecto de elevación al pasar el mouse */
+.servicio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(223, 90, 200, 0.3);
+}
+
+/* Efecto de pulsación al hacer clic */
+.servicio-card:active {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(223, 90, 200, 0.25);
+}
+
+/* Indicador visual de acción al pasar el mouse */
+.servicio-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #9c0076, #e95adb);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.servicio-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* Estilos para mostrar mensaje de cargando */
+.cargando-contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.cargando-animacion {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(156, 0, 118, 0.2);
+  border-top-color: #9c0076;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos para mensajes de error */
+.error-mensaje {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: rgba(255, 200, 200, 0.2);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.error-discreto {
+  background-color: rgba(255,220,220,0.2);
+  padding: 8px;
+  border-radius: 5px;
+  margin: 20px auto;
+  max-width: 800px;
+  font-size: 0.85rem;
+  color: #9c0076;
+  text-align: center;
+}
+
+.btn-reintentar {
+  background: linear-gradient(to right, #9c0076, #e95adb);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.btn-reintentar:hover {
+  background: linear-gradient(to right, #cc0099, #ff6ed8);
+}
+
+/* Estilos para modal de servicio */
+.modal-servicio {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-contenido {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #9c0076;
+}
+
+/* Detalles del servicio */
+.detalles-servicio {
+  display: flex;
+  justify-content: space-around;
+  margin: 15px 0;
+}
+
+.duracion {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .servicios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-reservar {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+  
+  .precio {
+    font-size: 1.3rem;
+  }
+}

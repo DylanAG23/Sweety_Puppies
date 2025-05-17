@@ -1,0 +1,448 @@
+
+/* Sección de gestión de servicios */
+.gestionar-servicios {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+}
+
+/* Título */
+.section-title h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #9c0076;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.section-title h2:after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #000;
+  margin-top: 5px;
+}
+
+/* Sistema de pestañas */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 10px;
+}
+
+.tab-btn {
+  background-color: #e6b3e6;
+  color: #4b004b;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  background-color: #d9a0d9;
+}
+
+.tab-btn.active {
+  background-color: #9c0076;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Formulario */
+.form-mejorado {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Grupos de formulario */
+.form-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e6b3e6;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Etiquetas flotantes */
+.form-group .form-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: #9c0076;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  background-color: transparent;
+  padding: 0 5px;
+}
+
+.form-group.focused .form-label,
+.form-group.has-value .form-label,
+.form-group input:focus ~ .form-label,
+.form-group select:focus ~ .form-label,
+.form-group textarea:focus ~ .form-label,
+.form-group input:not(:placeholder-shown) ~ .form-label,
+.form-group select:valid ~ .form-label,
+.form-group textarea:not(:placeholder-shown) ~ .form-label {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  background-color: #fff0f9;
+  padding: 0 5px;
+}
+
+/* Ocultar placeholder nativo */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: transparent;
+}
+
+/* Mensajes de error */
+.form-error {
+  display: none;
+  color: #e60073;
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.form-group.error input,
+.form-group.error textarea,
+.form-group.error select {
+  border-color: #e60073;
+}
+
+.form-group.error .form-label {
+  color: #e60073;
+}
+
+.form-group.error .form-error {
+  display: block;
+}
+
+/* Instrucciones del formulario */
+.form-instructions {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Botones */
+.buttons-container {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.btn-enviar, .btn-buscar-servicio {
+  background: linear-gradient(to right, #9c0076, #e95adb);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(156, 0, 118, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+  max-width: 250px;
+}
+
+.btn-secundario {
+  background: transparent;
+  color: #9c0076;
+  border: 2px solid #9c0076;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+  max-width: 250px;
+}
+
+.btn-secundario:hover {
+  background-color: rgba(156, 0, 118, 0.1);
+}
+
+.btn-eliminar {
+  background: linear-gradient(to right, #e60073, #ff1a8c);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(230, 0, 115, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+  max-width: 250px;
+}
+
+.btn-eliminar:hover {
+  background: linear-gradient(to right, #ff0080, #ff4da6);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(230, 0, 115, 0.3);
+}
+
+.btn-enviar:hover, .btn-buscar-servicio:hover {
+  background: linear-gradient(to right, #cc0099, #ff6ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(156, 0, 118, 0.3);
+}
+
+/* Animación */
+.bounce-effect {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bounce-effect:hover {
+  transform: scale(1.05);
+}
+
+.bounce-effect:active {
+  transform: scale(0.95);
+}
+
+/* Tabla de servicios */
+.tabla-container {
+  max-width: 900px;
+  margin: 20px auto;
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(156, 0, 118, 0.1);
+  background-color: white;
+}
+
+.tabla-servicios {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.tabla-servicios th, 
+.tabla-servicios td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.tabla-servicios th {
+  background-color: #9c0076;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.tabla-servicios tr:hover {
+  background-color: #fff0f9;
+}
+
+.tabla-servicios .btn-accion {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.tabla-servicios .btn-editar {
+  color: #9c0076;
+}
+
+.tabla-servicios .btn-eliminar-icon {
+  color: #e60073;
+}
+
+.tabla-servicios .btn-accion:hover {
+  transform: scale(1.2);
+}
+
+.sin-resultados {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Resultados de búsqueda */
+.resultados-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: 30px auto;
+  box-shadow: 0 0 15px rgba(156, 0, 118, 0.1);
+}
+
+.resultados-container h3 {
+  color: #9c0076;
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f2f2f2;
+}
+
+/* Modal para editar y eliminar */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: block;
+  opacity: 1;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 600px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transform: translateY(-50px);
+  transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.modal-small {
+  max-width: 400px;
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #9c0076;
+  cursor: pointer;
+}
+
+.cerrar-modal:hover {
+  color: #e60073;
+}
+
+.modal h2 {
+  color: #9c0076;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Toast de notificaciones */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: #9c0076;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast.success {
+  background-color: #00bfb3;
+}
+
+.toast.error {
+  background-color: #e60073;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .tab-btn {
+    border-radius: 8px;
+  }
+  
+  .buttons-container {
+    flex-direction: column;
+  }
+  
+  .btn-enviar, .btn-secundario, .btn-eliminar {
+    max-width: 100%;
+  }
+  
+  .tabla-servicios th, 
+  .tabla-servicios td {
+    padding: 8px;
+  }
+}
