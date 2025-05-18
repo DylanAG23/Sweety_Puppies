@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Imágenes - Sweety Puppies</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/imagenes.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Elementos del cursor personalizado -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
+
+  <!-- Header y navegación -->
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo" />
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html" class="animated-link">Home</a></li>
+        <li><a href="clientes.html" class="animated-link">Clientes</a></li>
+        <li><a href="mascotas.html" class="animated-link">Mascotas</a></li>
+        <li><a href="servicios.html" class="animated-link">Servicios</a></li>
+        <li><a href="citas.html" class="animated-link">Citas</a></li>
+        <li><a href="imagenes.html" class="animated-link">Imágenes</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Gestión de imágenes -->
+  <section id="gestionar-imagenes" class="gestionar-imagenes">
+    <div class="section-title">
+      <h2>Galería de Imágenes</h2>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="buscar">Buscar</button>
+      <button class="tab-btn" data-tab="nuevo">Nueva Imagen</button>
+      <button class="tab-btn" data-tab="listado">Galería Completa</button>
+    </div>
+
+    <div id="buscar-tab" class="tab-content active">
+      <form id="buscarForm" class="form-mejorado">  
+        <div class="form-group">
+          <input type="text" id="buscarTermino" name="buscarTermino" placeholder=" " required>
+          <label for="buscarTermino" class="form-label">Título o Categoría</label>
+          <span class="form-error">Por favor, introduce un término de búsqueda</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Buscar Imagen</button>
+        </div>
+      </form>
+
+      <div class="resultados-container">
+        <h3>Resultados de búsqueda</h3>
+        <div id="resultados-busqueda" class="galeria-container">
+          <!-- Aquí se mostrarán los resultados -->
+          <p class="sin-resultados">Utiliza el formulario para buscar imágenes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario para añadir nueva imagen -->
+    <div id="nuevo-tab" class="tab-content">
+      <form id="imagenForm" class="form-mejorado">  
+        <div class="form-group">
+          <input type="text" id="titulo" name="titulo" placeholder=" " required>
+          <label for="titulo" class="form-label">Título</label>
+          <span class="form-error">Por favor, introduce un título para la imagen</span>
+        </div>
+        <div class="form-group">
+          <select id="categoria" name="categoria" required>
+            <option value=""></option>
+            <option value="mascotas">Mascotas</option>
+            <option value="servicios">Servicios</option>
+            <option value="instalaciones">Instalaciones</option>
+            <option value="eventos">Eventos</option>
+          </select>
+          <label for="categoria" class="form-label">Categoría</label>
+          <span class="form-error">Por favor, selecciona una categoría</span>
+        </div>
+        <div class="form-group">
+          <textarea id="descripcion" name="descripcion" placeholder=" " rows="3" required></textarea>
+          <label for="descripcion" class="form-label">Descripción</label>
+          <span class="form-error">Por favor, introduce una descripción</span>
+        </div>
+        <div class="form-group file-input-group">
+          <input type="file" id="archivo" name="archivo" accept="image/png, image/jpeg, image/jpg" required>
+          <label for="archivo" class="file-label">
+            <span class="file-button">Seleccionar Imagen</span>
+            <span class="file-name">Ningún archivo seleccionado</span>
+          </label>
+          <span class="form-error">Por favor, selecciona una imagen (PNG, JPG)</span>
+        </div>
+        <div class="preview-container">
+          <div id="imagen-preview" class="imagen-preview">
+            <p>Vista previa de la imagen</p>
+          </div>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Subir Imagen</button>
+          <button type="reset" class="btn-secundario">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de imágenes (galería) -->
+    <div id="listado-tab" class="tab-content">
+      <div class="galeria-container" id="galeria-imagenes">
+        <!-- Aquí se cargarán las imágenes dinámicamente -->
+      </div>
+      <p id="sin-imagenes" class="sin-resultados">No hay imágenes en la galería</p>
+    </div>
+  </section>
+
+  <!-- Modal para ver imagen ampliada -->
+  <div id="modal-ver-imagen" class="modal">
+    <div class="modal-content modal-large">
+      <span class="cerrar-modal">&times;</span>
+      <h2 id="modal-imagen-titulo">Título de la imagen</h2>
+      <div class="modal-imagen-container">
+        <img id="modal-imagen" src="" alt="Imagen ampliada">
+      </div>
+      <p id="modal-imagen-descripcion">Descripción de la imagen</p>
+      <div class="modal-imagen-info">
+        <span id="modal-imagen-categoria">Categoría: </span> | 
+        <span id="modal-imagen-fecha">Fecha: </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar imagen -->
+  <div id="modal-editar" class="modal">
+    <div class="modal-content">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Editar Información de Imagen</h2>
+      <form id="editarForm" class="form-mejorado">
+        <input type="hidden" id="editar-id">
+        <div class="form-group">
+          <input type="text" id="editar-titulo" name="editar-titulo" placeholder=" " required>
+          <label for="editar-titulo" class="form-label">Título</label>
+          <span class="form-error">Por favor, introduce un título para la imagen</span>
+        </div>
+        <div class="form-group">
+          <select id="editar-categoria" name="editar-categoria" required>
+            <option value="">Selecciona una categoría</option>
+            <option value="mascotas">Mascotas</option>
+            <option value="servicios">Servicios</option>
+            <option value="instalaciones">Instalaciones</option>
+            <option value="eventos">Eventos</option>
+          </select>
+          <label for="editar-categoria" class="form-label">Categoría</label>
+          <span class="form-error">Por favor, selecciona una categoría</span>
+        </div>
+        <div class="form-group">
+          <textarea id="editar-descripcion" name="editar-descripcion" placeholder=" " rows="3" required></textarea>
+          <label for="editar-descripcion" class="form-label">Descripción</label>
+          <span class="form-error">Por favor, introduce una descripción</span>
+        </div>
+        <div class="preview-container">
+          <div id="editar-imagen-preview" class="imagen-preview">
+            <img id="editar-preview-img" src="" alt="Vista previa">
+          </div>
+        </div>
+        <div class="form-group file-input-group">
+          <input type="file" id="editar-archivo" name="editar-archivo" accept="image/png, image/jpeg, image/jpg">
+          <label for="editar-archivo" class="file-label">
+            <span class="file-button">Cambiar Imagen (opcional)</span>
+            <span class="file-name">Mantener imagen actual</span>
+          </label>
+          <span class="form-error">Formato de imagen no válido</span>
+        </div>
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Guardar Cambios</button>
+          <button type="button" class="btn-secundario cerrar-modal-btn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para confirmar eliminación -->
+  <div id="modal-eliminar" class="modal">
+    <div class="modal-content modal-small">
+      <span class="cerrar-modal">&times;</span>
+      <h2>Confirmar Eliminación</h2>
+      <div class="eliminar-preview">
+        <img id="eliminar-preview-img" src="" alt="Imagen a eliminar">
+      </div>
+      <p>¿Estás seguro que deseas eliminar la imagen "<span id="imagen-a-eliminar"></span>"?</p>
+      <div class="buttons-container">
+        <button id="confirmar-eliminar" class="btn-eliminar bounce-effect">Eliminar</button>
+        <button class="btn-secundario cerrar-modal-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificaciones -->
+  <div id="toast" class="toast">
+    <div class="toast-content">
+      <span id="toast-mensaje"></span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <p>&copy; 2025 Sweety Puppies. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/imagenes_front.js"></script>
+</body>
+</html>

@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Botón volver arriba
   initBackToTopButton();
   
-  // Formulario mejorado
-  initEnhancedForm();
 });
 
 // Función para animaciones al hacer scroll

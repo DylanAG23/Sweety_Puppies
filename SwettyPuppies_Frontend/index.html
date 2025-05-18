@@ -6,6 +6,7 @@
   <title>Sweety Puppies - Peluquería Canina</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/servicios-estilos.css">
+  <link rel="stylesheet" href="css/carrusel-estilos.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -24,6 +25,7 @@
         <li><a href="mascotas.html" class="animated-link">Mascotas</a></li>
         <li><a href="servicios.html" class="animated-link">Servicios</a></li>
         <li><a href="citas.html" class="animated-link">citas</a></li>
+        <li><a href="imagenes.html" class="animated-link">imagenes</a></li>
       </ul>
     </nav>
   </header>
@@ -34,6 +36,19 @@
         <h1 class="animated-title">Glamour para cada pelaje</h1>
         <p>Descubre el cambio de nuestros peluditos con amor y estilo</p>
       </div>
+    </div>
+  </section>
+
+  <!-- Nueva sección: Carrusel de Imágenes -->
+  <section id="galeria-mascotas" class="galeria-mascotas scroll-reveal">
+    <div class="section-title">
+      <h2>Galería de Mascotas</h2>
+    </div>
+    <p class="subtitle">Nuestros clientes más felices</p>
+    
+    <!-- Contenedor del carrusel -->
+    <div id="carrusel-imagenes" class="carrusel-container">
+      <!-- El contenido se cargará dinámicamente -->
     </div>
   </section>
 
@@ -113,18 +128,8 @@
   <!-- Script para las funcionalidades -->
   <script src="js/mejoras.js"></script>
   
-  <!-- Script para cargar servicios dinámicamente -->
-  <script>
-    // Script temporal para verificar si hay errores de carga
-    console.log('Script inline cargado');
-    
-    // Verificar si hay errores de conexión o API
-    window.addEventListener('error', function(e) {
-      console.error('Error detectado:', e.message);
-    });
-  </script>
-  
-  <!-- Cargar el script principal de servicios -->
+  <!-- Cargar los scripts principales -->
   <script src="js/servicios-dinamicos.js"></script>
+  <script src="js/carrusel-dinamico.js"></script>
 </body>
 </html>
