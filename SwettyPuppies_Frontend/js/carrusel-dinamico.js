@@ -1,4 +1,4 @@
-// carrusel-supabase.js - Versión optimizada para trabajar directamente con Supabase
+// carrusel-dinamico.js - Versión optimizada para Supabase
 document.addEventListener('DOMContentLoaded', function() {
     // Elemento contenedor del carrusel
     const carruselContainer = document.getElementById('carrusel-imagenes');
@@ -8,9 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
         autoplay: true,
         autoplaySpeed: 5000,
         slidesToShow: 3,
-        tableName: 'imagenes',        // Tabla de Supabase con metadata de imágenes
-        bucketName: 'imagenes',       // Bucket de Supabase que contiene las imágenes
-        categoria: 'carrusel',        // Categoría de imágenes a mostrar (opcional)
+        tableName: 'imagenes',         // Tabla de Supabase con metadata de imágenes
+        bucketName: 'imagenes',        // Bucket de Supabase que contiene las imágenes
+        carpeta: 'uploads',            // Carpeta dentro del bucket donde están las imágenes
+        categoria: 'carrusel',         // Categoría de imágenes a mostrar (opcional)
         responsive: [
             {
                 breakpoint: 768,
@@ -36,64 +37,140 @@ document.addEventListener('DOMContentLoaded', function() {
     const supabaseUrl = 'https://onyzutykzjiocjnlaqgr.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueXp1dHlremppb2NqbmxhcWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMzM5NTEsImV4cCI6MjA2MTgwOTk1MX0.lUtAdt56P_PsQ4Qo9gxSp6SSg9gvrfbSBc88sVxXk0Y';
     
-    // Inicializar cliente Supabase
-    const supabase = initSupabaseClient(supabaseUrl, supabaseKey);
-
-    /**
-     * Función para inicializar el cliente de Supabase
-     * @param {string} url - URL de Supabase
-     * @param {string} key - Clave de API de Supabase
-     * @return {Object} - Cliente de Supabase
-     */
-    function initSupabaseClient(url, key) {
-        // Verificar si la función createClient ya está disponible globalmente
-        if (typeof createClient === 'function') {
-            return createClient(url, key);
-        }
-        
-        // Si no se encuentra el cliente de Supabase, creamos un objeto con funciones básicas
-        console.warn('Supabase client not loaded. Using fallback implementation.');
-        return {
-            from: (table) => {
-                return {
-                    select: (columns) => {
-                        return {
-                            eq: (field, value) => {
-                                return { 
-                                    data: [], 
-                                    error: new Error('Supabase client not properly initialized')
-                                };
-                            }
-                        };
-                    }
-                };
-            },
-            storage: {
-                from: (bucket) => {
-                    return {
-                        getPublicUrl: (path) => {
-                            return {
-                                data: {
-                                    publicUrl: path
-                                }
-                            };
-                        }
-                    };
-                }
+    // Cargar la biblioteca de Supabase si no está disponible
+    function cargarScriptSupabase() {
+        return new Promise((resolve, reject) => {
+            // Si ya está cargado, resolvemos inmediatamente
+            if (typeof supabase !== 'undefined') {
+                resolve();
+                return;
             }
-        };
+            
+            // Si no está cargado, añadimos el script al DOM
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.async = true;
+            
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('No se pudo cargar la biblioteca de Supabase'));
+            
+            document.head.appendChild(script);
+        });
     }
 
     /**
-     * Función principal para cargar las imágenes desde Supabase
+     * Función para inicializar el cliente de Supabase
+     * @return {Object} - Cliente de Supabase
      */
-    async function cargarImagenes() {
+    async function initSupabaseClient() {
+        try {
+            await cargarScriptSupabase();
+            
+            // Crear cliente de Supabase una vez que la biblioteca esté cargada
+            return supabase.createClient(supabaseUrl, supabaseKey);
+        } catch (error) {
+            console.error('Error al inicializar Supabase:', error);
+            return null;
+        }
+    }
+
+    /**
+     * SOLUCIÓN ALTERNATIVA: Cargar directamente desde Storage
+     * Esta función es más directa y evita problemas con tablas de metadatos
+     */
+    async function cargarImagenesDesdeStorage() {
         try {
             // Mostrador de carga con animación
             mostrarCargando();
             
+            // Inicializar cliente de Supabase
+            const supabaseClient = await initSupabaseClient();
+            
+            if (!supabaseClient) {
+                throw new Error('No se pudo inicializar el cliente de Supabase');
+            }
+            
+            // Obtener lista de archivos directamente desde el bucket de storage
+            const { data: files, error } = await supabaseClient
+                .storage
+                .from(carruselConfig.bucketName)
+                .list(carruselConfig.carpeta || '', {
+                    sortBy: { column: 'name', order: 'asc' }
+                });
+            
+            // Verificar si hay error
+            if (error) {
+                throw new Error(`Error al listar archivos de Storage: ${error.message}`);
+            }
+            
+            // Filtrar solo archivos de imagen
+            const imageFiles = files.filter(file => 
+                file.name.match(/\.(jpeg|jpg|png|gif|webp)$/i) && !file.name.startsWith('.')
+            );
+            
+            console.log('Archivos de imagen encontrados:', imageFiles.length);
+            
+            if (imageFiles && imageFiles.length > 0) {
+                // Transformar los datos para el formato esperado
+                carruselImagenes = imageFiles.map((file, index) => {
+                    // Construir la ruta completa
+                    const rutaArchivo = `${carruselConfig.carpeta ? carruselConfig.carpeta + '/' : ''}${file.name}`;
+                    
+                    // Obtener URL pública para la imagen
+                    const { data } = supabaseClient.storage
+                        .from(carruselConfig.bucketName)
+                        .getPublicUrl(rutaArchivo);
+                    
+                    // Crear un objeto con el formato requerido
+                    return {
+                        id: index + 1,
+                        nombre: file.name.replace(/\.(jpeg|jpg|png|gif|webp)$/i, '').replace(/_/g, ' '),
+                        ruta: data.publicUrl,
+                        descripcion: `Imagen ${index + 1}`,
+                        categoria: carruselConfig.categoria || 'general',
+                        fecha_creacion: new Date().toISOString()
+                    };
+                });
+                
+                console.log('Imágenes cargadas desde Storage:', carruselImagenes.length);
+                
+                // Crear elementos del carrusel
+                crearElementosCarrusel(carruselImagenes);
+                
+                // Inicializar el carrusel
+                inicializarCarrusel();
+            } else {
+                console.log('No se encontraron imágenes en el bucket');
+                
+                // Intentar cargar desde la base de datos como respaldo
+                cargarImagenesDesdeBaseDatos();
+            }
+            
+        } catch (error) {
+            console.error('Error al cargar imágenes desde Storage:', error);
+            
+            // Intentar cargar desde la base de datos como respaldo
+            cargarImagenesDesdeBaseDatos();
+        }
+    }
+
+    /**
+     * Función original para cargar las imágenes desde la tabla de Supabase
+     */
+    async function cargarImagenesDesdeBaseDatos() {
+        try {
+            // Mostrador de carga con animación
+            mostrarCargando();
+            
+            // Inicializar cliente de Supabase
+            const supabaseClient = await initSupabaseClient();
+            
+            if (!supabaseClient) {
+                throw new Error('No se pudo inicializar el cliente de Supabase');
+            }
+            
             // Realizar la consulta a Supabase para obtener imágenes de la categoría especificada
-            let query = supabase
+            let query = supabaseClient
                 .from(carruselConfig.tableName)
                 .select('id, nombre, ruta, descripcion, categoria, fecha_creacion')
                 .eq('activo', true);
@@ -115,18 +192,31 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data && data.length > 0) {
                 // Transformar datos para incluir URLs completas de Supabase Storage
                 carruselImagenes = data.map(imagen => {
-                    // Obtener URL pública para la imagen
-                    const urlObj = supabase.storage
-                        .from(carruselConfig.bucketName)
-                        .getPublicUrl(imagen.ruta);
+                    // Procesar la ruta para garantizar que se acceda correctamente
+                    let rutaImagen = imagen.ruta;
+                    
+                    // Si la ruta no tiene una URL completa, construirla
+                    if (rutaImagen && !rutaImagen.startsWith('http')) {
+                        // Si la ruta ya incluye 'uploads/', usarla tal como está
+                        if (!rutaImagen.includes('uploads/') && carruselConfig.carpeta) {
+                            rutaImagen = `${carruselConfig.carpeta}/${rutaImagen}`;
+                        }
+                        
+                        // Obtener URL pública para la imagen
+                        const { data } = supabaseClient.storage
+                            .from(carruselConfig.bucketName)
+                            .getPublicUrl(rutaImagen);
+                        
+                        rutaImagen = data.publicUrl;
+                    }
                     
                     return {
                         ...imagen,
-                        ruta: urlObj.data.publicUrl
+                        ruta: rutaImagen
                     };
                 });
                 
-                console.log('Imágenes del carrusel cargadas:', carruselImagenes.length);
+                console.log('Imágenes del carrusel cargadas desde BD:', carruselImagenes.length);
                 
                 // Crear elementos del carrusel
                 crearElementosCarrusel(carruselImagenes);
@@ -134,12 +224,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Inicializar el carrusel
                 inicializarCarrusel();
             } else {
-                console.log('No se encontraron imágenes activas');
+                console.log('No se encontraron imágenes activas en la BD');
                 mostrarMensajeSinImagenes();
+                
+                // Plan B: Cargar imágenes locales si la BD falla
+                setTimeout(cargarImagenesLocales, 2000);
             }
             
         } catch (error) {
-            console.error('Error al cargar las imágenes del carrusel desde Supabase:', error);
+            console.error('Error al cargar las imágenes desde la BD:', error);
             
             // Mostrar mensaje de error amigable
             mostrarErrorCarga(error);
@@ -194,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         // Agregar evento al botón de reintentar
-        document.getElementById('btn-reintentar')?.addEventListener('click', cargarImagenes);
+        document.getElementById('btn-reintentar')?.addEventListener('click', cargarImagenesDesdeStorage);
     }
     
     /**
@@ -208,28 +301,28 @@ document.addEventListener('DOMContentLoaded', function() {
             { 
                 id: 1, 
                 nombre: 'Mascota 1', 
-                ruta: 'img/placeholder.png', 
+                ruta: 'img/mascota1.png', 
                 descripcion: 'Adorable perrito',
                 categoria: 'carrusel'
             },
             { 
                 id: 2, 
                 nombre: 'Mascota 2', 
-                ruta: 'img/placeholder.png', 
+                ruta: 'img/mascota2.png', 
                 descripcion: 'Cachorro feliz',
                 categoria: 'carrusel'
             },
             { 
                 id: 3, 
                 nombre: 'Mascota 3', 
-                ruta: 'img/placeholder.png', 
+                ruta: 'img/mascota3.png', 
                 descripcion: 'Peludo contento',
                 categoria: 'carrusel'
             },
             { 
                 id: 4, 
                 nombre: 'Mascota 4', 
-                ruta: 'img/placeholder.png', 
+                ruta: 'img/mascota4.png', 
                 descripcion: 'Hermoso canino',
                 categoria: 'carrusel'
             }
@@ -256,13 +349,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Si la URL ya está completa (http o https), devolverla tal cual
         if (url.startsWith('http')) return url;
-        
-        // Si es una ruta que hace referencia a la carpeta uploads, normalizar la ruta
-        if (url.includes('/uploads/') || url.includes('uploads/')) {
-            // Asegurar que la URL comienza con /uploads/ si es una ruta relativa
-            const path = url.includes('/uploads/') ? url : `/uploads/${url.split('uploads/').pop()}`;
-            return path;
-        }
         
         // Para otras rutas relativas, devolver tal cual
         return url;
@@ -309,7 +395,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Error al cargar imagen: ${this.src}`);
                 this.onerror = null; // Prevenir recursión
                 this.src = 'img/placeholder.png'; // Imagen alternativa si falla
-                console.log(`Error al cargar imagen del carrusel: ${imagen.ruta}`);
             };
             
             // Crear los textos descriptivos
@@ -322,10 +407,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const descripcion = document.createElement('p');
             descripcion.textContent = imagen.descripcion || '';
             
-            // Ensamblar los elementos
-            info.appendChild(titulo);
-            info.appendChild(descripcion);
-            
             card.appendChild(img);
             card.appendChild(info);
             
@@ -334,8 +415,8 @@ document.addEventListener('DOMContentLoaded', function() {
             overlay.className = 'imagen-overlay';
             
             const verButton = document.createElement('button');
-            verButton.className = 'btn-imagen btn-imagen-ver';
-            verButton.innerHTML = '<i class="fas fa-eye">👁️</i>';
+  
+            
             verButton.onclick = () => verImagenCarrusel(imagen.id);
             
             overlay.appendChild(verButton);
@@ -405,19 +486,14 @@ document.addEventListener('DOMContentLoaded', function() {
             modalVerImagen.id = 'modal-ver-imagen';
             modalVerImagen.className = 'modal';
             
+            // Versión simplificada del modal que solo muestra la imagen
             modalVerImagen.innerHTML = `
                 <div class="modal-contenido">
                     <div class="modal-cabecera">
-                        <h2 id="modal-imagen-titulo"></h2>
                         <button class="cerrar-modal">&times;</button>
                     </div>
                     <div class="modal-cuerpo">
-                        <img id="modal-imagen" src="" alt="">
-                        <div class="modal-imagen-info">
-                            <p id="modal-imagen-descripcion"></p>
-                            <p id="modal-imagen-categoria"></p>
-                            <p id="modal-imagen-fecha"></p>
-                        </div>
+                        <img id="modal-imagen" src="" alt="${imagen.nombre || 'Imagen de carrusel'}">
                     </div>
                 </div>
             `;
@@ -431,28 +507,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Llenar datos del modal
-        document.getElementById('modal-imagen-titulo').textContent = imagen.nombre;
-        document.getElementById('modal-imagen').src = validarUrlImagen(imagen.ruta);
-        document.getElementById('modal-imagen').alt = imagen.nombre;
-        document.getElementById('modal-imagen').onerror = function() {
-            this.src = 'img/placeholder.png';
-            this.onerror = null;
-        };
-        document.getElementById('modal-imagen-descripcion').textContent = imagen.descripcion;
-        document.getElementById('modal-imagen-categoria').textContent = `Categoría: ${imagen.categoria}`;
-
-        // Formatear fecha si está disponible
-        if (imagen.fecha_creacion) {
-            const fecha = new Date(imagen.fecha_creacion);
-            const fechaFormateada = fecha.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            document.getElementById('modal-imagen-fecha').textContent = `Fecha: ${fechaFormateada}`;
-        } else {
-            document.getElementById('modal-imagen-fecha').textContent = '';
+        // Actualizar la imagen en el modal
+        const modalImagen = document.getElementById('modal-imagen');
+        if (modalImagen) {
+            modalImagen.src = validarUrlImagen(imagen.ruta);
+            modalImagen.alt = imagen.nombre || 'Imagen de carrusel';
+            modalImagen.onerror = function() {
+                this.src = 'img/placeholder.png';
+                this.onerror = null;
+            };
         }
 
         // Mostrar modal
@@ -489,6 +552,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const indicadores = document.querySelectorAll('.carrusel-indicador');
         
         if (!track || slides.length === 0) return;
+        
+        // Añadir mensaje de depuración
+        console.log(`Inicializando carrusel con ${slides.length} slides`);
         
         let slidesToShow = getVisibleSlideCount();
         let slideWidth = carruselContainer.clientWidth / slidesToShow;
@@ -686,6 +752,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Iniciar carga de imágenes al cargar la página
-    cargarImagenes();
+    // Iniciar carga de imágenes directamente desde Storage
+    cargarImagenesDesdeStorage();
 });
