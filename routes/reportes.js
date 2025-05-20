@@ -3,7 +3,7 @@ const router = express.Router();
 const client = require('../baseDatos');
 
 // Endpoint para obtener el reporte diario de citas
-router.get('/reportes/citas-diarias', async (req, res) => {
+router.get('/citas-diarias', async (req, res) => {
   const { fecha } = req.query; // formato YYYY-MM-DD
   
   // Validación de parámetros

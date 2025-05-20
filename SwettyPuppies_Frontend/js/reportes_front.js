@@ -208,8 +208,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     actualizarInterfaz();
     
-    // Construir la URL de la API
-    const apiUrl = `/api/reportes/citas-diarias?fecha=${fechaSeleccionada}`;
+    // CORRECCIÓN: Construir la URL de la API con la ruta correcta
+    // La ruta en el backend es /reportes/citas-diarias sin el prefijo /api
+    const apiUrl = `/reportes/citas-diarias?fecha=${fechaSeleccionada}`;
     console.log('URL de la API:', apiUrl);
     
     // Realizar la solicitud a la API
