@@ -1,0 +1,247 @@
+/* Media queries */
+@media (max-width: 768px) {
+  .filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tabla-citas th, 
+  .tabla-citas td {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .tabla-citas {
+    font-size: 14px;
+  }
+}/* 
+   SECCIÓN DE REPORTES
+   ================== 
+*/
+
+/* Contenedor principal para reportes */
+.reporte-container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Título del reporte */
+.reporte-titulo {
+  color: #9c0076;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 800;
+}
+
+/* Sección de filtros */
+.filtros {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filtros .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filtros label {
+  font-weight: 600;
+  color: #9c0076;
+  margin-bottom: 5px;
+}
+
+.filtros .form-control {
+  padding: 8px 12px;
+  border: 2px solid #e6b3e6;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Botones */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #9c0076; 
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #7e005f;
+  transform: translateY(-2px);
+}
+
+.btn-success {
+  background-color: #6b9c00;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #5a8300;
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tabla de reporte */
+.tabla-citas {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  margin-top: 15px;
+}
+
+.tabla-citas th,
+.tabla-citas td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.tabla-citas th {
+  background-color: #9c0076;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.tabla-citas tr:hover {
+  background-color: #fff0f9;
+}
+
+.tabla-citas tfoot tr td {
+  font-weight: 600;
+  background-color: #f9f9f9;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Tarjetas */
+.card {
+  border: 1px solid #e6b3e6;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(156, 0, 118, 0.1);
+}
+
+.card-header {
+  padding: 15px;
+  background-color: #9c0076;
+  color: white;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.resumen {
+  padding: 10px 0;
+}
+
+.resumen h5 {
+  color: #9c0076;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.resumen p {
+  margin: 8px 0;
+}
+
+/* Mensajes */
+.cargando {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.error-mensaje {
+  color: #e60073;
+  padding: 10px;
+  background-color: #ffeeee;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.sin-datos {
+  padding: 30px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Sección de acciones */
+.acciones {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Vista previa */
+.vista-previa {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.vista-previa h5 {
+  color: #9c0076;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* Toast para notificaciones */
+.toast {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #6b9c00;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1000;
+  bottom: 30px;
+  right: 30px;
+  font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: visibility 0s, opacity 0.3s linear;
+}
+
+.toast.mostrar {
+  visibility: visible;
+  opacity: 1;
+}
+
+.toast.error {
+  background-color: #e60073;
+}
