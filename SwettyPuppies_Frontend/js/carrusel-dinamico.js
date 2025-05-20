@@ -415,8 +415,8 @@ document.addEventListener('DOMContentLoaded', function() {
             overlay.className = 'imagen-overlay';
             
             const verButton = document.createElement('button');
-  
-            
+            verButton.className = 'btn-imagen btn-imagen-ver';
+            verButton.innerHTML = '<i class="fas fa-eye">👁️</i>';
             verButton.onclick = () => verImagenCarrusel(imagen.id);
             
             overlay.appendChild(verButton);
