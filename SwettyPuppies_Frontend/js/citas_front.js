@@ -808,7 +808,7 @@ async function handleEditarCita(e) {
   }
 }
 
-// Función para eliminar cita
+// Función para eliminar cita (CORREGIDA)
 async function eliminarCita(idCita) {
   // Mostrar indicador de carga
   const eliminarBtn = document.getElementById('confirmarEliminar');
@@ -839,7 +839,8 @@ async function eliminarCita(idCita) {
     
     // Cerrar modal y actualizar tabla después de un breve tiempo
     setTimeout(() => {
-      document.getElementById('modalEliminar').classList.remove('show');
+      // CORRECCIÓN: usar el ID correcto del modal según tu HTML
+      document.getElementById('eliminarModal').classList.remove('show');
       cargarTablaCitas();
       
       // Restaurar botón
@@ -854,6 +855,60 @@ async function eliminarCita(idCita) {
     eliminarBtn.disabled = false;
     mostrarToast('Error al eliminar la cita: ' + error.message, 'error');
   }
+}
+
+// También necesitarás estas funciones auxiliares si no las tienes:
+
+// Función para abrir el modal de eliminación
+function abrirModalEliminar(idCita) {
+  document.getElementById('eliminar_id_cita').value = idCita;
+  document.getElementById('eliminarModal').classList.add('show');
+}
+
+// Event listeners para el modal de eliminar
+document.addEventListener('DOMContentLoaded', function() {
+  // Cerrar modal con X
+  document.querySelectorAll('.cerrar-modal').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.closest('.modal').classList.remove('show');
+    });
+  });
+  
+  // Cerrar modal con botón Cancelar
+  document.querySelectorAll('.cerrar-modal-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.closest('.modal').classList.remove('show');
+    });
+  });
+  
+  // Confirmar eliminación
+  document.getElementById('confirmarEliminar').addEventListener('click', function() {
+    const idCita = document.getElementById('eliminar_id_cita').value;
+    eliminarCita(idCita);
+  });
+  
+  // Cerrar modal al hacer clic fuera de él
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('show');
+      }
+    });
+  });
+});
+
+// Función para crear botones de acción en la tabla
+function crearBotonesAccion(cita) {
+  return `
+    <div class="acciones-buttons">
+      <button class="btn-editar" onclick="abrirModalEditar(${cita.id_cita})">
+        <i class="icon-edit"></i> Editar
+      </button>
+      <button class="btn-eliminar" onclick="abrirModalEliminar(${cita.id_cita})">
+        <i class="icon-delete"></i> Eliminar
+      </button>
+    </div>
+  `;
 }
 
 // Función para validar formulario completo
