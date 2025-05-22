@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sweety Puppies - Peluquería Canina</title>
+  <title>Login - Sweety Puppies</title>
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/servicios-estilos.css">
-  <link rel="stylesheet" href="css/carrusel-estilos.css">
+  <link rel="stylesheet" href="css/login.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,20 +13,49 @@
   <div class="cursor-dot" id="cursor-dot"></div>
   <div class="cursor-outline" id="cursor-outline"></div>
   
-  <header class="main-header">
-    <div class="logo-container">
-      <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo">
+  <!-- Container principal del login -->
+  <div class="login-container">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="logo-container">
+        <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo">
+        <h1>Sweety Puppies</h1>
+        <p>Peluquería Canina</p>
+      </div>
+
+      <!-- Formulario de login -->
+      <form id="loginForm" class="form-mejorado">
+        <div class="section-title">
+          <h2>Iniciar Sesión</h2>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="usuario" name="usuario" placeholder=" " required>
+          <label for="usuario" class="form-label">Usuario</label>
+          <span class="form-error">Por favor, introduce tu usuario</span>
+        </div>
+
+        <div class="form-group">
+          <input type="password" id="contrasena" name="contrasena" placeholder=" " required>
+          <label for="contrasena" class="form-label">Contraseña</label>
+          <span class="form-error">Por favor, introduce tu contraseña</span>
+        </div>
+
+        <div class="buttons-container">
+          <button type="submit" class="btn-enviar bounce-effect">Iniciar Sesión</button>
+        </div>
+      </form>
     </div>
-    <nav>
-      <ul class="nav-links">
-        <li><a href="index.html" class="animated-link">Home</a></li>
-        <li><a href="clientes.html" class="animated-link">Clientes</a></li>
-        <li><a href="mascotas.html" class="animated-link">Mascotas</a></li>
-        <li><a href="servicios.html" class="animated-link">Servicios</a></li>
-        <li><a href="citas.html" class="animated-link">citas</a></li>
-        <li><a href="imagenes.html" class="animated-link">imagenes</a></li>
-      </ul>
-    </nav>
-  </header>
+  </div>
+
+  <!-- Toast de notificaciones -->
+  <div id="toast" class="toast">
+    <div class="toast-content">
+      <span id="toast-mensaje"></span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/login.js"></script>
 </body>
 </html>
