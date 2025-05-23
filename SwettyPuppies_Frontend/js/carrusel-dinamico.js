@@ -1,4 +1,3 @@
-// carrusel-dinamico.js - Versión optimizada y mejorada visualmente
 document.addEventListener('DOMContentLoaded', function() {
     // Elemento contenedor del carrusel
     const carruselContainer = document.getElementById('carrusel-imagenes');
@@ -8,10 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
         autoplay: true,
         autoplaySpeed: 5000,
         slidesToShow: 3,
-        tableName: 'imagenes',         // Tabla de Supabase con metadata de imágenes
-        bucketName: 'imagenes',        // Bucket de Supabase que contiene las imágenes
-        carpeta: 'uploads',            // Carpeta dentro del bucket donde están las imágenes
-        categoria: 'carrusel',         // Categoría de imágenes a mostrar (opcional)
+        tableName: 'imagenes',       
+        bucketName: 'imagenes',        
+        carpeta: 'uploads',           
+        categoria: 'carrusel',         
         responsive: [
             {
                 breakpoint: 768,
@@ -444,10 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    /**
-     * SOLUCIÓN ALTERNATIVA: Cargar directamente desde Storage
-     * Esta función es más directa y evita problemas con tablas de metadatos
-     */
+
     async function cargarImagenesDesdeStorage() {
         try {
             // Mostrador de carga con animación
@@ -789,10 +785,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const descripcion = document.createElement('p');
             descripcion.textContent = imagen.descripcion || '';
             
-            // Agregar elementos a la tarjeta
-            info.appendChild(titulo);
-            info.appendChild(descripcion);
-            
+           
             card.appendChild(img);
             card.appendChild(info);
             
