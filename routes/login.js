@@ -1,5 +1,4 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const client = require('../baseDatos');
 
@@ -86,7 +85,7 @@ router.post('/login', async (req, res) => {
     const usuarioEncontrado = result.rows[0];
 
     // Verificar la contraseña
-    const contrasenaValida = await bcrypt.compare(contrasena, usuarioEncontrado.contrasena);
+    const contrasenaValida = contrasena === usuarioEncontrado.contrasena;
 
     if (!contrasenaValida) {
       return res.status(401).json({
