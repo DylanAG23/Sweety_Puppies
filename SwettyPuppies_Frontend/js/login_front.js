@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // Llamada al backend de Node.js
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('/api/login/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirigir después de un breve delay
                 setTimeout(() => {
-                    window.location.href = '../index.html';
+                    window.location.href = '/index.html';
                 }, 1500);
                 
             } else {
