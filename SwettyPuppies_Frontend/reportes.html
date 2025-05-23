@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reporte Diario - Sweety Puppies</title>
+  <title>Reportes y Estadísticas - Sweety Puppies</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/reportes.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
   <!-- Elementos del cursor personalizado -->
@@ -31,96 +32,322 @@
   </header>
 
   <!-- Contenido principal -->
-  <section id="app-reporte-diario" class="reporte-container">
+  <section class="buscar-cliente">
     <div class="section-title">
-      <h2 class="reporte-titulo">Reporte Diario de Citas</h2>
+      <h2>
+        <i class="fas fa-chart-line"></i>
+        Reportes y Estadísticas
+      </h2>
     </div>
     
-    <div class="filtros">
-      <div class="form-group">
-        <label for="fecha">Seleccionar fecha:</label>
-        <input 
-          type="date" 
-          id="fecha" 
-          class="form-control"
-        />
-      </div>
-      
-      <button class="btn btn-primary">
-        Generar Reporte
+    <!-- Sistema de pestañas -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="diario">
+        <i class="fas fa-calendar-day"></i>
+        Reporte Diario
+      </button>
+      <button class="tab-btn" data-tab="periodo">
+        <i class="fas fa-calendar-alt"></i>
+        Por Período
+      </button>
+      <button class="tab-btn" data-tab="mensual">
+        <i class="fas fa-chart-bar"></i>
+        Estadísticas Mensuales
       </button>
     </div>
 
-    <div class="cargando" style="display: none;">
-      <p>Obteniendo datos, por favor espere...</p>
-    </div>
-    
-    <div class="error-mensaje" style="display: none;">
-      <p></p>
-    </div>
-    
-    <!-- Vista previa del reporte -->
-    <div class="vista-previa" style="display: none;">
-      <div class="card">
-        <div class="card-header">
-          <h4>Reporte de Citas: </h4>
+    <!-- Tab: Reporte Diario -->
+    <div class="tab-content active" id="tab-diario">
+      <div class="form-mejorado">
+        <div class="form-group">
+          <input type="date" id="fechaDiaria" class="form-control" placeholder=" ">
+          <label class="form-label">Seleccionar fecha</label>
         </div>
-        <div class="card-body">
-          <div class="resumen">
-            <h5>Resumen</h5>
-            <p><strong>Fecha:</strong> </p>
-            <p><strong>Total de citas:</strong> </p>
-            <p><strong>Total de ingresos:</strong> $</p>
+        <div class="buttons-container">
+          <button class="btn-enviar" onclick="generarReporteDiario()">
+            <i class="fas fa-search"></i>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+
+      <!-- Estadísticas rápidas diarias -->
+      <div class="estadisticas-container" id="estadisticasDiarias" style="display: none;">
+        <div class="estadisticas-grid">
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="totalCitasDia">0</h3>
+              <p>Citas del día</p>
+            </div>
+          </div>
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="ingresosDia">$0</h3>
+              <p>Ingresos del día</p>
+            </div>
+          </div>
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="clientesDia">0</h3>
+              <p>Clientes únicos</p>
+            </div>
+          </div>
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-paw"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="mascotasDia">0</h3>
+              <p>Mascotas atendidas</p>
+            </div>
           </div>
         </div>
       </div>
-      
-      <h5>Detalle de Citas</h5>
-      <div class="table-responsive">
-        <table class="tabla-citas">
-          <thead>
-            <tr>
-              <th>Hora</th>
-              <th>Cliente</th>
-              <th>Mascota</th>
-              <th>Servicio</th>
-              <th>Observaciones</th>
-              <th>Precio</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Las filas se llenarán dinámicamente con JavaScript -->
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
-              <td><strong>$0.00</strong></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      
-      <div class="acciones">
-        <button class="btn btn-success">
-          Descargar PDF
-        </button>
+
+      <!-- Detalle de citas diarias -->
+      <div class="resultados-container" id="detalleCitasDiarias" style="display: none;">
+        <h3><i class="fas fa-list"></i> Detalle de Citas del Día</h3>
+        <div class="tabla-container">
+          <table class="tabla-clientes">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Mascota</th>
+                <th>Servicio</th>
+                <th>Observaciones</th>
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCitasDiarias">
+              <!-- Se llena dinámicamente -->
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" class="total-label">Total del día:</td>
+                <td class="total-amount"><span id="totalDiaFooter">$0.00</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="buttons-container">
+          <button class="btn-secundario" onclick="exportarPDF()">
+            <i class="fas fa-file-pdf"></i>
+            Exportar PDF
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- Tab: Por Período -->
+    <div class="tab-content" id="tab-periodo">
+      <div class="form-mejorado">
+        <div class="form-group">
+          <input type="date" id="fechaInicio" class="form-control" placeholder=" ">
+          <label class="form-label">Fecha inicio</label>
+        </div>
+        <div class="form-group">
+          <input type="date" id="fechaFin" class="form-control" placeholder=" ">
+          <label class="form-label">Fecha fin</label>
+        </div>
+        <div class="buttons-container">
+          <button class="btn-enviar" onclick="generarReportePeriodo()">
+            <i class="fas fa-chart-pie"></i>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+
+      <!-- Resumen general del período -->
+      <div class="estadisticas-container" id="resumenPeriodo" style="display: none;">
+        <h3><i class="fas fa-clipboard-list"></i> Resumen General del Período</h3>
+        <div class="estadisticas-grid">
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="totalCitasPeriodo">0</h3>
+              <p>Total de citas</p>
+            </div>
+          </div>
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="ingresosPeriodo">$0</h3>
+              <p>Total ingresos</p>
+            </div>
+          </div>
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="clientesPeriodo">0</h3>
+              <p>Clientes únicos</p>
+            </div>
+          </div>
+          <div class="stat-card bounce-effect">
+            <div class="stat-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-content">
+              <h3 id="promedioDiario">$0</h3>
+              <p>Promedio diario</p>
+            </div>
+          </div>
+        </div>
+        <div class="servicio-popular">
+          <h4><i class="fas fa-star"></i> Servicio más popular: <span id="servicioPopular">-</span></h4>
+        </div>
+        <!-- Botón para exportar reporte completo del período -->
+        <div class="buttons-container" style="margin-top: 20px;">
+          <button class="btn-secundario" onclick="exportarPDF()">
+            <i class="fas fa-file-pdf"></i>
+            Exportar Reporte Completo
+          </button>
+        </div>
+      </div>
+
+      <!-- Servicios más populares -->
+      <div class="resultados-container" id="serviciosPopulares" style="display: none;">
+        <h3><i class="fas fa-trophy"></i> Servicios Más Populares</h3>
+        <div class="tabla-container">
+          <table class="tabla-clientes">
+            <thead>
+              <tr>
+                <th>Servicio</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total Ingresos</th>
+              </tr>
+            </thead>
+            <tbody id="tablaServiciosPopulares">
+              <!-- Se llena dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Clientes más frecuentes -->
+      <div class="resultados-container" id="clientesFrecuentes" style="display: none;">
+        <h3><i class="fas fa-user-friends"></i> Clientes Más Frecuentes</h3>
+        <div class="tabla-container">
+          <table class="tabla-clientes">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Cédula</th>
+                <th>Total Citas</th>
+                <th>Total Gastado</th>
+              </tr>
+            </thead>
+            <tbody id="tablaClientesFrecuentes">
+              <!-- Se llena dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Estadísticas por día de la semana -->
+      <div class="resultados-container" id="diasSemana" style="display: none;">
+        <h3><i class="fas fa-calendar-week"></i> Estadísticas por Día de la Semana</h3>
+        <div class="tabla-container">
+          <table class="tabla-clientes">
+            <thead>
+              <tr>
+                <th>Día de la Semana</th>
+                <th>Total Citas</th>
+                <th>Total Ingresos</th>
+              </tr>
+            </thead>
+            <tbody id="tablaDiasSemana">
+              <!-- Se llena dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Estadísticas Mensuales -->
+    <div class="tab-content" id="tab-mensual">
+      <div class="form-mejorado">
+        <div class="form-group">
+          <input type="number" id="anoMensual" class="form-control" placeholder=" " min="2020" max="2030">
+          <label class="form-label">Año</label>
+        </div>
+        <div class="buttons-container">
+          <button class="btn-enviar" onclick="generarReporteMensual()">
+            <i class="fas fa-chart-bar"></i>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+
+      <!-- Ingresos mensuales -->
+      <div class="resultados-container" id="ingresosMensuales" style="display: none;">
+        <h3><i class="fas fa-calendar"></i> Ingresos Mensuales del Año <span id="anoSeleccionado"></span></h3>
+        <div class="tabla-container">
+          <table class="tabla-clientes">
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th>Total Citas</th>
+                <th>Total Ingresos</th>
+              </tr>
+            </thead>
+            <tbody id="tablaIngresosMensuales">
+              <!-- Se llena dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Botón para exportar estadísticas mensuales -->
+        <div class="buttons-container" style="margin-top: 20px;">
+          <button class="btn-secundario" onclick="exportarPDF()">
+            <i class="fas fa-file-pdf"></i>
+            Exportar Estadísticas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estados de carga y mensajes -->
+    <div class="cargando" id="cargando" style="display: none;">
+      <div class="loader"></div>
+      <p>Generando reporte, por favor espere...</p>
+    </div>
     
-    <div class="sin-datos" style="display: none;">
-      <p>No hay citas registradas para la fecha seleccionada.</p>
+    <div class="error-mensaje" id="errorMensaje" style="display: none;">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p id="textoError">Ha ocurrido un error al generar el reporte</p>
+    </div>
+    
+    <div class="sin-datos" id="sinDatos" style="display: none;">
+      <i class="fas fa-search"></i>
+      <p>No hay datos disponibles para los filtros seleccionados.</p>
     </div>
   </section>
 
-  <!-- Toast para notificaciones -->
-  <div id="toast" class="toast">Operación realizada con éxito</div>
 
-  <!-- Scripts necesarios -->
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-  
-  <!-- Script con la lógica principal de reportes -->
+
+  <!-- Toast para notificaciones -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastText">Operación realizada con éxito</span>
+  </div>
+
+  <!-- Script principal -->
   <script src="js/reportes_front.js"></script>
 </body>
 </html>

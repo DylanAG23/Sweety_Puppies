@@ -785,7 +785,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const descripcion = document.createElement('p');
             descripcion.textContent = imagen.descripcion || '';
             
-           
+            // Agregar elementos a la tarjeta
+            info.appendChild(titulo);
+            info.appendChild(descripcion);
+            
             card.appendChild(img);
             card.appendChild(info);
             
