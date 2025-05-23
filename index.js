@@ -23,6 +23,7 @@ app.use('/api/servicios', require('./routes/servicios'));
 app.use('/api/citas', require('./routes/citas'));
 app.use('/api/imagenes', require('./routes/imagenes'));
 app.use('/api/login', require('./routes/login'));
+app.use('/api/reportes', require('./routes/reportes')); // Agregar ruta de reportes
 
 // Ruta para servir el index.html en la raíz
 app.get('/', (req, res) => {
@@ -34,7 +35,12 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'SwettyPuppies_Frontend', 'login.html'));
 });
 
+// Ruta para servir reportes.html
+app.get('/reportes', (req, res) => {
+    res.sendFile(path.join(__dirname, 'SwettyPuppies_Frontend', 'reportes.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
-
+  console.log(`Documentación disponible en http://localhost:${PORT}/api-docs`);
 });
