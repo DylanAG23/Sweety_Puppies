@@ -73,12 +73,12 @@
           <span class="form-error">Por favor, introduce el ID de la cita</span>
         </div>
         <div class="form-group">
-          <input type="date" id="fecha" name="fecha" placeholder=" " required>
+          <input type="date" id="fecha" name="fecha" placeholder=" " required min="">
           <label for="fecha" class="form-label">Fecha</label>
           <span class="form-error">Por favor, selecciona una fecha</span>
         </div>
         <div class="form-group">
-          <input type="time" id="hora" name="hora" placeholder=" " required>
+          <input type="time" id="hora" name="hora" placeholder=" " required min="08:00" max="17:00">
           <label for="hora" class="form-label">Hora</label>
           <span class="form-error">Por favor, selecciona una hora</span>
         </div>
@@ -138,12 +138,12 @@
       <form id="editarForm" class="form-mejorado">
         <input type="hidden" id="editar_id_cita" name="editar_id_cita">
         <div class="form-group">
-          <input type="date" id="editar_fecha" name="editar_fecha" placeholder=" " required>
+          <input type="date" id="editar_fecha" name="editar_fecha" placeholder=" " required min="">
           <label for="editar_fecha" class="form-label">Fecha</label>
           <span class="form-error">Por favor, selecciona una fecha</span>
         </div>
         <div class="form-group">
-          <input type="time" id="editar_hora" name="editar_hora" placeholder=" " required>
+          <input type="time" id="editar_hora" name="editar_hora" placeholder=" " required min="08:00" max="17:00">
           <label for="editar_hora" class="form-label">Hora</label>
           <span class="form-error">Por favor, selecciona una hora</span>
         </div>

@@ -209,11 +209,32 @@ router.get('/fecha/:fecha', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   const { id_cita, fecha, hora, id_servicio, id_mascota } = req.body;
-  
+
   // Validación básica
   if (!id_cita || !fecha || !hora || !id_servicio || !id_mascota) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       message: 'Faltan campos requeridos (id_cita, fecha, hora, id_servicio, id_mascota)'
+    });
+  }
+
+  // Validación de fecha: no permitir fechas anteriores al día actual
+  const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (fechaSeleccionada < hoy) {
+    return res.status(400).json({
+      message: 'No se pueden agendar citas en fechas anteriores al día actual'
+    });
+  }
+
+  // Validación de hora: solo entre 8:00 AM y 5:00 PM
+  const horaMinima = '08:00';
+  const horaMaxima = '17:00';
+
+  if (hora < horaMinima || hora > horaMaxima) {
+    return res.status(400).json({
+      message: 'Las citas solo se pueden agendar entre las 8:00 AM y 5:00 PM'
     });
   }
   
@@ -273,11 +294,32 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { fecha, hora, id_servicio, id_mascota } = req.body;
-  
+
   // Validación básica
   if (!fecha || !hora || !id_servicio || !id_mascota) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       message: 'Faltan campos requeridos (fecha, hora, id_servicio, id_mascota)'
+    });
+  }
+
+  // Validación de fecha: no permitir fechas anteriores al día actual
+  const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (fechaSeleccionada < hoy) {
+    return res.status(400).json({
+      message: 'No se pueden agendar citas en fechas anteriores al día actual'
+    });
+  }
+
+  // Validación de hora: solo entre 8:00 AM y 5:00 PM
+  const horaMinima = '08:00';
+  const horaMaxima = '17:00';
+
+  if (hora < horaMinima || hora > horaMaxima) {
+    return res.status(400).json({
+      message: 'Las citas solo se pueden agendar entre las 8:00 AM y 5:00 PM'
     });
   }
   

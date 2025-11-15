@@ -946,14 +946,34 @@ function validarFormularioCompleto(formId) {
         if (!input.value.match(/^\d{4}-\d{2}-\d{2}$/)) {
           mostrarError(input.id, 'Formato de fecha inválido (YYYY-MM-DD)');
           esValido = false;
+        } else {
+          // Validar que la fecha no sea anterior a hoy
+          const fechaSeleccionada = new Date(input.value + 'T00:00:00');
+          const hoy = new Date();
+          hoy.setHours(0, 0, 0, 0); // Resetear hora para comparar solo fechas
+
+          if (fechaSeleccionada < hoy) {
+            mostrarError(input.id, 'No se pueden agendar citas en fechas anteriores al día actual');
+            esValido = false;
+          }
         }
         break;
-        
+
       case 'hora':
       case 'editar_hora':
         if (!input.value.match(/^\d{2}:\d{2}$/)) {
           mostrarError(input.id, 'Formato de hora inválido (HH:MM)');
           esValido = false;
+        } else {
+          // Validar que la hora esté entre 8:00 AM y 5:00 PM
+          const horaSeleccionada = input.value;
+          const horaMinima = '08:00';
+          const horaMaxima = '17:00';
+
+          if (horaSeleccionada < horaMinima || horaSeleccionada > horaMaxima) {
+            mostrarError(input.id, 'Las citas solo se pueden agendar entre las 8:00 AM y 5:00 PM');
+            esValido = false;
+          }
         }
         break;
     }
@@ -1140,5 +1160,26 @@ function sugerirProximaCita() {
   };
 }
 
+// Función para establecer la fecha mínima en los inputs de fecha
+function establecerFechaMinima() {
+  const hoy = new Date();
+  const fechaFormateada = hoy.toISOString().split('T')[0]; // YYYY-MM-DD
+
+  // Establecer fecha mínima para el formulario de nueva cita
+  const fechaInput = document.getElementById('fecha');
+  if (fechaInput) {
+    fechaInput.min = fechaFormateada;
+  }
+
+  // Establecer fecha mínima para el formulario de edición
+  const editarFechaInput = document.getElementById('editar_fecha');
+  if (editarFechaInput) {
+    editarFechaInput.min = fechaFormateada;
+  }
+}
+
 // Inicializar la aplicación cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', inicializarAplicacion);
+document.addEventListener('DOMContentLoaded', function() {
+  establecerFechaMinima();
+  inicializarAplicacion();
+});
