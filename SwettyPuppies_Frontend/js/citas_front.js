@@ -696,7 +696,7 @@ function abrirModalEditar(idCita) {
   citaActual = cita;
 
   // Mostrar el modal
-  document.getElementById('modalEditar').classList.add('show');
+  document.getElementById('editarModal').classList.add('show');
 }
 
 // Función para abrir modal de eliminación
@@ -718,12 +718,12 @@ function abrirModalEliminar(idCita) {
   
   // Actualizar texto de confirmación
   document.getElementById('confirmar-texto').innerHTML = `
-    ¿Estás seguro de eliminar la cita del ${cita.fecha} a las ${cita.hora} para 
+    ¿Estás seguro de eliminar la cita del ${cita.fecha} a las ${cita.hora} para
     <strong>${nombreMascota}</strong> (Servicio: ${nombreServicio})?
   `;
-  
+
   // Mostrar el modal
-  document.getElementById('modalEliminar').classList.add('show');
+  document.getElementById('eliminarModal').classList.add('show');
 }
 
 // Función para editar cita
@@ -749,7 +749,7 @@ async function handleEditarCita(e) {
   };
   
   // Mostrar indicador de carga
-  const submitBtn = document.querySelector('#editarForm .btn-guardar');
+  const submitBtn = document.querySelector('#editarForm .btn-enviar');
   const originalText = submitBtn.textContent;
   submitBtn.textContent = 'Guardando...';
   submitBtn.disabled = true;
@@ -788,7 +788,7 @@ async function handleEditarCita(e) {
     
     // Cerrar modal y actualizar tabla después de un breve tiempo
     setTimeout(() => {
-      document.getElementById('modalEditar').classList.remove('show');
+      document.getElementById('editarModal').classList.remove('show');
       cargarTablaCitas();
       
       // Restaurar botón

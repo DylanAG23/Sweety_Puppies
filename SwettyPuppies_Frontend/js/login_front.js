@@ -116,11 +116,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.success) {
                 mostrarToast('¡Inicio de sesión exitoso!', 'success');
-                
+
                 // Guardar token en una variable global o en memoria para la sesión
                 window.userToken = data.token;
                 window.userData = data.usuario;
-                
+
+                // Establecer sesión en localStorage
+                if (typeof sessionManager !== 'undefined') {
+                    sessionManager.setSession(data.token, data.usuario);
+                }
+
                 // Redirigir después de un breve delay
                 setTimeout(() => {
                     window.location.href = '/index.html';

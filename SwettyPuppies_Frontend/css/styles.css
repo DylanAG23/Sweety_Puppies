@@ -92,7 +92,30 @@ header.main-header {
 }
 
 .nav-links a:hover {
-  color: #9c0076;
+   color: #9c0076;
+}
+
+/* Botón de logout */
+.btn-logout {
+   background: linear-gradient(to right, #9c0076, #e95adb);
+   color: white;
+   border: none;
+   padding: 10px 20px;
+   border-radius: 20px;
+   font-size: 14px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0 2px 8px rgba(156, 0, 118, 0.2);
+   margin-left: 20px;
+   text-transform: uppercase;
+   letter-spacing: 0.5px;
+}
+
+.btn-logout:hover {
+   background: linear-gradient(to right, #cc0099, #ff6ed8);
+   transform: translateY(-1px);
+   box-shadow: 0 4px 12px rgba(156, 0, 118, 0.3);
 }
 
 /* 

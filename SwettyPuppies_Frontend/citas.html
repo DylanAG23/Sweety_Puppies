@@ -29,6 +29,7 @@
         <li><a href="citas.html" class="animated-link">Citas</a></li>
         <li><a href="reportes.html" class="animated-link active">Reportes</a></li>
         <li><a href="imagenes.html" class="animated-link">Imágenes</a></li>
+        <button id="logout-btn" class="btn-logout bounce-effect">Cerrar Sesión</button>
       </ul>
     </nav>
   </header>
@@ -184,6 +185,21 @@
   <div id="toast" class="toast">Operación realizada con éxito</div>
 
   <!-- Scripts -->
+  <script src="js/session.js"></script>
   <script src="js/citas_front.js"></script>
+
+  <!-- Script para verificar sesión y logout -->
+  <script>
+      // Verificar sesión al cargar la página
+      document.addEventListener('DOMContentLoaded', function() {
+          checkSession();
+
+          // Manejar el botón de logout
+          const logoutBtn = document.getElementById('logout-btn');
+          if (logoutBtn) {
+              logoutBtn.addEventListener('click', logout);
+          }
+      });
+  </script>
 </body>
 </html>
