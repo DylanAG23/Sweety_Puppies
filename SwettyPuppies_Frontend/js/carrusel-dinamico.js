@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let carruselImagenes = [];
     
     // Configuración de Supabase
-    const supabaseUrl = 'https://onyzutykzjiocjnlaqgr.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueXp1dHlremppb2NqbmxhcWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMzM5NTEsImV4cCI6MjA2MTgwOTk1MX0.lUtAdt56P_PsQ4Qo9gxSp6SSg9gvrfbSBc88sVxXk0Y';
+    const supabaseUrl = 'https://roqfkukmaayuqffbsggb.supabase.co';
+    const supabaseKey = 'sb_publishable_ZcvRhIBnKdwJsfm96BWDcw_jOmQYYBQ';
     
     // Inyectar estilos mejorados para el carrusel
     inyectarEstilosCarrusel();
