@@ -1,6 +1,16 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
+import './styles/app.css'
+import '../css/styles.css'
+import '../css/login.css'
+import '../css/cliente-dashboard.css'
+import '../css/servicios-estilos.css'
+import '../css/carrusel-estilos.css'
+import '../css/clientes.css'
+import '../css/mascotas.css'
+import '../css/citas.css'
+import '../css/servicios.css'
+import '../css/imagenes.css'
+import '../css/reportes.css'
 
 createApp(App).mount('#app')

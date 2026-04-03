@@ -1,44 +1,75 @@
-require('dotenv').config(); // Agregar esta línea al principio
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { swaggerUi, swaggerSpec } = require('./swagger');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const frontendRoot = path.join(__dirname, 'SwettyPuppies_Frontend');
+const frontendDist = path.join(frontendRoot, 'dist');
+const appShellPath = fs.existsSync(path.join(frontendDist, 'index.html'))
+  ? path.join(frontendDist, 'index.html')
+  : path.join(frontendRoot, 'index.html');
 
 app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos del frontend
-app.use(express.static(path.join(__dirname, 'SwettyPuppies_Frontend')));
-
-// Documentación Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Importar las rutas
 app.use('/api/clientes', require('./routes/clientes'));
 app.use('/api/mascotas', require('./routes/mascotas'));
+app.use('/api/cliente/mascotas', require('./routes/clienteMascotas'));
 app.use('/api/servicios', require('./routes/servicios'));
 app.use('/api/citas', require('./routes/citas'));
 app.use('/api/imagenes', require('./routes/imagenes'));
-app.use('/api/login', require('./routes/login'));
-app.use('/api/reportes', require('./routes/reportes')); // Agregar ruta de reportes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/login', require('./routes/auth'));
+app.use('/api/reportes', require('./routes/reportes'));
 
-// Ruta para servir el index.html en la raíz
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'SwettyPuppies_Frontend', 'index.html'));
+app.get('/cliente-dashboard.html', (req, res) => {
+  res.redirect('/cliente');
 });
 
-// Ruta para servir el login.html
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'SwettyPuppies_Frontend', 'login.html'));
+app.get('/index.html', (req, res) => {
+  res.redirect('/admin');
 });
 
-// Ruta para servir reportes.html
-app.get('/reportes', (req, res) => {
-    res.sendFile(path.join(__dirname, 'SwettyPuppies_Frontend', 'reportes.html'));
+const appRoutes = [
+  '/',
+  '/login',
+  '/admin',
+  '/cliente',
+  '/cliente/mascotas',
+  '/cliente/mascotas/nueva',
+  '/cliente/citas/nueva',
+  '/cliente/historial',
+  '/cliente/perfil',
+  '/clientes',
+  '/mascotas',
+  '/servicios',
+  '/citas',
+  '/imagenes',
+  '/reportes',
+  '/clientes.html',
+  '/mascotas.html',
+  '/servicios.html',
+  '/citas.html',
+  '/imagenes.html',
+  '/reportes.html',
+  '/login.html'
+];
+
+app.get(appRoutes, (req, res) => {
+  res.sendFile(appShellPath);
 });
+
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+}
+
+app.use(express.static(frontendRoot));
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);

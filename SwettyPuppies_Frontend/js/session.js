@@ -1,85 +1,127 @@
-// Sistema de gestión de sesiones usando localStorage
-
 class SessionManager {
-    constructor() {
-        this.sessionKey = 'sweetyPuppiesSession';
+  constructor() {
+    this.sessionKey = 'sweetyPuppiesSession';
+    this.adminRoutes = new Set([
+      '/admin',
+      '/index.html',
+      '/clientes',
+      '/clientes.html',
+      '/mascotas',
+      '/mascotas.html',
+      '/servicios',
+      '/servicios.html',
+      '/citas',
+      '/citas.html',
+      '/imagenes',
+      '/imagenes.html',
+      '/reportes',
+      '/reportes.html'
+    ]);
+  }
+
+  setSession(token, userData) {
+    const sessionData = {
+      token,
+      userData,
+      timestamp: Date.now()
+    };
+
+    localStorage.setItem(this.sessionKey, JSON.stringify(sessionData));
+  }
+
+  getSessionData() {
+    const sessionData = localStorage.getItem(this.sessionKey);
+    if (!sessionData) {
+      return null;
     }
 
-    // Establecer sesión después del login exitoso
-    setSession(token, userData) {
-        const sessionData = {
-            token: token,
-            userData: userData,
-            timestamp: Date.now()
-        };
-        localStorage.setItem(this.sessionKey, JSON.stringify(sessionData));
+    try {
+      return JSON.parse(sessionData);
+    } catch (error) {
+      console.error('Error al leer la sesión:', error);
+      this.clearSession();
+      return null;
+    }
+  }
+
+  isLoggedIn() {
+    const session = this.getSessionData();
+    if (!session) {
+      return false;
     }
 
-    // Verificar si hay una sesión activa
-    isLoggedIn() {
-        const sessionData = localStorage.getItem(this.sessionKey);
-        if (!sessionData) {
-            return false;
-        }
-
-        try {
-            const session = JSON.parse(sessionData);
-            // Verificar si la sesión no ha expirado (opcional, por ejemplo 24 horas)
-            const expirationTime = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
-            if (Date.now() - session.timestamp > expirationTime) {
-                this.clearSession();
-                return false;
-            }
-            return true;
-        } catch (error) {
-            console.error('Error al verificar sesión:', error);
-            this.clearSession();
-            return false;
-        }
+    const expirationTime = 24 * 60 * 60 * 1000;
+    if (Date.now() - session.timestamp > expirationTime) {
+      this.clearSession();
+      return false;
     }
 
-    // Obtener datos de la sesión
-    getSessionData() {
-        const sessionData = localStorage.getItem(this.sessionKey);
-        if (sessionData) {
-            try {
-                return JSON.parse(sessionData);
-            } catch (error) {
-                console.error('Error al obtener datos de sesión:', error);
-                return null;
-            }
-        }
-        return null;
+    return true;
+  }
+
+  clearSession() {
+    localStorage.removeItem(this.sessionKey);
+  }
+
+  getHomeByRole(role) {
+    return role === 'administrador' ? '/admin' : '/cliente';
+  }
+
+  enforcePageAccess() {
+    const path = window.location.pathname.toLowerCase();
+    const session = this.getSessionData();
+    const user = session?.userData;
+
+    if (!user) {
+      return true;
     }
 
-    // Limpiar sesión (logout)
-    clearSession() {
-        localStorage.removeItem(this.sessionKey);
+    if (path === '/' || path.includes('/login')) {
+      window.location.href = this.getHomeByRole(user.rol);
+      return false;
     }
 
-    // Redirigir a login si no hay sesión
-    checkAndRedirect() {
-        if (!this.isLoggedIn()) {
-            window.location.href = 'login.html';
-        }
+    if (this.adminRoutes.has(path) && user.rol !== 'administrador') {
+      window.location.href = '/cliente';
+      return false;
     }
 
-    // Logout y redirigir
-    logout() {
-        this.clearSession();
-        window.location.href = 'login.html';
+    if ((path.includes('/cliente') || path.includes('cliente-dashboard')) && user.rol !== 'cliente') {
+      window.location.href = '/admin';
+      return false;
     }
+
+    return true;
+  }
+
+  checkAndRedirect() {
+    const path = window.location.pathname.toLowerCase();
+    const isPublicAuth = path === '/' || path.includes('/login');
+
+    if (!this.isLoggedIn()) {
+      if (!isPublicAuth) {
+        window.location.href = '/login';
+        return false;
+      }
+
+      return true;
+    }
+
+    return this.enforcePageAccess();
+  }
+
+  logout() {
+    this.clearSession();
+    window.location.href = '/login';
+  }
 }
 
-// Instancia global del session manager
 const sessionManager = new SessionManager();
 
-// Función para verificar sesión en páginas protegidas
 function checkSession() {
-    sessionManager.checkAndRedirect();
+  return sessionManager.checkAndRedirect();
 }
 
-// Función para hacer logout
 function logout() {
-    sessionManager.logout();
+  sessionManager.logout();
 }

@@ -3,59 +3,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Sweety Puppies</title>
+  <title>Acceso - Sweety Puppies</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/login.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-<body>
-  <!-- Elementos del cursor personalizado -->
-  <div class="cursor-dot" id="cursor-dot"></div>
-  <div class="cursor-outline" id="cursor-outline"></div>
-  
-  <!-- Container principal del login -->
-  <div class="login-container">
-    <div class="login-card">
-      <!-- Logo -->
-      <div class="logo-container">
-        <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo">
-        <h1>Sweety Puppies</h1>
-        <p>Peluquería Canina</p>
+<body class="auth-body">
+  <div class="auth-shell">
+    <section class="auth-hero">
+      <div class="auth-hero-copy">
+        <img src="img/logo.png" alt="Logo Sweety Puppies" class="auth-logo">
+        <p class="auth-kicker">Sweety Puppies</p>
+        <h1>Bienvenido a Sweety Puppies</h1>
+        <p class="auth-subtitle">Un rincon tierno para consentir a tu peludito con amor, estilo y confianza.</p>
+        <div class="auth-actions">
+          <button class="btn-enviar bounce-effect" data-switch-view="login">Iniciar sesion</button>
+          <button class="btn-secundario" data-switch-view="register">Registrarse</button>
+        </div>
+      </div>
+      <div class="auth-decoration">
+        <div class="paw paw-one"></div>
+        <div class="paw paw-two"></div>
+        <div class="paw paw-three"></div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="auth-panel" data-auth-view="landing">
+        <span class="panel-badge">Hola</span>
+        <h2>Tu proxima cita empieza aqui</h2>
+        <p>Ingresa a tu cuenta o crea una nueva para gestionar el perfil de tu mascota con una experiencia dulce y segura.</p>
       </div>
 
-      <!-- Formulario de login -->
-      <form id="loginForm" class="form-mejorado">
+      <div class="auth-panel" data-auth-view="login" hidden>
+        <button class="text-link" data-switch-view="landing">Volver</button>
         <div class="section-title">
-          <h2>Iniciar Sesión</h2>
+          <h2>Iniciar sesion</h2>
         </div>
+        <form id="loginForm" class="form-mejorado">
+          <div class="form-group">
+            <input type="email" id="loginEmail" name="email" placeholder=" " required>
+            <label for="loginEmail" class="form-label">Correo electronico</label>
+          </div>
+          <div class="form-group">
+            <input type="password" id="loginPassword" name="password" placeholder=" " required>
+            <label for="loginPassword" class="form-label">Contrasena</label>
+          </div>
+          <div class="buttons-container">
+            <button type="submit" class="btn-enviar bounce-effect">Entrar</button>
+          </div>
+        </form>
+        <p class="panel-helper">Todavia no tienes cuenta? <button class="text-link inline-link" data-switch-view="register">Registrate</button></p>
+      </div>
 
-        <div class="form-group">
-          <input type="text" id="usuario" name="usuario" placeholder=" " required>
-          <label for="usuario" class="form-label">Usuario</label>
-          <span class="form-error">Por favor, introduce tu usuario</span>
+      <div class="auth-panel" data-auth-view="register" hidden>
+        <button class="text-link" data-switch-view="landing">Volver</button>
+        <div class="section-title">
+          <h2>Registro de cliente</h2>
         </div>
+        <form id="registerForm" class="form-mejorado auth-grid">
+          <div class="form-group">
+            <input type="text" id="nombre" name="nombre" placeholder=" " required>
+            <label for="nombre" class="form-label">Nombre</label>
+          </div>
+          <div class="form-group">
+            <input type="text" id="apellido" name="apellido" placeholder=" " required>
+            <label for="apellido" class="form-label">Apellido</label>
+          </div>
+          <div class="form-group">
+            <input type="text" id="cedula" name="cedula" placeholder=" " required>
+            <label for="cedula" class="form-label">Cedula</label>
+          </div>
+          <div class="form-group">
+            <input type="text" id="telefono" name="telefono" placeholder=" " required>
+            <label for="telefono" class="form-label">Telefono</label>
+          </div>
+          <div class="form-group full-width">
+            <input type="email" id="registerEmail" name="email" placeholder=" " required>
+            <label for="registerEmail" class="form-label">Correo electronico</label>
+          </div>
+          <div class="form-group">
+            <input type="password" id="registerPassword" name="password" placeholder=" " required>
+            <label for="registerPassword" class="form-label">Contrasena</label>
+          </div>
+          <div class="form-group">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder=" " required>
+            <label for="confirmPassword" class="form-label">Confirmar contrasena</label>
+          </div>
+          <div class="buttons-container full-width">
+            <button type="submit" class="btn-enviar bounce-effect">Generar codigo</button>
+          </div>
+        </form>
+      </div>
 
-        <div class="form-group">
-          <input type="password" id="contrasena" name="contrasena" placeholder=" " required>
-          <label for="contrasena" class="form-label">Contraseña</label>
-          <span class="form-error">Por favor, introduce tu contraseña</span>
-        </div>
-
-        <div class="buttons-container">
-          <button type="submit" class="btn-enviar bounce-effect">Iniciar Sesión</button>
-        </div>
-      </form>
-    </div>
+      <div class="auth-panel" data-auth-view="verify" hidden>
+        <button class="text-link" data-switch-view="register">Editar datos</button>
+        <span class="panel-badge">Verificacion</span>
+        <h2>Verifica tu registro</h2>
+        <p>Te enviamos un codigo al correo de <strong id="verifyEmailLabel">tu correo</strong>. Escribelo aqui para completar el registro.</p>
+        <form id="verifyForm" class="form-mejorado">
+          <input type="hidden" id="verifyEmail" name="email">
+          <div class="form-group">
+            <input type="text" id="codigo" name="codigo" placeholder=" " required>
+            <label for="codigo" class="form-label">Codigo de verificacion</label>
+          </div>
+          <div class="buttons-container stacked-actions">
+            <button type="submit" class="btn-enviar bounce-effect">Verificar codigo</button>
+            <button type="button" id="resendCodeBtn" class="btn-secundario">Regenerar codigo</button>
+          </div>
+        </form>
+      </div>
+    </section>
   </div>
 
-  <!-- Toast de notificaciones -->
   <div id="toast" class="toast">
     <div class="toast-content">
       <span id="toast-mensaje"></span>
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="js/session.js"></script>
   <script src="js/login_front.js"></script>
 </body>

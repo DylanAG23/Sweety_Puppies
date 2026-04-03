@@ -1,0 +1,14 @@
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+#app {
+  min-height: 100vh;
+}

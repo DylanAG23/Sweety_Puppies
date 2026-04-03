@@ -3,119 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sweety Puppies - Peluquería Canina</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/servicios-estilos.css">
-  <link rel="stylesheet" href="css/carrusel-estilos.css">
+  <title>Sweety Puppies</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <!-- Elementos del cursor personalizado -->
-  <div class="cursor-dot" id="cursor-dot"></div>
-  <div class="cursor-outline" id="cursor-outline"></div>
-  
-  <header class="main-header">
-    <div class="logo-container">
-      <img src="img/logo.png" alt="Logo Sweety Puppies" class="logo">
-    </div>
-    <nav>
-      <ul class="nav-links">
-        <li><a href="index.html" class="animated-link">Home</a></li>
-        <li><a href="clientes.html" class="animated-link">Clientes</a></li>
-        <li><a href="mascotas.html" class="animated-link">Mascotas</a></li>
-        <li><a href="servicios.html" class="animated-link">Servicios</a></li>
-        <li><a href="citas.html" class="animated-link">citas</a></li>
-        <li><a href="imagenes.html" class="animated-link">imagenes</a></li>
-        <li><a href="reportes.html" class="animated-link active">Reportes</a></li>
-        <button id="logout-btn" class="btn-logout bounce-effect">Cerrar Sesión</button>
-      </ul>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="hero-gradient">
-      <div class="hero-content">
-        <h1 class="animated-title">Glamour para cada pelaje</h1>
-        <p>Descubre el cambio de nuestros peluditos con amor y estilo</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Nueva sección: Carrusel de Imágenes -->
-  <section id="galeria-mascotas" class="galeria-mascotas scroll-reveal">
-    <div class="section-title">
-      <h2>Galería de Mascotas</h2>
-    </div>
-    <p class="subtitle">Nuestros clientes más felices</p>
-    
-    <!-- Contenedor del carrusel -->
-    <div id="carrusel-imagenes" class="carrusel-container">
-      <!-- El contenido se cargará dinámicamente -->
-    </div>
-  </section>
-
-  <section id="servicios" class="servicios scroll-reveal">
-    <div class="section-title">
-      <h2>Servicios</h2>
-    </div>
-    <!-- Los servicios se cargarán dinámicamente aquí -->
-  </section>
-
-  
-  <section id="reserva" class="reserva scroll-reveal">
-    <div class="reserva-card">
-      <h2>Reserva tu cita para disfrutar de un baño con glamour.</h2>
-      <div class="reserva-info">
-        <span class="whatsapp-text">Agenda en WhatsApp</span>
-        <span class="whatsapp-numero">3058064242</span>
-      </div>
-    </div>
-  </section>
-
-
-  <footer>
-    <div class="footer-logo">
-      <img src="img/logo.png" alt="Sweety Puppies Logo" class="footer-img">
-    </div>
-    <p>Peluquería canina. Glamour para cada peludo.</p>
-    <p class="copyright">© 2025 Sweety Puppies - Todos los derechos reservados</p>
-  </footer>
-
-  <!-- Botón volver arriba -->
-  <button id="btn-volver-arriba" class="btn-volver-arriba bounce-effect">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18 15l-6-6-6 6"/>
-    </svg>
-  </button>
-
-  <div id="cursor-dot">
-    <img src="img/tijeras.png" alt="Tijeras" style="width: 20px; height: 20px;">
-  </div>
-  <div id="cursor-outline"></div>
-  
-  <!-- Cursor personalizado -->
-  <div id="cursor-tijeras"></div>
-
-  <!-- Script para las funcionalidades -->
-  <script src="js/session.js"></script>
-  <script src="js/mejoras.js"></script>
-
-  <!-- Cargar los scripts principales -->
-  <script src="js/servicios-dinamicos.js"></script>
-  <script src="js/carrusel-dinamico.js"></script>
-
-  <!-- Script para verificar sesión y logout -->
-  <script>
-      // Verificar sesión al cargar la página
-      document.addEventListener('DOMContentLoaded', function() {
-          checkSession();
-
-          // Manejar el botón de logout
-          const logoutBtn = document.getElementById('logout-btn');
-          if (logoutBtn) {
-              logoutBtn.addEventListener('click', logout);
-          }
-      });
-  </script>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

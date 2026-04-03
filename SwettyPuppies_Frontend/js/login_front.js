@@ -1,191 +1,256 @@
-// Funcionalidad del formulario de login
-document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('loginForm');
-    const usuarioInput = document.getElementById('usuario');
-    const contrasenaInput = document.getElementById('contrasena');
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof checkSession === 'function' && checkSession() === false) {
+    return;
+  }
 
-    // Manejo de etiquetas flotantes
-    function manejarEtiquetasFlotantes() {
-        const inputs = document.querySelectorAll('.form-group input');
-        
-        inputs.forEach(input => {
-            const formGroup = input.closest('.form-group');
-            
-            // Al hacer focus
-            input.addEventListener('focus', function() {
-                formGroup.classList.add('focused');
-            });
-            
-            // Al perder focus
-            input.addEventListener('blur', function() {
-                formGroup.classList.remove('focused');
-                if (this.value.trim() !== '') {
-                    formGroup.classList.add('has-value');
-                } else {
-                    formGroup.classList.remove('has-value');
-                }
-            });
-            
-            // Verificar si ya tiene valor al cargar
-            if (input.value.trim() !== '') {
-                formGroup.classList.add('has-value');
-            }
-        });
+  const state = {
+    currentView: 'landing',
+    pendingEmail: ''
+  };
+
+  const views = document.querySelectorAll('[data-auth-view]');
+  const switchButtons = document.querySelectorAll('[data-switch-view]');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const verifyForm = document.getElementById('verifyForm');
+  const resendCodeButton = document.getElementById('resendCodeBtn');
+  const verifyEmailLabel = document.getElementById('verifyEmailLabel');
+
+  function showView(viewName) {
+    state.currentView = viewName;
+    views.forEach((view) => {
+      view.hidden = view.dataset.authView !== viewName;
+    });
+  }
+
+  function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-mensaje');
+
+    toastMessage.textContent = message;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3500);
+  }
+
+  function setPendingEmail(email) {
+    state.pendingEmail = email;
+    verifyEmailLabel.textContent = email;
+    document.getElementById('verifyEmail').value = email;
+  }
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function setLoading(button, isLoading, loadingText = 'Procesando...') {
+    if (!button) {
+      return;
     }
 
-    // Mostrar toast de notificación
-    function mostrarToast(mensaje, tipo = 'info') {
-        const toast = document.getElementById('toast');
-        const toastMensaje = document.getElementById('toast-mensaje');
-        
-        toastMensaje.textContent = mensaje;
-        toast.className = `toast ${tipo}`;
-        toast.classList.add('show');
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+    if (isLoading) {
+      button.dataset.originalText = button.textContent;
+      button.textContent = loadingText;
+      button.disabled = true;
+      button.classList.add('loading');
+      return;
     }
 
-    // Validar formulario
-    function validarFormulario() {
-        let esValido = true;
-        const formGroups = document.querySelectorAll('.form-group');
-        
-        formGroups.forEach(group => {
-            const input = group.querySelector('input');
-            const valor = input.value.trim();
-            
-            // Limpiar errores previos
-            group.classList.remove('error');
-            
-            if (valor === '') {
-                group.classList.add('error');
-                esValido = false;
-            }
-        });
-        
-        return esValido;
-    }
+    button.textContent = button.dataset.originalText || button.textContent;
+    button.disabled = false;
+    button.classList.remove('loading');
+  }
 
-    // Limpiar errores al escribir
-    function limpiarErroresAlEscribir() {
-        const inputs = document.querySelectorAll('.form-group input');
-        
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const formGroup = this.closest('.form-group');
-                if (this.value.trim() !== '') {
-                    formGroup.classList.remove('error');
-                }
-            });
-        });
-    }
+  function getFormValues(form) {
+    const formData = new FormData(form);
+    return Object.fromEntries(formData.entries());
+  }
 
-    // Manejar envío del formulario
-    loginForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        if (!validarFormulario()) {
-            mostrarToast('Por favor, completa todos los campos', 'error');
-            return;
-        }
-        
-        const btnEnviar = document.querySelector('.btn-enviar');
-        const usuario = usuarioInput.value.trim();
-        const contrasena = contrasenaInput.value.trim();
-        
-        // Mostrar estado de carga
-        btnEnviar.classList.add('loading');
-        btnEnviar.disabled = true;
-        
-        try {
-            // Llamada al backend de Node.js
-            const response = await fetch('/api/login/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    usuario: usuario,
-                    contrasena: contrasena
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                mostrarToast('¡Inicio de sesión exitoso!', 'success');
-
-                // Guardar token en una variable global o en memoria para la sesión
-                window.userToken = data.token;
-                window.userData = data.usuario;
-
-                // Establecer sesión en localStorage
-                if (typeof sessionManager !== 'undefined') {
-                    sessionManager.setSession(data.token, data.usuario);
-                }
-
-                // Redirigir después de un breve delay
-                setTimeout(() => {
-                    window.location.href = '/index.html';
-                }, 1500);
-                
-            } else {
-                mostrarToast(data.message || 'Usuario o contraseña incorrectos', 'error');
-            }
-            
-        } catch (error) {
-            console.error('Error en el login:', error);
-            mostrarToast('Error de conexión. Intenta nuevamente.', 'error');
-        } finally {
-            // Remover estado de carga
-            btnEnviar.classList.remove('loading');
-            btnEnviar.disabled = false;
-        }
+  async function postJson(url, payload) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    // Manejo de tecla Enter
-    document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && e.target.matches('.form-group input')) {
-            const inputs = Array.from(document.querySelectorAll('.form-group input'));
-            const currentIndex = inputs.indexOf(e.target);
-            
-            if (currentIndex < inputs.length - 1) {
-                // Si no es el último input, ir al siguiente
-                inputs[currentIndex + 1].focus();
-            } else {
-                // Si es el último input, enviar formulario
-                loginForm.dispatchEvent(new Event('submit'));
-            }
-        }
-    });
+    const data = await response.json();
 
-    // Inicializar funcionalidades
-    manejarEtiquetasFlotantes();
-    limpiarErroresAlEscribir();
-});
-
-// Cursor personalizado (si lo usas en otras páginas)
-document.addEventListener('DOMContentLoaded', function() {
-    const cursorDot = document.getElementById('cursor-dot');
-    const cursorOutline = document.getElementById('cursor-outline');
-    
-    if (cursorDot && cursorOutline) {
-        document.addEventListener('mousemove', function(e) {
-            const posX = e.clientX;
-            const posY = e.clientY;
-            
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
-            
-            cursorOutline.style.left = `${posX}px`;
-            cursorOutline.style.top = `${posY}px`;
-            
-            cursorOutline.animate({
-                left: `${posX}px`,
-                top: `${posY}px`
-            }, { duration: 500, fill: "forwards" });
-        });
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Ocurrio un error en la solicitud');
     }
+
+    return data;
+  }
+
+  function normalizeRedirectPath(redirectTo, role) {
+    if (role === 'cliente' || redirectTo === '/cliente-dashboard.html') {
+      return '/cliente';
+    }
+
+    if (role === 'administrador' || redirectTo === '/index.html') {
+      return '/admin';
+    }
+
+    return redirectTo || '/login';
+  }
+
+  switchButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetView = button.dataset.switchView;
+      if (targetView) {
+        showView(targetView);
+      }
+    });
+  });
+
+  registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const values = getFormValues(registerForm);
+    const submitButton = registerForm.querySelector('button[type="submit"]');
+
+    if (
+      !values.nombre ||
+      !values.apellido ||
+      !values.cedula ||
+      !values.telefono ||
+      !values.email ||
+      !values.password ||
+      !values.confirmPassword
+    ) {
+      showToast('Completa todos los campos del registro', 'error');
+      return;
+    }
+
+    if (!validateEmail(values.email)) {
+      showToast('Escribe un correo valido', 'error');
+      return;
+    }
+
+    if (values.password !== values.confirmPassword) {
+      showToast('Las contrasenas no coinciden', 'error');
+      return;
+    }
+
+    setLoading(submitButton, true, 'Generando codigo...');
+
+    try {
+      const data = await postJson('/api/auth/register/initiate', values);
+      setPendingEmail(data.email);
+      showView('verify');
+      document.getElementById('codigo').value = '';
+      showToast(data.message, 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(submitButton, false);
+    }
+  });
+
+  verifyForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const values = getFormValues(verifyForm);
+    const submitButton = verifyForm.querySelector('button[type="submit"]');
+
+    if (!values.email || !values.codigo) {
+      showToast('Debes escribir el correo y el codigo', 'error');
+      return;
+    }
+
+    setLoading(submitButton, true, 'Verificando...');
+
+    try {
+      const data = await postJson('/api/auth/register/verify', values);
+      showToast(data.message, 'success');
+      registerForm.reset();
+      verifyForm.reset();
+      document.getElementById('loginEmail').value = values.email;
+      showView('login');
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(submitButton, false);
+    }
+  });
+
+  resendCodeButton.addEventListener('click', async () => {
+    const values = getFormValues(registerForm);
+    const email = state.pendingEmail || values.email;
+
+    if (!email) {
+      showToast('Primero completa el registro para regenerar el codigo', 'error');
+      showView('register');
+      return;
+    }
+
+    const payload = {
+      nombre: values.nombre,
+      apellido: values.apellido,
+      cedula: values.cedula,
+      telefono: values.telefono,
+      email,
+      password: values.password,
+      confirmPassword: values.confirmPassword
+    };
+
+    if (!payload.nombre || !payload.apellido || !payload.cedula || !payload.telefono || !payload.password) {
+      showToast('Conserva los datos del registro para regenerar el codigo', 'error');
+      showView('register');
+      return;
+    }
+
+    setLoading(resendCodeButton, true, 'Regenerando...');
+
+    try {
+      const data = await postJson('/api/auth/register/initiate', payload);
+      setPendingEmail(data.email);
+      document.getElementById('codigo').value = '';
+      showToast(data.message, 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(resendCodeButton, false);
+    }
+  });
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const values = getFormValues(loginForm);
+    const submitButton = loginForm.querySelector('button[type="submit"]');
+
+    if (!values.email || !values.password) {
+      showToast('Correo y contrasena son obligatorios', 'error');
+      return;
+    }
+
+    setLoading(submitButton, true, 'Ingresando...');
+
+    try {
+      const data = await postJson('/api/auth/login', values);
+      const redirectPath = normalizeRedirectPath(data.redirectTo, data.user?.rol);
+
+      if (typeof sessionManager !== 'undefined') {
+        sessionManager.setSession(data.token, data.user);
+      }
+
+      showToast(data.message, 'success');
+
+      setTimeout(() => {
+        window.location.href = redirectPath;
+      }, 800);
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(submitButton, false);
+    }
+  });
+
+  showView('landing');
 });
