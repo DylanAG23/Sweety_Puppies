@@ -21,6 +21,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/clientes', require('./routes/clientes'));
 app.use('/api/mascotas', require('./routes/mascotas'));
 app.use('/api/cliente/mascotas', require('./routes/clienteMascotas'));
+app.use('/api/cliente/citas', require('./routes/clienteCitas'));
+app.use('/api/cliente/historial', require('./routes/clienteHistorial'));
 app.use('/api/servicios', require('./routes/servicios'));
 app.use('/api/citas', require('./routes/citas'));
 app.use('/api/imagenes', require('./routes/imagenes'));

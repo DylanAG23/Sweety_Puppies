@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { apiGet } from '@/lib/api'
+import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
 
@@ -58,6 +59,9 @@ const error = ref('')
 const payload = ref<ClientHomeResponse | null>(null)
 const currentImageIndex = ref(0)
 const currentPath = window.location.pathname.toLowerCase()
+const businessMapsUrl =
+  'https://www.google.com/maps/place/Sweety+puppies/@5.0243655,-74.0038038,17z/data=!4m15!1m8!3m7!1s0x8e407128692e2f17:0x80a709b539972cc2!2sSweety+puppies!8m2!3d5.0243417!4d-74.0037652!10e1!16s%2Fg%2F11z0hhgd47!3m5!1s0x8e407128692e2f17:0x80a709b539972cc2!8m2!3d5.0243417!4d-74.0037652!16s%2Fg%2F11z0hhgd47?entry=ttu&g_ep=EgoyMDI2MDQwMS4wIKXMDSoASAFQAw%3D%3D'
+const businessLocationLabel = 'Sweety Puppies · Calle 3 # 1-49, Facatativa, Cundinamarca'
 
 const greeting = computed(() => {
   if (!payload.value) {
@@ -118,6 +122,7 @@ onMounted(async () => {
 
   const session = requireRole('cliente')
   if (!session) {
+    loading.value = false
     return
   }
 
@@ -148,10 +153,17 @@ function previousImage() {
 }
 
 function formatDate(value: string) {
+  const normalized = value.includes('T') ? value : `${value}T00:00:00`
+  const parsedDate = new Date(normalized)
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Fecha por confirmar'
+  }
+
   return new Intl.DateTimeFormat('es-CO', {
     day: 'numeric',
     month: 'long',
-  }).format(new Date(`${value}T00:00:00`))
+  }).format(parsedDate)
 }
 
 function formatTime(value: string) {
@@ -159,11 +171,21 @@ function formatTime(value: string) {
 }
 
 function formatDateTime(value: string) {
+  const parsedDate = new Date(value)
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Fecha por confirmar'
+  }
+
   return new Intl.DateTimeFormat('es-CO', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }).format(new Date(value))
+  }).format(parsedDate)
+}
+
+function goTo(path: string) {
+  navigateTo(path)
 }
 </script>
 
@@ -204,7 +226,15 @@ function formatDateTime(value: string) {
             <div class="hero-business-meta">
               <div>
                 <strong>Ubicacion</strong>
-                <span>{{ payload.about.location }}</span>
+                <span class="business-location-copy">{{ businessLocationLabel }}</span>
+                <a
+                  :href="businessMapsUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="location-link"
+                >
+                  Ver en Google Maps
+                </a>
               </div>
               <div>
                 <strong>Mensaje</strong>
@@ -216,7 +246,7 @@ function formatDateTime(value: string) {
 
         <aside class="hero-side">
           <div class="profile-card">
-            <a href="/cliente/perfil" class="profile-edit-button" aria-label="Editar tus datos">
+            <a href="/cliente/perfil" class="profile-edit-button" aria-label="Editar tus datos" @click.prevent="goTo('/cliente/perfil')">
               <span aria-hidden="true">✎</span>
             </a>
             <div class="profile-card-head">
@@ -466,6 +496,24 @@ function formatDateTime(value: string) {
 .profile-grid span,
 .summary-pill-card small {
   color: #6f6170;
+}
+
+.business-location-copy {
+  display: block;
+}
+
+.location-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  color: #0b9f93;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.location-link:hover {
+  color: #0a8c82;
+  text-decoration: underline;
 }
 
 .hero-side {

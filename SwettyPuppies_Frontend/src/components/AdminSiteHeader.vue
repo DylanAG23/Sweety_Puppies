@@ -7,16 +7,19 @@ const props = defineProps<{
 }>()
 
 const navItems = [
-  { label: 'Inicio', href: '/cliente' },
-  { label: 'Mi perfil', href: '/cliente/perfil' },
-  { label: 'Mis mascotas', href: '/cliente/mascotas' },
-  { label: 'Agendar cita', href: '/cliente/citas/nueva' },
-  { label: 'Historial', href: '/cliente/historial' },
+  { label: 'Inicio', href: '/admin' },
+  { label: 'Agenda', href: '/admin/agenda' },
+  { label: 'Clientes', href: '/admin/clientes' },
+  { label: 'Mascotas', href: '/admin/mascotas' },
+  { label: 'Historial', href: '/admin/historial' },
+  { label: 'Servicios', href: '/admin/servicios' },
+  { label: 'Tarifas', href: '/admin/tarifas' },
+  { label: 'Galeria', href: '/admin/galeria' },
 ]
 
 function isActive(href: string) {
-  if (href === '/cliente') {
-    return props.currentPath === '/cliente'
+  if (href === '/admin') {
+    return props.currentPath === '/admin'
   }
 
   return props.currentPath === href || props.currentPath.startsWith(`${href}/`)
@@ -26,18 +29,17 @@ function handleNavigate(event: Event, href: string) {
   event.preventDefault()
   navigateTo(href)
 }
-
 </script>
 
 <template>
-  <header class="client-site-header">
-    <a href="/cliente" class="header-brand" @click="handleNavigate($event, '/cliente')">
+  <header class="admin-site-header">
+    <a href="/admin" class="header-brand" @click="handleNavigate($event, '/admin')">
       <div class="brand-logo-shell">
         <img src="/img/logo.png" alt="Logo de Sweety Puppies" class="brand-logo">
       </div>
       <div class="brand-copy">
         <strong>Sweety Puppies</strong>
-        <small>Portal tierno para consentir a tus peluditos</small>
+        <small>Centro administrativo del negocio</small>
       </div>
     </a>
 
@@ -61,10 +63,10 @@ function handleNavigate(event: Event, href: string) {
 </template>
 
 <style scoped>
-.client-site-header {
+.admin-site-header {
   position: sticky;
   top: 12px;
-  z-index: 20;
+  z-index: 24;
   margin-bottom: 22px;
   padding: 16px 20px;
   display: grid;
@@ -78,31 +80,6 @@ function handleNavigate(event: Event, href: string) {
     0 20px 46px rgba(204, 115, 174, 0.16),
     0 8px 18px rgba(155, 214, 232, 0.08);
   backdrop-filter: blur(22px);
-  isolation: isolate;
-}
-
-.client-site-header::after {
-  content: '';
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: -10px;
-  height: 18px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 214, 235, 0.36) 0%, rgba(255, 214, 235, 0) 100%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.client-site-header::before {
-  content: '';
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(236, 165, 207, 0.75) 20%, rgba(160, 226, 241, 0.75) 80%, rgba(255, 255, 255, 0) 100%);
-  pointer-events: none;
 }
 
 .header-brand {
@@ -165,12 +142,7 @@ function handleNavigate(event: Event, href: string) {
   font-size: 0.92rem;
   border: 1px solid rgba(243, 203, 228, 0.9);
   box-shadow: 0 10px 22px rgba(219, 126, 183, 0.1);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .header-nav-link:hover,
@@ -179,13 +151,10 @@ function handleNavigate(event: Event, href: string) {
   box-shadow: 0 16px 28px rgba(233, 90, 219, 0.24);
   background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
   color: #fff;
-  border-color: rgba(193, 0, 143, 0.9);
 }
 
 .header-actions {
   display: flex;
-  align-items: center;
-  gap: 12px;
   justify-content: flex-end;
 }
 
@@ -197,35 +166,24 @@ function handleNavigate(event: Event, href: string) {
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-}
-
-.header-logout {
   background: linear-gradient(135deg, #2db9c9 0%, #60d7df 100%);
   color: #fff;
   box-shadow: 0 14px 26px rgba(45, 185, 201, 0.26);
 }
 
-.header-logout:hover {
-  transform: translateY(-2px);
-}
-
 @media (max-width: 1180px) {
-  .client-site-header {
+  .admin-site-header {
     grid-template-columns: 1fr;
   }
 
-  .header-nav {
-    justify-content: flex-start;
-  }
-
+  .header-nav,
   .header-actions {
     justify-content: flex-start;
-    flex-wrap: wrap;
   }
 }
 
 @media (max-width: 720px) {
-  .client-site-header {
+  .admin-site-header {
     padding: 18px;
     border-radius: 24px;
   }

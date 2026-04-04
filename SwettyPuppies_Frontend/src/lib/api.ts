@@ -48,6 +48,25 @@ export async function apiPatch<T>(url: string, payload: unknown): Promise<T> {
   return parseApiResponse<T>(response, 'Error al guardar la informacion')
 }
 
+export async function apiPost<T>(url: string, payload: unknown): Promise<T> {
+  const session = getSession()
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(session
+        ? {
+            Authorization: `Bearer ${session.token}`,
+          }
+        : {}),
+    },
+    body: JSON.stringify(payload),
+  })
+
+  return parseApiResponse<T>(response, 'Error al enviar la informacion')
+}
+
 export async function apiDelete<T>(url: string): Promise<T> {
   const session = getSession()
 

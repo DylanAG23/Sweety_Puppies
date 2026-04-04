@@ -1,6 +1,10 @@
 class SessionManager {
   constructor() {
     this.sessionKey = 'sweetyPuppiesSession';
+    this.sessionRequestKey = 'sweetyPuppiesSessionRequest';
+    this.sessionResponseKey = 'sweetyPuppiesSessionResponse';
+    this.sessionStorageRef = window.sessionStorage;
+    this.legacyStorageRef = window.localStorage;
     this.adminRoutes = new Set([
       '/admin',
       '/index.html',
@@ -17,6 +21,34 @@ class SessionManager {
       '/reportes',
       '/reportes.html'
     ]);
+
+    window.addEventListener('storage', (event) => {
+      if (event.key !== this.sessionRequestKey || !event.newValue) {
+        return;
+      }
+
+      const session = this.getSessionSnapshot();
+      if (!session) {
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(event.newValue);
+        if (!payload?.requestId) {
+          return;
+        }
+
+        this.legacyStorageRef.setItem(
+          this.sessionResponseKey,
+          JSON.stringify({
+            requestId: payload.requestId,
+            sessionData: session
+          })
+        );
+      } catch (error) {
+        console.error('No se pudo compartir la sesion entre pestanas:', error);
+      }
+    });
   }
 
   setSession(token, userData) {
@@ -26,12 +58,14 @@ class SessionManager {
       timestamp: Date.now()
     };
 
-    localStorage.setItem(this.sessionKey, JSON.stringify(sessionData));
+    this.sessionStorageRef.setItem(this.sessionKey, JSON.stringify(sessionData));
+    this.legacyStorageRef.removeItem(this.sessionKey);
   }
 
   getSessionData() {
-    const sessionData = localStorage.getItem(this.sessionKey);
+    const sessionData = this.sessionStorageRef.getItem(this.sessionKey);
     if (!sessionData) {
+      this.legacyStorageRef.removeItem(this.sessionKey);
       return null;
     }
 
@@ -59,8 +93,30 @@ class SessionManager {
     return true;
   }
 
+  getSessionSnapshot() {
+    const sessionData = this.sessionStorageRef.getItem(this.sessionKey);
+    if (!sessionData) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(sessionData);
+      const expirationTime = 24 * 60 * 60 * 1000;
+      if (Date.now() - parsed.timestamp > expirationTime) {
+        this.clearSession();
+        return null;
+      }
+
+      return parsed;
+    } catch (error) {
+      this.clearSession();
+      return null;
+    }
+  }
+
   clearSession() {
-    localStorage.removeItem(this.sessionKey);
+    this.sessionStorageRef.removeItem(this.sessionKey);
+    this.legacyStorageRef.removeItem(this.sessionKey);
   }
 
   getHomeByRole(role) {

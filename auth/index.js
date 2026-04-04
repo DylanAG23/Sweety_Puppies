@@ -3,6 +3,7 @@ const { verifyRegistrationCode } = require('./application/useCases/verifyRegistr
 const { loginUser } = require('./application/useCases/loginUser');
 const { requestPasswordRecovery } = require('./application/useCases/requestPasswordRecovery');
 const { getClientHome } = require('./application/useCases/getClientHome');
+const { getAdminHome } = require('./application/useCases/getAdminHome');
 const { getClientProfile } = require('./application/useCases/getClientProfile');
 const { updateClientProfile } = require('./application/useCases/updateClientProfile');
 const { createAuthController } = require('./infrastructure/http/authController');
@@ -29,6 +30,7 @@ function createAuthModule() {
     loginUser: (payload) => loginUser(dependencies, payload),
     requestPasswordRecovery: (payload) => requestPasswordRecovery(dependencies, payload),
     getClientHome: (sessionUser) => getClientHome(dependencies, sessionUser),
+    getAdminHome: (sessionUser) => getAdminHome(dependencies, sessionUser),
     getClientProfile: (sessionUser) => getClientProfile(dependencies, sessionUser),
     updateClientProfile: (sessionUser, payload) => updateClientProfile(dependencies, sessionUser, payload)
   };

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { apiDelete, apiForm, apiGet, apiPatch } from '@/lib/api'
+import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
 
@@ -133,6 +134,7 @@ onMounted(async () => {
 
   const session = requireRole('cliente')
   if (!session) {
+    loading.value = false
     return
   }
 
@@ -490,6 +492,10 @@ function formatDateTime(value: string | null) {
     minute: '2-digit',
   }).format(date)
 }
+
+function goTo(path: string) {
+  navigateTo(path)
+}
 </script>
 
 <template>
@@ -503,7 +509,7 @@ function formatDateTime(value: string | null) {
       <h1>No pudimos abrir Mis Mascotas</h1>
       <p>{{ error }}</p>
       <div class="pets-actions-row">
-        <a href="/cliente" class="btn-secundario">Ir a inicio</a>
+        <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Ir a inicio</a>
         <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
       </div>
     </section>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { apiGet, apiPatch } from '@/lib/api'
+import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
 
@@ -42,6 +43,7 @@ onMounted(async () => {
 
   const session = requireRole('cliente')
   if (!session) {
+    loading.value = false
     return
   }
 
@@ -82,6 +84,10 @@ async function saveProfile() {
     saving.value = false
   }
 }
+
+function goTo(path: string) {
+  navigateTo(path)
+}
 </script>
 
 <template>
@@ -95,7 +101,7 @@ async function saveProfile() {
       <h1>No pudimos abrir tu perfil</h1>
       <p>{{ error }}</p>
       <div class="profile-actions">
-        <a href="/cliente" class="btn-secundario">Ir a inicio</a>
+        <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Ir a inicio</a>
         <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
       </div>
     </section>
@@ -170,7 +176,7 @@ async function saveProfile() {
             <p v-if="successMessage" class="feedback success">{{ successMessage }}</p>
 
             <div class="profile-actions">
-              <a href="/cliente" class="btn-secundario">Inicio</a>
+              <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Inicio</a>
               <button type="submit" class="btn-enviar" :disabled="saving">
                 {{ saving ? 'Guardando...' : 'Guardar cambios' }}
               </button>

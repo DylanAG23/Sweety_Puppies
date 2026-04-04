@@ -159,8 +159,8 @@ class PostgresAuthRepository {
           u.rol::text AS rol,
           u.activo,
           c.id AS cliente_id,
-          c.nombre,
-          c.apellido,
+          COALESCE(c.nombre, a.nombre, '') AS nombre,
+          COALESCE(c.apellido, a.apellido, '') AS apellido,
           a.id AS administrador_id
         FROM usuarios u
         LEFT JOIN LATERAL (
@@ -172,7 +172,7 @@ class PostgresAuthRepository {
           LIMIT 1
         ) c ON true
         LEFT JOIN LATERAL (
-          SELECT id
+          SELECT id, nombre, apellido
           FROM administradores
           WHERE usuario_id = u.id
             AND activo = true
@@ -248,6 +248,51 @@ class PostgresAuthRepository {
 
   async findClientProfileByUserId(userId) {
     return this.resolveClientProfileForSession({ userId });
+  }
+
+  async resolveAdminProfileForSession({ userId, preferredAdminId = null }) {
+    const result = await client.query(
+      `
+        SELECT
+          a.id AS administrador_id,
+          a.nombre,
+          a.apellido,
+          a.telefono,
+          u.email
+        FROM administradores a
+        INNER JOIN usuarios u ON u.id = a.usuario_id
+        WHERE a.usuario_id = $1
+          AND a.activo = true
+          AND ($2::uuid IS NULL OR a.id = $2::uuid)
+        ORDER BY
+          CASE
+            WHEN $2::uuid IS NOT NULL AND a.id = $2::uuid THEN 0
+            ELSE 1
+          END,
+          a.created_at ASC,
+          a.id ASC
+        LIMIT 1
+      `,
+      [userId, preferredAdminId]
+    );
+
+    if (result.rowCount > 0) {
+      const row = result.rows[0];
+
+      return {
+        administradorId: row.administrador_id,
+        nombre: row.nombre,
+        apellido: row.apellido,
+        telefono: row.telefono,
+        email: row.email
+      };
+    }
+
+    if (!preferredAdminId) {
+      return null;
+    }
+
+    return this.resolveAdminProfileForSession({ userId });
   }
 
   async updateClientProfileByUserId(userId, { telefono, direccion, preferredClientId = null }) {
@@ -420,6 +465,126 @@ class PostgresAuthRepository {
       mascotasCount: petsResult.rows[0]?.total ?? 0,
       nextAppointment: nextAppointmentResult.rows[0] || null,
       lastService: latestServiceResult.rows[0] || null
+    };
+  }
+
+  async findAdminSummary() {
+    const [
+      citasHoyResult,
+      citasPendientesResult,
+      mascotasResult,
+      clientesResult,
+      serviciosMesResult,
+      bloqueosResult,
+      agendaHoyResult
+    ] = await Promise.all([
+      client.query(
+        `
+          SELECT COUNT(*)::int AS total
+          FROM citas
+          WHERE fecha = CURRENT_DATE
+            AND activo = true
+            AND estado::text IN ('pendiente', 'confirmada', 'en_atencion')
+        `
+      ),
+      client.query(
+        `
+          SELECT COUNT(*)::int AS total
+          FROM citas
+          WHERE activo = true
+            AND estado::text = 'pendiente'
+        `
+      ),
+      client.query(
+        `
+          SELECT COUNT(*)::int AS total
+          FROM mascotas
+          WHERE activo = true
+        `
+      ),
+      client.query(
+        `
+          SELECT COUNT(*)::int AS total
+          FROM clientes
+          WHERE activo = true
+        `
+      ),
+      client.query(
+        `
+          SELECT COUNT(*)::int AS total
+          FROM historial_servicios
+          WHERE date_trunc('month', fecha_servicio) = date_trunc('month', CURRENT_DATE)
+        `
+      ),
+      client.query(
+        `
+          SELECT
+            COUNT(*)::int AS total,
+            COALESCE(
+              json_agg(
+                json_build_object(
+                  'id', id,
+                  'fecha', fecha,
+                  'horaInicio', hora_inicio,
+                  'horaFin', hora_fin,
+                  'motivo', motivo
+                )
+                ORDER BY fecha ASC, hora_inicio ASC
+              ) FILTER (WHERE id IS NOT NULL),
+              '[]'::json
+            ) AS proximos
+          FROM (
+            SELECT id, fecha, hora_inicio, hora_fin, motivo
+            FROM bloqueos_agenda
+            WHERE activo = true
+              AND fecha >= CURRENT_DATE
+            ORDER BY fecha ASC, hora_inicio ASC NULLS FIRST
+            LIMIT 4
+          ) bloques
+        `
+      ),
+      client.query(
+        `
+          SELECT
+            c.id,
+            c.fecha,
+            c.hora_inicio,
+            c.estado::text AS estado,
+            CONCAT_WS(' ', cl.nombre, cl.apellido) AS cliente_nombre,
+            m.nombre AS mascota_nombre,
+            s.nombre AS servicio_nombre
+          FROM citas c
+          INNER JOIN clientes cl ON cl.id = c.cliente_id
+          LEFT JOIN mascotas m ON m.id = c.mascota_id
+          LEFT JOIN servicios s ON s.id = c.servicio_id
+          WHERE c.fecha = CURRENT_DATE
+            AND c.activo = true
+            AND c.estado::text IN ('pendiente', 'confirmada', 'en_atencion')
+          ORDER BY c.hora_inicio ASC
+          LIMIT 5
+        `
+      )
+    ]);
+
+    return {
+      citasHoy: citasHoyResult.rows[0]?.total ?? 0,
+      citasPendientes: citasPendientesResult.rows[0]?.total ?? 0,
+      mascotasRegistradas: mascotasResult.rows[0]?.total ?? 0,
+      clientesRegistrados: clientesResult.rows[0]?.total ?? 0,
+      serviciosMes: serviciosMesResult.rows[0]?.total ?? 0,
+      bloqueosProximos: {
+        total: bloqueosResult.rows[0]?.total ?? 0,
+        items: bloqueosResult.rows[0]?.proximos ?? []
+      },
+      agendaHoy: agendaHoyResult.rows.map((row) => ({
+        id: row.id,
+        fecha: row.fecha,
+        horaInicio: row.hora_inicio,
+        estado: row.estado,
+        clienteNombre: row.cliente_nombre,
+        mascotaNombre: row.mascota_nombre,
+        servicioNombre: row.servicio_nombre
+      }))
     };
   }
 

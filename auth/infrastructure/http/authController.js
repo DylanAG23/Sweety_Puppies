@@ -45,6 +45,15 @@ function createAuthController(useCases) {
       }
     },
 
+    getAdminHome: async (req, res) => {
+      try {
+        const result = await useCases.getAdminHome(req.user);
+        res.status(200).json({ success: true, ...result });
+      } catch (error) {
+        handleError(res, error, 'Error al cargar el panel administrativo');
+      }
+    },
+
     getClientProfile: async (req, res) => {
       try {
         const result = await useCases.getClientProfile(req.user);
