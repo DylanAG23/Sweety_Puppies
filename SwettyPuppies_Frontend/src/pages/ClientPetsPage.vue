@@ -85,10 +85,21 @@ const modalMode = ref<'create' | 'edit'>('create')
 const isCreateFormExpanded = ref(false)
 const isEditFormOpen = ref(false)
 const isDetailOpen = ref(false)
+const isConfirmDialogOpen = ref(false)
 const mascotas = ref<Pet[]>([])
 const selectedPet = ref<Pet | null>(null)
 const previewMascotaUrl = ref('')
 const previewCarnetUrl = ref('')
+const confirmDialog = reactive({
+  mode: 'status' as 'status' | 'delete',
+  petId: '',
+  petName: '',
+  title: '',
+  message: '',
+  confirmLabel: '',
+  tone: 'soft' as 'soft' | 'danger',
+  nextActiveState: false,
+})
 
 const form = reactive({
   id: '',
@@ -441,9 +452,78 @@ async function deletePet(pet: Pet) {
   }
 }
 
+function requestTogglePetStatus(pet: Pet) {
+  const nextActiveState = !pet.activo
+  confirmDialog.mode = 'status'
+  confirmDialog.petId = pet.id
+  confirmDialog.petName = pet.nombre
+  confirmDialog.title = nextActiveState ? 'Activar mascota' : 'Desactivar mascota'
+  confirmDialog.message = nextActiveState
+    ? `¿Deseas volver a activar a ${pet.nombre} para que aparezca disponible en tu portal?`
+    : `¿Deseas desactivar a ${pet.nombre}? Seguirá guardada, pero quedará inactiva hasta que la vuelvas a activar.`
+  confirmDialog.confirmLabel = nextActiveState ? 'Sí, activar' : 'Sí, desactivar'
+  confirmDialog.tone = 'soft'
+  confirmDialog.nextActiveState = nextActiveState
+  isConfirmDialogOpen.value = true
+}
+
+function requestDeletePet(pet: Pet) {
+  confirmDialog.mode = 'delete'
+  confirmDialog.petId = pet.id
+  confirmDialog.petName = pet.nombre
+  confirmDialog.title = 'Eliminar mascota'
+  confirmDialog.message = `¿Estas segura de eliminar a ${pet.nombre}? Esta accion no se puede deshacer.`
+  confirmDialog.confirmLabel = 'Sí, eliminar'
+  confirmDialog.tone = 'danger'
+  confirmDialog.nextActiveState = false
+  isConfirmDialogOpen.value = true
+}
+
+function closeConfirmDialog() {
+  isConfirmDialogOpen.value = false
+}
+
+async function confirmDialogAction() {
+  const pet = mascotas.value.find((item) => item.id === confirmDialog.petId) || selectedPet.value
+  if (!pet) {
+    closeConfirmDialog()
+    return
+  }
+
+  if (confirmDialog.mode === 'delete') {
+    const originalConfirm = window.confirm
+    window.confirm = () => true
+    try {
+      await deletePet(pet)
+    } finally {
+      window.confirm = originalConfirm
+    }
+  } else {
+    const originalConfirm = window.confirm
+    window.confirm = () => true
+    try {
+      await togglePetStatus(pet)
+      if (selectedPet.value?.id === pet.id) {
+        const updatedPet = mascotas.value.find((item) => item.id === pet.id)
+        if (updatedPet) {
+          selectedPet.value = updatedPet
+        }
+      }
+    } finally {
+      window.confirm = originalConfirm
+    }
+  }
+
+  closeConfirmDialog()
+}
+
 function formatLabel(value: string | null) {
   if (!value) {
     return 'No registrado'
+  }
+
+  if (value === 'pequeno') {
+    return 'Pequeño'
   }
 
   return value.charAt(0).toUpperCase() + value.slice(1)
@@ -769,7 +849,7 @@ function goTo(path: string) {
                 :disabled="removingId === pet.id"
                 role="switch"
                 :aria-checked="pet.activo"
-                @click.stop="togglePetStatus(pet)"
+                @click.stop="requestTogglePetStatus(pet)"
               >
                 <span class="status-switch-track">
                   <span class="status-switch-thumb"></span>
@@ -780,7 +860,7 @@ function goTo(path: string) {
                 type="button"
                 class="btn-delete"
                 :disabled="deletingId === pet.id"
-                @click.stop="deletePet(pet)"
+                @click.stop="requestDeletePet(pet)"
               >
                 {{ deletingId === pet.id ? 'Eliminando...' : 'Eliminar' }}
               </button>
@@ -1029,7 +1109,7 @@ function goTo(path: string) {
             type="button"
             class="btn-delete"
             :disabled="deletingId === selectedPet.id"
-            @click="deletePet(selectedPet)"
+            @click="requestDeletePet(selectedPet)"
           >
             {{ deletingId === selectedPet.id ? 'Eliminando...' : 'Eliminar mascota' }}
           </button>
@@ -1040,6 +1120,32 @@ function goTo(path: string) {
             @click="closeDetailModal(); openEditModal(selectedPet)"
           >
             Editar mascota
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div v-if="isConfirmDialogOpen" class="modal-overlay confirm-overlay" @click.self="closeConfirmDialog">
+      <section class="pets-shell confirm-card">
+        <div class="confirm-icon" :class="confirmDialog.tone">
+          {{ confirmDialog.mode === 'delete' ? '!' : '?' }}
+        </div>
+        <span class="pets-pill">{{ confirmDialog.mode === 'delete' ? 'Confirmacion delicada' : 'Confirmacion' }}</span>
+        <h2>{{ confirmDialog.title }}</h2>
+        <p>{{ confirmDialog.message }}</p>
+        <div class="pets-actions-row confirm-actions">
+          <button type="button" class="btn-secundario" @click="closeConfirmDialog">Cancelar</button>
+          <button
+            type="button"
+            :class="confirmDialog.tone === 'danger' ? 'btn-delete' : 'btn-enviar'"
+            :disabled="removingId === confirmDialog.petId || deletingId === confirmDialog.petId"
+            @click="confirmDialogAction"
+          >
+            {{
+              removingId === confirmDialog.petId || deletingId === confirmDialog.petId
+                ? 'Guardando...'
+                : confirmDialog.confirmLabel
+            }}
           </button>
         </div>
       </section>
@@ -1347,6 +1453,50 @@ function goTo(path: string) {
   max-height: calc(100vh - 40px);
   overflow: auto;
   padding: 24px;
+}
+
+.confirm-overlay {
+  z-index: 140;
+}
+
+.confirm-card {
+  width: min(520px, 100%);
+  padding: 32px;
+  text-align: center;
+}
+
+.confirm-card h2 {
+  margin: 16px 0 12px;
+  color: #8f176e;
+}
+
+.confirm-card p {
+  color: #6e5064;
+  line-height: 1.75;
+}
+
+.confirm-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #8f176e;
+  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
+  box-shadow: 0 18px 30px rgba(233, 90, 219, 0.14);
+}
+
+.confirm-icon.danger {
+  color: #c23c7b;
+  background: linear-gradient(135deg, #ffedf5 0%, #ffdce8 100%);
+}
+
+.confirm-actions {
+  justify-content: center;
+  margin-top: 22px;
 }
 
 .form-modal {

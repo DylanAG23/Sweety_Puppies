@@ -198,13 +198,18 @@ router.post(
       }
 
       const fotoEstadoActual = req.files?.fotoEstadoActual?.[0];
+      const uploadWarnings = [];
       const fotoEstadoActualData = fotoEstadoActual
-        ? await uploadBufferToSupabase({
-            buffer: fotoEstadoActual.buffer,
-            originalName: fotoEstadoActual.originalname,
-            mimeType: fotoEstadoActual.mimetype,
-            folder: `clientes/${clientContext.clienteId}/citas/estado-actual`
-          })
+        ? await uploadOptionalAppointmentAsset(
+            {
+              buffer: fotoEstadoActual.buffer,
+              originalName: fotoEstadoActual.originalname,
+              mimeType: fotoEstadoActual.mimetype,
+              folder: `clientes/${clientContext.clienteId}/citas/estado-actual`
+            },
+            'la foto del estado actual',
+            uploadWarnings
+          )
         : null;
 
       await client.query('BEGIN');
@@ -301,7 +306,9 @@ router.post(
 
       res.status(201).json({
         success: true,
-        message: 'Cita agendada correctamente y quedo pendiente por confirmacion',
+        message: uploadWarnings.length
+          ? `Cita agendada correctamente y quedo pendiente por confirmacion. ${uploadWarnings.join(' ')}`
+          : 'Cita agendada correctamente y quedo pendiente por confirmacion',
         cita: {
           ...cita,
           mascotaNombre: quote.mascota.nombre,
@@ -309,7 +316,8 @@ router.post(
           precioCalculado: quote.totalEstimado,
           adicionales: quote.adicionales,
           fotoEstadoActualUrl: fotoEstadoActualData?.publicUrl || null
-        }
+        },
+        warnings: uploadWarnings
       });
     } catch (error) {
       await client.query('ROLLBACK').catch(() => {});
@@ -1457,6 +1465,16 @@ function normalizeOptionalText(value) {
 
   const normalized = String(value).trim();
   return normalized || null;
+}
+
+async function uploadOptionalAppointmentAsset(config, label, warnings = []) {
+  try {
+    return await uploadBufferToSupabase(config);
+  } catch (error) {
+    console.error(`No se pudo subir ${label}:`, error);
+    warnings.push(`No se pudo subir ${label} por un problema temporal de conexion.`);
+    return null;
+  }
 }
 
 function normalizeBasicValue(value) {

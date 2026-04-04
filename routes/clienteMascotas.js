@@ -138,23 +138,32 @@ router.post(
       const files = req.files || {};
       const fotoMascota = files.fotoMascota?.[0];
       const fotoCarnet = files.fotoCarnet?.[0];
+      const uploadWarnings = [];
 
       const fotoMascotaData = fotoMascota
-        ? await uploadBufferToSupabase({
-            buffer: fotoMascota.buffer,
-            originalName: fotoMascota.originalname,
-            mimeType: fotoMascota.mimetype,
-            folder: `clientes/${clientContext.clienteId}/mascotas/perfil`
-          })
+        ? await uploadOptionalAsset(
+            {
+              buffer: fotoMascota.buffer,
+              originalName: fotoMascota.originalname,
+              mimeType: fotoMascota.mimetype,
+              folder: `clientes/${clientContext.clienteId}/mascotas/perfil`
+            },
+            'la foto de perfil de la mascota',
+            uploadWarnings
+          )
         : null;
 
       const fotoCarnetData = fotoCarnet
-        ? await uploadBufferToSupabase({
-            buffer: fotoCarnet.buffer,
-            originalName: fotoCarnet.originalname,
-            mimeType: fotoCarnet.mimetype,
-            folder: `clientes/${clientContext.clienteId}/mascotas/carnets`
-          })
+        ? await uploadOptionalAsset(
+            {
+              buffer: fotoCarnet.buffer,
+              originalName: fotoCarnet.originalname,
+              mimeType: fotoCarnet.mimetype,
+              folder: `clientes/${clientContext.clienteId}/mascotas/carnets`
+            },
+            'la foto del carnet de vacunacion',
+            uploadWarnings
+          )
         : null;
 
       const result = await client.query(
@@ -228,8 +237,11 @@ router.post(
 
       res.status(201).json({
         success: true,
-        message: 'Mascota registrada correctamente',
-        mascota
+        message: uploadWarnings.length
+          ? `Mascota registrada correctamente. ${uploadWarnings.join(' ')}`
+          : 'Mascota registrada correctamente',
+        mascota,
+        warnings: uploadWarnings
       });
     } catch (error) {
       handleError(res, error, 'Error al registrar la mascota');
@@ -268,30 +280,45 @@ router.patch(
       const files = req.files || {};
       const fotoMascota = files.fotoMascota?.[0];
       const fotoCarnet = files.fotoCarnet?.[0];
+      const uploadWarnings = [];
 
       let fotoMascotaUrl = existingPet.foto_mascota_url;
       let fotoCarnetUrl = existingPet.foto_carnet_vacunacion_url;
 
       if (fotoMascota) {
-        const uploadedPhoto = await uploadBufferToSupabase({
-          buffer: fotoMascota.buffer,
-          originalName: fotoMascota.originalname,
-          mimeType: fotoMascota.mimetype,
-          folder: `clientes/${clientContext.clienteId}/mascotas/perfil`
-        });
-        fotoMascotaUrl = uploadedPhoto.publicUrl;
-        safeDeletePublicUrl(existingPet.foto_mascota_url);
+        const uploadedPhoto = await uploadOptionalAsset(
+          {
+            buffer: fotoMascota.buffer,
+            originalName: fotoMascota.originalname,
+            mimeType: fotoMascota.mimetype,
+            folder: `clientes/${clientContext.clienteId}/mascotas/perfil`
+          },
+          'la foto de perfil de la mascota',
+          uploadWarnings
+        );
+
+        if (uploadedPhoto) {
+          fotoMascotaUrl = uploadedPhoto.publicUrl;
+          safeDeletePublicUrl(existingPet.foto_mascota_url);
+        }
       }
 
       if (fotoCarnet) {
-        const uploadedCard = await uploadBufferToSupabase({
-          buffer: fotoCarnet.buffer,
-          originalName: fotoCarnet.originalname,
-          mimeType: fotoCarnet.mimetype,
-          folder: `clientes/${clientContext.clienteId}/mascotas/carnets`
-        });
-        fotoCarnetUrl = uploadedCard.publicUrl;
-        safeDeletePublicUrl(existingPet.foto_carnet_vacunacion_url);
+        const uploadedCard = await uploadOptionalAsset(
+          {
+            buffer: fotoCarnet.buffer,
+            originalName: fotoCarnet.originalname,
+            mimeType: fotoCarnet.mimetype,
+            folder: `clientes/${clientContext.clienteId}/mascotas/carnets`
+          },
+          'la foto del carnet de vacunacion',
+          uploadWarnings
+        );
+
+        if (uploadedCard) {
+          fotoCarnetUrl = uploadedCard.publicUrl;
+          safeDeletePublicUrl(existingPet.foto_carnet_vacunacion_url);
+        }
       }
 
       await client.query(
@@ -346,8 +373,11 @@ router.patch(
 
       res.json({
         success: true,
-        message: 'Mascota actualizada correctamente',
-        mascota
+        message: uploadWarnings.length
+          ? `Mascota actualizada correctamente. ${uploadWarnings.join(' ')}`
+          : 'Mascota actualizada correctamente',
+        mascota,
+        warnings: uploadWarnings
       });
     } catch (error) {
       handleError(res, error, 'Error al actualizar la mascota');
@@ -449,7 +479,7 @@ function normalizePetPayload(body, fallback = null) {
   return {
     nombre: String(getValue('nombre')).trim(),
     raza: normalizeOptionalText(getValue('raza', 'raza', null)),
-    tamano: normalizeEnumValue(getValue('tamano'), tamanoAllowedValues),
+    tamano: normalizeDatabasePetSize(normalizeEnumValue(getValue('tamano'), tamanoAllowedValues)),
     sexo: normalizeEnumValue(getValue('sexo', 'sexo', null), sexoAllowedValues),
     edad: Number(getValue('edad')),
     tipoPelaje: normalizeEnumValue(getValue(['tipo_pelaje', 'tipoPelaje'], 'tipo_pelaje'), tipoPelajeAllowedValues),
@@ -542,6 +572,24 @@ function normalizeEnumValue(value, allowedValues) {
   return allowedValues.get(normalized) || null;
 }
 
+function normalizeDatabasePetSize(value) {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+
+  if (normalized === 'pequeno') {
+    return 'pequeno';
+  }
+
+  return normalized;
+}
+
 async function getClientContext(user) {
   const result = await client.query(
     `
@@ -610,6 +658,16 @@ async function findOwnedPet(petId, clienteIds, onlyActive = true) {
   );
 
   return result.rows[0] || null;
+}
+
+async function uploadOptionalAsset(config, label, warnings = []) {
+  try {
+    return await uploadBufferToSupabase(config);
+  } catch (error) {
+    console.error(`No se pudo subir ${label}:`, error);
+    warnings.push(`No se pudo subir ${label} por un problema temporal de conexion.`);
+    return null;
+  }
 }
 
 async function safeDeletePublicUrl(publicUrl) {
