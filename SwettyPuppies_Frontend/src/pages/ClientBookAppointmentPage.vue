@@ -70,6 +70,7 @@ type FormOptionsResponse = {
   mascotas: PetOption[]
   servicios: ServiceOption[]
   serviciosAdicionales: AdditionalOption[]
+  fechaMinimaAgenda: string
 }
 
 type CreateAppointmentResponse = {
@@ -90,7 +91,6 @@ type CreateAppointmentResponse = {
 }
 
 const currentPath = window.location.pathname.toLowerCase()
-const todayDate = new Date().toISOString().split('T')[0]
 const fallbackPetImage = '/img/mascota1.png'
 
 const pelajeStateOptions = [
@@ -116,6 +116,7 @@ const previewEstadoActualUrl = ref('')
 const mascotaOptions = ref<PetOption[]>([])
 const serviceOptions = ref<ServiceOption[]>([])
 const additionalOptions = ref<AdditionalOption[]>([])
+const minBookingDate = ref(getTodayDateString())
 const quote = ref<QuoteResponse['quote'] | null>(null)
 const slots = ref<AvailabilityResponse['slots']>([])
 const createdAppointment = ref<CreateAppointmentResponse['cita'] | null>(null)
@@ -153,6 +154,13 @@ const summaryItems = computed(() => {
   ]
 })
 
+const dateFieldHint = computed(() => {
+  const minDateLabel = formatDateLabel(minBookingDate.value)
+  return minBookingDate.value === getTodayDateString()
+    ? 'Puedes reservar desde hoy en adelante. Los domingos se mantienen cerrados.'
+    : `La jornada de hoy ya cerró. Puedes reservar desde ${minDateLabel}. Los domingos se mantienen cerrados.`
+})
+
 let quoteRequestId = 0
 let availabilityRequestId = 0
 
@@ -170,6 +178,7 @@ onMounted(async () => {
     mascotaOptions.value = options.mascotas
     serviceOptions.value = options.servicios
     additionalOptions.value = options.serviciosAdicionales
+    minBookingDate.value = options.fechaMinimaAgenda || getTodayDateString()
   } catch (caughtError) {
     error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar el modulo de citas'
   } finally {
@@ -205,6 +214,12 @@ watch(
     availabilityMessage.value = ''
 
     if (!form.fecha || !quote.value) {
+      return
+    }
+
+    const selectionError = getDateSelectionMessage(form.fecha)
+    if (selectionError) {
+      availabilityMessage.value = selectionError
       return
     }
 
@@ -311,6 +326,12 @@ async function submitAppointment() {
     return
   }
 
+  const selectionError = getDateSelectionMessage(form.fecha)
+  if (selectionError) {
+    error.value = selectionError
+    return
+  }
+
   if (!form.horaInicio) {
     error.value = 'Debes elegir una hora disponible'
     return
@@ -399,6 +420,46 @@ function formatTime(value: string | null) {
   }
 
   return String(value).slice(0, 5)
+}
+
+function getDateSelectionMessage(value: string) {
+  if (!value) {
+    return ''
+  }
+
+  if (value < minBookingDate.value) {
+    return minBookingDate.value === getTodayDateString()
+      ? 'Solo puedes agendar citas desde hoy en adelante.'
+      : `La agenda de hoy ya cerró. Las nuevas citas deben programarse desde ${formatDateLabel(minBookingDate.value)}.`
+  }
+
+  if (isSunday(value)) {
+    return 'Los domingos Sweety Puppies permanece cerrado.'
+  }
+
+  return ''
+}
+
+function isSunday(value: string) {
+  const date = new Date(`${value}T00:00:00`)
+  return !Number.isNaN(date.getTime()) && date.getDay() === 0
+}
+
+function getTodayDateString() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+function formatDateLabel(value: string) {
+  const date = new Date(`${value}T00:00:00`)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'long',
+  }).format(date)
 }
 </script>
 
@@ -572,7 +633,8 @@ function formatTime(value: string | null) {
               <div class="field-grid compact-grid">
                 <label class="field-block">
                   <span>Fecha *</span>
-                  <input v-model="form.fecha" type="date" :min="todayDate">
+                  <input v-model="form.fecha" type="date" :min="minBookingDate">
+                  <small class="field-help">{{ dateFieldHint }}</small>
                 </label>
               </div>
 
@@ -785,6 +847,13 @@ function formatTime(value: string | null) {
   margin-bottom: 8px;
   color: #9c0076;
   font-weight: 700;
+}
+
+.field-help {
+  display: block;
+  margin-top: 8px;
+  color: #7a5f70;
+  line-height: 1.55;
 }
 
 .field-block input,

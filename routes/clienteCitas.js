@@ -113,17 +113,19 @@ router.use(authenticateToken, authorizeRoles('cliente'));
 router.get('/form-options', async (req, res) => {
   try {
     const clientContext = await getClientContext(req.user);
-    const [pets, services, additionals] = await Promise.all([
+    const [pets, services, additionals, fechaMinimaAgenda] = await Promise.all([
       getClientPets(clientContext.clienteIds),
       getActiveServices(),
-      getActiveAdditionalServices()
+      getActiveAdditionalServices(),
+      getEffectiveBookableStartDate()
     ]);
 
     res.json({
       success: true,
       mascotas: pets,
       servicios: services,
-      serviciosAdicionales: additionals
+      serviciosAdicionales: additionals,
+      fechaMinimaAgenda
     });
   } catch (error) {
     handleError(res, error, 'Error al cargar el formulario de citas');
@@ -667,10 +669,19 @@ async function buildAvailability(clientContext, rawPayload) {
     throw error;
   }
 
-  validateFutureDate(payload.fecha);
+  await validateBookableDate(payload.fecha);
 
   const quote = await buildAppointmentQuote(clientContext, payload);
   const horario = await getBusinessScheduleForDate(payload.fecha);
+  const dayName = getDayName(payload.fecha);
+
+  if (dayName === 'domingo') {
+    return {
+      fecha: payload.fecha,
+      slots: [],
+      message: 'Los domingos Sweety Puppies permanece cerrado'
+    };
+  }
 
   if (!horario || !horario.abierto) {
     return {
@@ -1332,10 +1343,10 @@ function minutesToTime(totalMinutes) {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
 }
 
-function validateFutureDate(fecha) {
+async function validateBookableDate(fecha) {
   const selectedDate = new Date(`${fecha}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const minDate = await getEffectiveBookableStartDate();
+  const minimumAllowedDate = new Date(`${minDate}T00:00:00`);
 
   if (Number.isNaN(selectedDate.getTime())) {
     const error = new Error('La fecha seleccionada no es valida');
@@ -1343,11 +1354,96 @@ function validateFutureDate(fecha) {
     throw error;
   }
 
-  if (selectedDate < today) {
-    const error = new Error('No puedes agendar citas en fechas pasadas');
+  if (selectedDate < minimumAllowedDate) {
+    const error = new Error(
+      minDate === getBusinessNow().date
+        ? 'Solo puedes agendar citas desde hoy en adelante'
+        : `La agenda de hoy ya cerro. Las nuevas citas deben programarse desde ${formatShortHumanDate(minDate)}`
+    );
     error.status = 400;
     throw error;
   }
+
+  if (getDayName(fecha) === 'domingo') {
+    const error = new Error('Los domingos Sweety Puppies permanece cerrado');
+    error.status = 400;
+    throw error;
+  }
+}
+
+async function getEffectiveBookableStartDate() {
+  const now = getBusinessNow();
+  const todaySchedule = await getBusinessScheduleForDate(now.date);
+
+  const shouldMoveToNextDay =
+    !todaySchedule ||
+    !todaySchedule.abierto ||
+    getDayName(now.date) === 'domingo' ||
+    now.totalMinutes >= timeToMinutes(todaySchedule.hora_cierre);
+
+  return findNextOperationalDate(shouldMoveToNextDay ? addDays(now.date, 1) : now.date);
+}
+
+async function findNextOperationalDate(startDate) {
+  let candidate = startDate;
+
+  for (let index = 0; index < 15; index += 1) {
+    const horario = await getBusinessScheduleForDate(candidate);
+    if (horario?.abierto && getDayName(candidate) !== 'domingo') {
+      return candidate;
+    }
+
+    candidate = addDays(candidate, 1);
+  }
+
+  return startDate;
+}
+
+function getBusinessNow() {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  });
+
+  const parts = Object.fromEntries(
+    formatter
+      .formatToParts(new Date())
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value])
+  );
+
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    totalMinutes: Number(parts.hour) * 60 + Number(parts.minute)
+  };
+}
+
+function addDays(dateValue, days) {
+  const date = new Date(`${dateValue}T00:00:00`);
+  date.setDate(date.getDate() + days);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function getDayName(fecha) {
+  const date = new Date(`${fecha}T00:00:00`);
+  return DAY_NAMES[date.getDay()];
+}
+
+function formatShortHumanDate(dateValue) {
+  const date = new Date(`${dateValue}T00:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return dateValue;
+  }
+
+  return new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'long'
+  }).format(date);
 }
 
 function dedupeIds(values) {

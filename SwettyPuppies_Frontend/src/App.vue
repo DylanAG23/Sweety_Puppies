@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getSession, hydrateSessionFromLiveTab } from './lib/session'
 import AuthPage from './pages/AuthPage.vue'
 import AdminHomePage from './pages/AdminHomePage.vue'
+import AdminAgendaPage from './pages/AdminAgendaPage.vue'
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage.vue'
 import ClientesPage from './pages/ClientesPage.vue'
 import MascotasPage from './pages/MascotasPage.vue'
@@ -31,7 +32,9 @@ const adminRoutes = new Set([
   '/admin/adicionales',
   '/admin/tarifas',
   '/admin/bloqueos',
+  '/admin/contenido',
   '/admin/galeria',
+  '/admin/reportes',
   '/admin/dashboard',
   '/clientes',
   '/clientes.html',
@@ -56,10 +59,11 @@ const routes = new Map<
   ['/login.html', { component: AuthPage }],
   ['/admin', { component: AdminHomePage }],
   ['/index.html', { component: AdminHomePage }],
-  ['/admin/agenda', { component: CitasPage }],
+  ['/admin/agenda', { component: AdminAgendaPage }],
   ['/admin/clientes', { component: ClientesPage }],
   ['/admin/mascotas', { component: MascotasPage }],
   ['/admin/servicios', { component: ServiciosPage }],
+  ['/admin/contenido', { component: ImagenesPage }],
   ['/admin/galeria', { component: ImagenesPage }],
   ['/admin/reportes', { component: ReportesPage }],
   [
@@ -92,16 +96,7 @@ const routes = new Map<
       },
     },
   ],
-  [
-    '/admin/bloqueos',
-    {
-      component: AdminPlaceholderPage,
-      props: {
-        title: 'Bloqueos de agenda',
-        description: 'Aqui podras crear, revisar y mantener fechas o franjas bloqueadas para la agenda del negocio.',
-      },
-    },
-  ],
+  ['/admin/bloqueos', { component: AdminAgendaPage, props: { initialSection: 'blocks' } }],
   [
     '/admin/dashboard',
     {

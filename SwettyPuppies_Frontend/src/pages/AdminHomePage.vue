@@ -149,16 +149,16 @@ const moduleCards = [
     badge: 'Bloqueos',
   },
   {
-    title: 'Galeria / Peluditos del mes',
-    description: 'Administra imagenes, promociones y contenido visual del portal.',
-    href: '/admin/galeria',
-    badge: 'Galeria',
+    title: 'Contenido del portal',
+    description: 'Aqui Sara podra publicar imagenes, anuncios y contenido que sera visible en el inicio de los clientes.',
+    href: '/admin/contenido',
+    badge: 'Contenido',
   },
   {
-    title: 'Dashboard',
-    description: 'Deja lista la base para metricas, indicadores y decisiones del negocio.',
-    href: '/admin/dashboard',
-    badge: 'Dashboard',
+    title: 'Reportes',
+    description: 'Aqui se concentrara la rentabilidad del negocio, ventas por dia y analisis operativo de Sweety Puppies.',
+    href: '/admin/reportes',
+    badge: 'Reportes',
   },
 ]
 

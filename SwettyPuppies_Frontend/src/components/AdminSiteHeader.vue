@@ -14,7 +14,8 @@ const navItems = [
   { label: 'Historial', href: '/admin/historial' },
   { label: 'Servicios', href: '/admin/servicios' },
   { label: 'Tarifas', href: '/admin/tarifas' },
-  { label: 'Galeria', href: '/admin/galeria' },
+  { label: 'Contenido', href: '/admin/contenido' },
+  { label: 'Reportes', href: '/admin/reportes' },
 ]
 
 function isActive(href: string) {

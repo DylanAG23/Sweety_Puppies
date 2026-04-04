@@ -616,14 +616,14 @@ footer {
   position: absolute;
   width: 60px;
   height: 60px;
-  background-image: url('../img/corazon.png'); /* Corregido: añadida carpeta img/ */
-  background-size: contain;
-  background-repeat: no-repeat;
+  border-radius: 26px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 192, 225, 0.94) 42%, rgba(233, 90, 219, 0.72) 100%);
+  box-shadow: 0 10px 24px rgba(233, 90, 219, 0.18);
   opacity: 0.8;
 }
 
 .heart:nth-child(odd) {
-  background-image: url('../img/corazon.png'); /* Corregido: añadida carpeta img/ */
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.92) 0%, rgba(212, 245, 255, 0.94) 42%, rgba(96, 215, 223, 0.72) 100%);
 }
 
 /* Animación para los corazones */
