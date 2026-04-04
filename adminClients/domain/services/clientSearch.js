@@ -1,0 +1,14 @@
+function normalizeSearchTerm(value) {
+  return String(value || '').trim();
+}
+
+function isUuidLike(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    String(value || '')
+  );
+}
+
+module.exports = {
+  normalizeSearchTerm,
+  isUuidLike
+};

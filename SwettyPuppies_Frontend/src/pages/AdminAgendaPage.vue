@@ -236,7 +236,7 @@ const dayStatusMessage = computed(() => {
     return agenda.value.cierreMotivo || 'Este dia aparece cerrado en la agenda.'
   }
 
-  return `Horario del negocio: ${formatTime(agenda.value.horario?.horaApertura)} a ${formatTime(agenda.value.horario?.horaCierre)}. Ultima cita sugerida: ${formatTime(agenda.value.horario?.ultimaCita)}.`
+  return `Horario del negocio: ${formatTime(agenda.value.horario?.horaApertura ?? null)} a ${formatTime(agenda.value.horario?.horaCierre ?? null)}. Ultima cita sugerida: ${formatTime(agenda.value.horario?.ultimaCita ?? null)}.`
 })
 
 const fullDayBlocks = computed(() => agenda.value?.bloqueos.filter((block) => block.esDiaCompleto) ?? [])
