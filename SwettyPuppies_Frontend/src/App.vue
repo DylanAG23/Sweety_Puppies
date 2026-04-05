@@ -4,6 +4,7 @@ import { getSession, hydrateSessionFromLiveTab } from './lib/session'
 import AuthPage from './pages/AuthPage.vue'
 import AdminHomePage from './pages/AdminHomePage.vue'
 import AdminAgendaPage from './pages/AdminAgendaPage.vue'
+import AdminManagementPage from './pages/AdminManagementPage.vue'
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage.vue'
 import ClientesPage from './pages/ClientesPage.vue'
 import MascotasPage from './pages/MascotasPage.vue'
@@ -28,6 +29,9 @@ const adminRoutes = new Set([
   '/admin/clientes',
   '/admin/mascotas',
   '/admin/historial',
+  '/admin/gestion',
+  '/admin/gestion/citas',
+  '/admin/gestion/servicios',
   '/admin/servicios',
   '/admin/adicionales',
   '/admin/tarifas',
@@ -62,6 +66,9 @@ const routes = new Map<
   ['/admin/agenda', { component: AdminAgendaPage }],
   ['/admin/clientes', { component: ClientesPage }],
   ['/admin/mascotas', { component: MascotasPage }],
+  ['/admin/gestion', { component: AdminManagementPage }],
+  ['/admin/gestion/citas', { component: AdminManagementPage, props: { initialTab: 'citas' } }],
+  ['/admin/gestion/servicios', { component: AdminManagementPage, props: { initialTab: 'servicios' } }],
   ['/admin/servicios', { component: ServiciosPage }],
   ['/admin/contenido', { component: ImagenesPage }],
   ['/admin/galeria', { component: ImagenesPage }],
@@ -69,10 +76,9 @@ const routes = new Map<
   [
     '/admin/historial',
     {
-      component: AdminPlaceholderPage,
+      component: AdminManagementPage,
       props: {
-        title: 'Historial de servicios',
-        description: 'Aqui quedara el modulo administrativo para revisar servicios terminados, observaciones y seguimiento interno.',
+        initialTab: 'servicios',
       },
     },
   ],

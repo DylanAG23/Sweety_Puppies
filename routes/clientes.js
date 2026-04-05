@@ -9,5 +9,6 @@ router.use(authenticateToken, authorizeRoles('administrador'));
 
 router.get('/', controller.listClients);
 router.get('/:id', controller.getClientDetail);
+router.patch('/:id', controller.updateClient);
 
 module.exports = router;

@@ -24,6 +24,7 @@ app.use('/api/cliente/mascotas', require('./routes/clienteMascotas'));
 app.use('/api/cliente/citas', require('./routes/clienteCitas'));
 app.use('/api/cliente/historial', require('./routes/clienteHistorial'));
 app.use('/api/admin/agenda', require('./routes/adminAgenda'));
+app.use('/api/admin/gestion', require('./routes/adminGestion'));
 app.use('/api/servicios', require('./routes/servicios'));
 app.use('/api/citas', require('./routes/citas'));
 app.use('/api/imagenes', require('./routes/imagenes'));
@@ -47,6 +48,9 @@ const appRoutes = [
   '/admin/clientes',
   '/admin/mascotas',
   '/admin/historial',
+  '/admin/gestion',
+  '/admin/gestion/citas',
+  '/admin/gestion/servicios',
   '/admin/servicios',
   '/admin/adicionales',
   '/admin/tarifas',

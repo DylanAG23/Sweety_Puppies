@@ -207,22 +207,40 @@ Ver detalle completo: ${reviewUrl}
 }
 
 async function sendAppointmentStatusEmail({ email, appointment, status, flowType = 'nueva' }) {
-  const isConfirmed = status === 'confirmada';
   const isReschedule = flowType === 'reprogramacion';
-  const statusTitle = isConfirmed
-    ? isReschedule
-      ? 'Sweety Puppies acepto y confirmo la reprogramacion de tu cita'
-      : 'Tu cita fue confirmada por Sweety Puppies'
-    : isReschedule
-      ? 'La reprogramacion de tu cita fue cancelada por Sweety Puppies'
-      : 'Tu cita fue cancelada por Sweety Puppies';
-  const statusCopy = isConfirmed
-    ? isReschedule
-      ? 'La administracion de Sweety Puppies reviso tu cambio y ya confirmo la nueva fecha de la cita para tu peludito.'
-      : 'La administracion de Sweety Puppies reviso tu solicitud y ya dejo confirmada la visita para tu peludito.'
-    : isReschedule
-      ? 'La administracion de Sweety Puppies no pudo aprobar esta reprogramacion y la solicitud quedo cancelada.'
-      : 'La administracion de Sweety Puppies no pudo mantener esta solicitud y la cita quedo cancelada.';
+  const contentByStatus = {
+    confirmada: {
+      title: isReschedule
+        ? 'Sweety Puppies acepto y confirmo la reprogramacion de tu cita'
+        : 'Tu cita fue confirmada por Sweety Puppies',
+      copy: isReschedule
+        ? 'La administracion de Sweety Puppies reviso tu cambio y ya confirmo la nueva fecha de la cita para tu peludito.'
+        : 'La administracion de Sweety Puppies reviso tu solicitud y ya dejo confirmada la visita para tu peludito.',
+      label: 'Confirmada'
+    },
+    cancelada: {
+      title: isReschedule
+        ? 'La reprogramacion de tu cita fue cancelada por Sweety Puppies'
+        : 'Tu cita fue cancelada por Sweety Puppies',
+      copy: isReschedule
+        ? 'La administracion de Sweety Puppies no pudo aprobar esta reprogramacion y la solicitud quedo cancelada.'
+        : 'La administracion de Sweety Puppies no pudo mantener esta solicitud y la cita quedo cancelada.',
+      label: 'Cancelada'
+    },
+    en_atencion: {
+      title: `La cita de ${appointment.petName} ya inicio en Sweety Puppies`,
+      copy: 'La administracion de Sweety Puppies ya inicio la atencion de tu peludito. Te mantendremos al tanto del proceso.',
+      label: 'En atencion'
+    },
+    completada: {
+      title: `La cita de ${appointment.petName} fue finalizada por Sweety Puppies`,
+      copy: 'La administracion de Sweety Puppies finalizo el servicio de tu peludito y ya quedo registrado en su historial.',
+      label: 'Completada'
+    }
+  };
+  const content = contentByStatus[status] || contentByStatus.cancelada;
+  const statusTitle = content.title;
+  const statusCopy = content.copy;
 
   const html = `
     <div style="margin:0; padding:32px 16px; background:linear-gradient(180deg,#fff7fb 0%,#fff0f8 100%); font-family:Arial,sans-serif; color:#4b2d40;">
@@ -240,7 +258,7 @@ async function sendAppointmentStatusEmail({ email, appointment, status, flowType
             <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Servicio</td><td style="padding:10px 0; color:#5f4557;">${appointment.serviceName}</td></tr>
             <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Fecha</td><td style="padding:10px 0; color:#5f4557;">${appointment.dateLabel}</td></tr>
             <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Hora</td><td style="padding:10px 0; color:#5f4557;">${appointment.timeLabel}</td></tr>
-            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Estado</td><td style="padding:10px 0; color:#5f4557;">${isConfirmed ? 'Confirmada' : 'Cancelada'}</td></tr>
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Estado</td><td style="padding:10px 0; color:#5f4557;">${content.label}</td></tr>
             <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Precio estimado</td><td style="padding:10px 0; color:#5f4557;">${formatCurrency(appointment.totalPrice)}</td></tr>
           </table>
         </div>
@@ -260,7 +278,7 @@ Mascota: ${appointment.petName}
 Servicio: ${appointment.serviceName}
 Fecha: ${appointment.dateLabel}
 Hora: ${appointment.timeLabel}
-Estado: ${isConfirmed ? 'Confirmada' : 'Cancelada'}
+Estado: ${content.label}
 Precio estimado: ${formatCurrency(appointment.totalPrice)}
   `.trim();
 

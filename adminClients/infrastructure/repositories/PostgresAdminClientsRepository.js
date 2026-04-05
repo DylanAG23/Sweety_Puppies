@@ -187,6 +187,85 @@ class PostgresAdminClientsRepository {
 
     return result.rows;
   }
+
+  async ensureEmailAvailable(email, excludeUserId) {
+    const result = await client.query(
+      `
+        SELECT id
+        FROM usuarios
+        WHERE lower(email) = lower($1)
+          AND id <> $2::uuid
+        LIMIT 1
+      `,
+      [email, excludeUserId]
+    );
+
+    if (result.rowCount) {
+      throw new AdminClientError('Ya existe otro usuario registrado con ese correo', 409, 'EMAIL_ALREADY_USED');
+    }
+  }
+
+  async updateClientProfile(clientId, payload) {
+    await client.query('BEGIN');
+
+    try {
+      const ownershipResult = await client.query(
+        `
+          SELECT usuario_id
+          FROM clientes
+          WHERE id = $1::uuid
+          LIMIT 1
+        `,
+        [clientId]
+      );
+
+      if (!ownershipResult.rowCount) {
+        throw new AdminClientError('No encontramos el cliente solicitado', 404, 'CLIENT_NOT_FOUND');
+      }
+
+      const userId = ownershipResult.rows[0].usuario_id;
+
+      await client.query(
+        `
+          UPDATE usuarios
+          SET
+            email = $2,
+            updated_at = NOW()
+          WHERE id = $1::uuid
+        `,
+        [userId, payload.email]
+      );
+
+      await client.query(
+        `
+          UPDATE clientes
+          SET
+            nombre = $2,
+            apellido = $3,
+            telefono = $4,
+            telefono_secundario = $5,
+            direccion = $6,
+            activo = $7,
+            updated_at = NOW()
+          WHERE id = $1::uuid
+        `,
+        [
+          clientId,
+          payload.nombre,
+          payload.apellido,
+          payload.telefono,
+          payload.telefono_secundario,
+          payload.direccion,
+          payload.activo
+        ]
+      );
+
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    }
+  }
 }
 
 module.exports = { PostgresAdminClientsRepository };

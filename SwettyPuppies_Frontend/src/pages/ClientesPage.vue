@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { apiGet } from '@/lib/api'
+import { apiGet, apiPatch } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
 
@@ -63,9 +63,17 @@ type ClientDetailResponse = {
   cliente: ClientDetail
 }
 
+type ClientUpdateResponse = {
+  success: boolean
+  message: string
+  cliente: ClientDetail
+}
+
 const currentPath = window.location.pathname.toLowerCase()
 const loading = ref(true)
 const detailLoading = ref(false)
+const savingClient = ref(false)
+const isEditingClient = ref(false)
 const error = ref('')
 const toast = ref('')
 const searchTerm = ref('')
@@ -74,6 +82,15 @@ const clients = ref<ClientListItem[]>([])
 const selectedClient = ref<ClientDetail | null>(null)
 const isDetailOpen = ref(false)
 const fallbackPetImage = '/img/mascota1.png'
+const clientForm = ref({
+  nombre: '',
+  apellido: '',
+  telefono: '',
+  telefono_secundario: '',
+  direccion: '',
+  email: '',
+  activo: true,
+})
 
 const summaryCards = computed(() => {
   const total = clients.value.length
@@ -142,10 +159,13 @@ async function openClientDetail(clientId: string) {
   detailLoading.value = true
   selectedClient.value = null
   isDetailOpen.value = true
+  isEditingClient.value = false
+  error.value = ''
 
   try {
     const data = await apiGet<ClientDetailResponse>(`/api/clientes/${clientId}`)
     selectedClient.value = data.cliente
+    fillClientForm(data.cliente)
   } catch (caughtError) {
     error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar el detalle del cliente'
     closeDetail()
@@ -157,6 +177,68 @@ async function openClientDetail(clientId: string) {
 function closeDetail() {
   isDetailOpen.value = false
   selectedClient.value = null
+  isEditingClient.value = false
+}
+
+function fillClientForm(client: ClientDetail) {
+  clientForm.value = {
+    nombre: client.nombre || '',
+    apellido: client.apellido || '',
+    telefono: client.telefono || '',
+    telefono_secundario: client.telefono_secundario || '',
+    direccion: client.direccion || '',
+    email: client.email || '',
+    activo: client.activo,
+  }
+}
+
+function startClientEditing() {
+  if (!selectedClient.value) {
+    return
+  }
+
+  fillClientForm(selectedClient.value)
+  isEditingClient.value = true
+}
+
+function cancelClientEditing() {
+  if (selectedClient.value) {
+    fillClientForm(selectedClient.value)
+  }
+  isEditingClient.value = false
+}
+
+function syncClientInList(updatedClient: ClientDetail) {
+  clients.value = clients.value.map((item) =>
+    item.id === updatedClient.id
+      ? {
+          ...item,
+          ...updatedClient,
+        }
+      : item
+  )
+}
+
+async function saveClient() {
+  if (!selectedClient.value) {
+    return
+  }
+
+  savingClient.value = true
+  error.value = ''
+
+  try {
+    const data = await apiPatch<ClientUpdateResponse>(`/api/clientes/${selectedClient.value.id}`, clientForm.value)
+    selectedClient.value = data.cliente
+    fillClientForm(data.cliente)
+    syncClientInList(data.cliente)
+    isEditingClient.value = false
+    showToast(data.message || 'Cliente actualizado correctamente')
+  } catch (caughtError) {
+    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo actualizar el cliente'
+  } finally {
+    savingClient.value = false
+  }
 }
 
 function showToast(message: string) {
@@ -443,7 +525,76 @@ function formatLabel(value: string | null) {
               </article>
             </div>
 
+            <article v-if="isEditingClient" class="detail-card wide edit-card">
+              <div class="detail-section-head">
+                <div>
+                  <strong>Editar cliente</strong>
+                  <small>Solo la administradora puede actualizar estos datos.</small>
+                </div>
+              </div>
+
+              <div class="edit-grid">
+                <label class="field-group">
+                  <span>Nombre</span>
+                  <input v-model="clientForm.nombre" type="text">
+                </label>
+                <label class="field-group">
+                  <span>Apellido</span>
+                  <input v-model="clientForm.apellido" type="text">
+                </label>
+                <label class="field-group">
+                  <span>Telefono principal</span>
+                  <input v-model="clientForm.telefono" type="text">
+                </label>
+                <label class="field-group">
+                  <span>Telefono secundario</span>
+                  <input v-model="clientForm.telefono_secundario" type="text">
+                </label>
+                <label class="field-group">
+                  <span>Correo</span>
+                  <input v-model="clientForm.email" type="email">
+                </label>
+                <label class="field-group">
+                  <span>Estado</span>
+                  <select v-model="clientForm.activo">
+                    <option :value="true">Activo</option>
+                    <option :value="false">Inactivo</option>
+                  </select>
+                </label>
+                <label class="field-group full">
+                  <span>Direccion</span>
+                  <textarea v-model="clientForm.direccion" rows="3" />
+                </label>
+              </div>
+            </article>
+
             <div class="modal-actions">
+              <button
+                v-if="!isEditingClient"
+                type="button"
+                class="btn-enviar"
+                @click="startClientEditing"
+              >
+                Editar cliente
+              </button>
+              <button
+                v-if="isEditingClient"
+                type="button"
+                class="btn-enviar"
+                :disabled="savingClient"
+                @click="saveClient"
+              >
+                {{ savingClient ? 'Guardando cambios...' : 'Guardar cambios' }}
+              </button>
+              <button
+                v-if="isEditingClient"
+                type="button"
+                class="btn-secundario"
+                :disabled="savingClient"
+                @click="cancelClientEditing"
+              >
+                Cancelar edicion
+              </button>
               <button
                 type="button"
                 class="btn-secundario"
@@ -574,6 +725,16 @@ function formatLabel(value: string | null) {
 }
 
 .field-group input {
+  border-radius: 18px;
+  border: 1px solid rgba(243, 203, 228, 0.9);
+  padding: 14px 16px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.95);
+  color: #5b4256;
+}
+
+.field-group select,
+.field-group textarea {
   border-radius: 18px;
   border: 1px solid rgba(243, 203, 228, 0.9);
   padding: 14px 16px;
@@ -820,6 +981,16 @@ function formatLabel(value: string | null) {
   margin-top: 18px;
   display: grid;
   gap: 16px;
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.edit-grid .full {
+  grid-column: 1 / -1;
 }
 
 .detail-card.wide {

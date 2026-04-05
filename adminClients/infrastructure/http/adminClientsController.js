@@ -40,6 +40,19 @@ function createAdminClientsController(useCases) {
       } catch (error) {
         handleHttpError(res, error, 'Error al cargar el detalle del cliente');
       }
+    },
+
+    updateClient: async (req, res) => {
+      try {
+        const result = await useCases.updateAdminClient(req.user, req.params.id, req.body);
+        res.json({
+          success: true,
+          message: 'Cliente actualizado correctamente',
+          cliente: result.cliente
+        });
+      } catch (error) {
+        handleHttpError(res, error, 'Error al actualizar el cliente');
+      }
     }
   };
 }

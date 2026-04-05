@@ -96,7 +96,7 @@ const quickActions = [
   { title: 'Ver agenda de hoy', href: '/admin/agenda', tone: 'pink' },
   { title: 'Revisar citas pendientes', href: '/admin/agenda', tone: 'blue' },
   { title: 'Gestionar tarifas', href: '/admin/tarifas', tone: 'pink' },
-  { title: 'Ver historial reciente', href: '/admin/historial', tone: 'blue' },
+  { title: 'Gestionar citas y servicios', href: '/admin/gestion', tone: 'blue' },
 ]
 
 const moduleCards = [
@@ -119,10 +119,10 @@ const moduleCards = [
     badge: 'Mascotas',
   },
   {
-    title: 'Historial de servicios',
-    description: 'Consulta servicios finalizados, recomendaciones y seguimiento operativo.',
-    href: '/admin/historial',
-    badge: 'Historial',
+    title: 'Gestion de citas y servicios',
+    description: 'Opera citas, revisa atenciones en curso y consulta servicios ya realizados desde un mismo modulo.',
+    href: '/admin/gestion',
+    badge: 'Gestion',
   },
   {
     title: 'Servicios',
