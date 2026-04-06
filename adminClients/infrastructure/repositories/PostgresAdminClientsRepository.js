@@ -67,12 +67,12 @@ class PostgresAdminClientsRepository {
         )::int AS citas_activas,
         (
           SELECT COUNT(*)
-          FROM historial_servicios hs
+          FROM historial_citas hs
           WHERE hs.cliente_id = c.id
         )::int AS servicios_realizados,
         (
           SELECT MAX(hs.fecha_servicio)
-          FROM historial_servicios hs
+          FROM historial_citas hs
           WHERE hs.cliente_id = c.id
         ) AS ultima_atencion
       FROM clientes c
@@ -126,12 +126,12 @@ class PostgresAdminClientsRepository {
           )::int AS citas_activas,
           (
             SELECT COUNT(*)
-            FROM historial_servicios hs
+            FROM historial_citas hs
             WHERE hs.cliente_id = c.id
           )::int AS servicios_realizados,
           (
             SELECT MAX(hs.fecha_servicio)
-            FROM historial_servicios hs
+            FROM historial_citas hs
             WHERE hs.cliente_id = c.id
           ) AS ultima_atencion
         FROM clientes c

@@ -215,7 +215,7 @@ async function openCompletedServiceDetail(id: string) {
     const data = await apiGet<{ servicio: CompletedServiceDetail }>(`/api/admin/gestion/servicios/${id}`)
     selectedCompletedService.value = data.servicio
   } catch (caughtError) {
-    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar el detalle del servicio'
+    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar el detalle de la cita realizada'
     closeCompletedServiceModal()
   } finally {
     detailLoading.value = false
@@ -413,7 +413,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 <template>
   <main class="management-page">
     <section v-if="loading" class="management-shell state-card">
-      <h1>Cargando gestion de citas y servicios...</h1>
+      <h1>Cargando gestion de citas y citas realizadas...</h1>
       <p>Estamos preparando la operacion del negocio.</p>
     </section>
 
@@ -431,12 +431,12 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 
       <section class="management-shell hero-card">
         <div>
-          <span class="soft-pill">Gestion de citas y servicios</span>
+          <span class="soft-pill">Gestion de citas</span>
           <h1>El corazon operativo de Sweety Puppies</h1>
-          <p>Aqui administras la operacion de citas y consultas el historial real de servicios ya realizados.</p>
+          <p>Aqui administras la operacion de citas y consultas el historial real de citas ya realizadas.</p>
           <div class="hero-note">
             <strong>Operacion central</strong>
-            <span>Confirma, inicia, atiende y finaliza citas; luego revisa el servicio ya completado desde su propio historial.</span>
+            <span>Confirma, inicia, atiende y finaliza citas; luego revisa la cita ya completada desde su propio historial.</span>
           </div>
         </div>
 
@@ -446,7 +446,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             <span>{{ appointments.length }}</span>
           </button>
           <button type="button" class="tab-button" :class="{ active: currentTab === 'servicios' }" @click="switchTab('servicios')">
-            Servicios realizados
+            Citas realizadas
             <span>{{ completedServices.length }}</span>
           </button>
         </div>
@@ -503,7 +503,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             <div class="mini-grid">
               <div><strong>Fecha</strong><span>{{ formatDate(appointment.fecha) }}</span></div>
               <div><strong>Hora</strong><span>{{ formatTime(appointment.horaInicio) }}</span></div>
-              <div><strong>Servicio</strong><span>{{ appointment.servicioNombre || 'Por confirmar' }}</span></div>
+              <div><strong>Servicio solicitado</strong><span>{{ appointment.servicioNombre || 'Por confirmar' }}</span></div>
               <div><strong>Valor</strong><span>{{ formatCurrency(appointment.precioMostrado) }}</span></div>
             </div>
             <div class="row-actions right">
@@ -535,7 +535,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         </section>
 
         <section class="summary-grid services">
-          <article class="management-shell summary-card"><strong>Servicios visibles</strong><span class="summary-value">{{ serviceSummary.total }}</span></article>
+          <article class="management-shell summary-card"><strong>Citas realizadas visibles</strong><span class="summary-value">{{ serviceSummary.total }}</span></article>
           <article class="management-shell summary-card mint"><strong>Mascotas atendidas</strong><span class="summary-value">{{ serviceSummary.mascotas }}</span></article>
           <article class="management-shell summary-card wide"><strong>Facturacion visible</strong><span class="summary-value">{{ formatCurrency(serviceSummary.facturacion) }}</span></article>
         </section>
@@ -560,8 +560,8 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             </div>
           </article>
           <article v-if="!completedServices.length" class="management-shell empty-card">
-            <span class="soft-pill subtle">Servicios realizados</span>
-            <h2>Aun no hay servicios finalizados</h2>
+            <span class="soft-pill subtle">Citas realizadas</span>
+            <h2>Aun no hay citas finalizadas</h2>
             <p>Cuando completes las primeras citas, aqui aparecera el historial operativo real del negocio.</p>
           </article>
         </section>
@@ -581,7 +581,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             <div class="detail-grid">
               <article class="detail-card"><strong>Cliente</strong><span>{{ selectedAppointment.cliente.nombre || 'Cliente por revisar' }}</span><small>{{ selectedAppointment.cliente.cedula || 'Cedula por confirmar' }}</small><small>{{ selectedAppointment.cliente.telefono || 'Telefono por confirmar' }}</small><small>{{ selectedAppointment.cliente.email || 'Correo por confirmar' }}</small></article>
               <article class="detail-card"><strong>Mascota</strong><span>{{ selectedAppointment.mascota.nombre }}</span><small>{{ selectedAppointment.mascota.raza || 'Raza por confirmar' }}</small><small>{{ formatLabel(selectedAppointment.mascota.tamano) }} · {{ formatLabel(selectedAppointment.mascota.tipoPelaje) }}</small></article>
-              <article class="detail-card"><strong>Servicio</strong><span>{{ selectedAppointment.servicioPrincipal.nombre }}</span><small>{{ formatDate(selectedAppointment.fecha) }}</small><small>{{ formatTime(selectedAppointment.horaInicio) }} - {{ formatTime(selectedAppointment.horaFinEstimada) }}</small></article>
+              <article class="detail-card"><strong>Servicio solicitado</strong><span>{{ selectedAppointment.servicioPrincipal.nombre }}</span><small>{{ formatDate(selectedAppointment.fecha) }}</small><small>{{ formatTime(selectedAppointment.horaInicio) }} - {{ formatTime(selectedAppointment.horaFinEstimada) }}</small></article>
               <article class="detail-card"><strong>Estado</strong><span class="status-badge inline" :class="statusClass(selectedAppointment.estado)">{{ formatLabel(selectedAppointment.estado) }}</span><small>{{ formatLabel(selectedAppointment.estadoPelajeReportado) }} · {{ formatLabel(selectedAppointment.comportamientoReportado) }}</small></article>
               <article class="detail-card"><strong>Precio base</strong><span>{{ formatCurrency(selectedAppointment.precioBase) }}</span></article>
               <article class="detail-card"><strong>Calculado</strong><span>{{ formatCurrency(selectedAppointment.precioCalculado) }}</span></article>
@@ -641,7 +641,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
                 <button type="button" class="btn-secundario" @click="showFinalizePanel = !showFinalizePanel">{{ showFinalizePanel ? 'Ocultar finalizacion' : 'Finalizar cita' }}</button>
               </div>
               <div v-if="showFinalizePanel" class="finalize-card">
-                <label class="field-block"><span>Observaciones finales</span><textarea v-model="finalizeForm.observacionesFinales" rows="3" placeholder="Resultado final del servicio..." /></label>
+                <label class="field-block"><span>Observaciones finales</span><textarea v-model="finalizeForm.observacionesFinales" rows="3" placeholder="Resultado final de la cita..." /></label>
                 <label class="field-block"><span>Recomendaciones</span><textarea v-model="finalizeForm.recomendaciones" rows="3" placeholder="Cuidados sugeridos para la familia..." /></label>
                 <div class="row-actions">
                   <button type="button" class="btn-enviar" :disabled="actionLoading" @click="finalizeAppointment">Confirmar finalizacion</button>
@@ -658,8 +658,8 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         <section class="management-shell modal-card">
           <div class="modal-head">
             <div>
-              <span class="soft-pill subtle">Servicio realizado</span>
-              <h2>{{ selectedCompletedService?.mascotaNombre || 'Cargando servicio...' }}</h2>
+              <span class="soft-pill subtle">Cita realizada</span>
+              <h2>{{ selectedCompletedService?.mascotaNombre || 'Cargando cita realizada...' }}</h2>
             </div>
             <button type="button" class="modal-close" @click="closeCompletedServiceModal">×</button>
           </div>
@@ -668,14 +668,14 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             <div class="detail-grid">
               <article class="detail-card"><strong>Cliente</strong><span>{{ selectedCompletedService.clienteNombreCompleto || 'No registrado' }}</span><small>{{ selectedCompletedService.clienteEmail || 'Correo no registrado' }}</small><small>{{ selectedCompletedService.clienteTelefono || 'Telefono no registrado' }}</small></article>
               <article class="detail-card"><strong>Mascota</strong><span>{{ selectedCompletedService.mascotaNombre }}</span><small>{{ selectedCompletedService.mascotaRaza || 'Raza no registrada' }}</small><small>{{ formatLabel(selectedCompletedService.mascotaTamano) }} · {{ formatLabel(selectedCompletedService.mascotaTipoPelaje) }}</small></article>
-              <article class="detail-card"><strong>Fecha del servicio</strong><span>{{ formatDate(selectedCompletedService.fechaServicio) }}</span></article>
+              <article class="detail-card"><strong>Fecha de la cita realizada</strong><span>{{ formatDate(selectedCompletedService.fechaServicio) }}</span></article>
               <article class="detail-card"><strong>Servicio principal</strong><span>{{ selectedCompletedService.servicioPrincipalNombre }}</span><small>{{ selectedCompletedService.serviciosAdicionalesResumen || 'Sin adicionales' }}</small></article>
               <article class="detail-card"><strong>Pelaje real</strong><span>{{ formatLabel(selectedCompletedService.estadoPelajeReal) }}</span></article>
               <article class="detail-card"><strong>Comportamiento</strong><span>{{ formatLabel(selectedCompletedService.comportamientoObservado) }}</span></article>
               <article class="detail-card"><strong>Precio base</strong><span>{{ formatCurrency(selectedCompletedService.precioBase) }}</span></article>
               <article class="detail-card"><strong>Calculado</strong><span>{{ formatCurrency(selectedCompletedService.precioCalculado) }}</span></article>
               <article class="detail-card"><strong>Final</strong><span>{{ formatCurrency(selectedCompletedService.precioFinal) }}</span></article>
-              <article class="detail-card wide"><strong>Resumen del servicio</strong><p>{{ selectedCompletedService.resumenServicioRealizado || 'No se registro un resumen final.' }}</p></article>
+              <article class="detail-card wide"><strong>Resumen de la cita realizada</strong><p>{{ selectedCompletedService.resumenServicioRealizado || 'No se registro un resumen final.' }}</p></article>
               <article class="detail-card wide"><strong>Observaciones finales</strong><p>{{ selectedCompletedService.observacionesFinales || 'Sin observaciones finales.' }}</p></article>
               <article class="detail-card wide"><strong>Recomendaciones</strong><p>{{ selectedCompletedService.recomendaciones || 'Sin recomendaciones registradas.' }}</p></article>
             </div>

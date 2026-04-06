@@ -54,9 +54,24 @@ type ClientHomeResponse = {
   }>
 }
 
+type PortalContentItem = {
+  id: string
+  titulo: string
+  descripcion: string | null
+  ruta: string
+  categoria: string | null
+  orden: number
+}
+
+type ActiveContentResponse = {
+  success: boolean
+  publicaciones: PortalContentItem[]
+}
+
 const loading = ref(true)
 const error = ref('')
 const payload = ref<ClientHomeResponse | null>(null)
+const activeContent = ref<PortalContentItem[]>([])
 const currentImageIndex = ref(0)
 const currentPath = window.location.pathname.toLowerCase()
 const businessMapsUrl =
@@ -81,11 +96,11 @@ const heroSubtitle = computed(() => {
 })
 
 const currentImage = computed(() => {
-  if (!payload.value?.images.length) {
+  if (!activeContent.value.length) {
     return null
   }
 
-  return payload.value.images[currentImageIndex.value % payload.value.images.length]
+  return activeContent.value[currentImageIndex.value % activeContent.value.length]
 })
 
 const summaryCards = computed(() => {
@@ -128,6 +143,14 @@ onMounted(async () => {
 
   try {
     payload.value = await apiGet<ClientHomeResponse>('/api/auth/me/client-home')
+    activeContent.value = payload.value.images || []
+
+    try {
+      const contentData = await apiGet<ActiveContentResponse>('/api/contenido/activo')
+      activeContent.value = contentData.publicaciones || activeContent.value
+    } catch (contentError) {
+      console.warn('No se pudo refrescar el contenido activo del lobby cliente:', contentError)
+    }
   } catch (caughtError) {
     error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar tu portal'
   } finally {
@@ -136,20 +159,20 @@ onMounted(async () => {
 })
 
 function nextImage() {
-  if (!payload.value?.images.length) {
+  if (!activeContent.value.length) {
     return
   }
 
-  currentImageIndex.value = (currentImageIndex.value + 1) % payload.value.images.length
+  currentImageIndex.value = (currentImageIndex.value + 1) % activeContent.value.length
 }
 
 function previousImage() {
-  if (!payload.value?.images.length) {
+  if (!activeContent.value.length) {
     return
   }
 
   currentImageIndex.value =
-    (currentImageIndex.value - 1 + payload.value.images.length) % payload.value.images.length
+    (currentImageIndex.value - 1 + activeContent.value.length) % activeContent.value.length
 }
 
 function formatDate(value: string) {
@@ -298,7 +321,7 @@ function goTo(path: string) {
             dentro de un espacio visual limpio y tierno.
           </p>
 
-          <div class="gallery-actions" v-if="payload.images.length > 1">
+          <div class="gallery-actions" v-if="activeContent.length > 1">
             <button type="button" class="gallery-button" @click="previousImage">Anterior</button>
             <button type="button" class="gallery-button" @click="nextImage">Siguiente</button>
           </div>
@@ -317,9 +340,9 @@ function goTo(path: string) {
           <p>Muy pronto veras aqui las fotos mas lindas de nuestros peluditos felices.</p>
         </div>
 
-        <div v-if="payload.images.length" class="gallery-thumbs">
+        <div v-if="activeContent.length" class="gallery-thumbs">
           <button
-            v-for="(image, index) in payload.images.slice(0, 6)"
+            v-for="(image, index) in activeContent.slice(0, 6)"
             :key="image.id"
             type="button"
             class="thumb-card"

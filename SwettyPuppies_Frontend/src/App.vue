@@ -34,7 +34,6 @@ const adminRoutes = new Set([
   '/admin/gestion/servicios',
   '/admin/servicios',
   '/admin/adicionales',
-  '/admin/tarifas',
   '/admin/bloqueos',
   '/admin/contenido',
   '/admin/galeria',
@@ -69,7 +68,7 @@ const routes = new Map<
   ['/admin/gestion', { component: AdminManagementPage }],
   ['/admin/gestion/citas', { component: AdminManagementPage, props: { initialTab: 'citas' } }],
   ['/admin/gestion/servicios', { component: AdminManagementPage, props: { initialTab: 'servicios' } }],
-  ['/admin/servicios', { component: ServiciosPage }],
+  ['/admin/servicios', { component: ServiciosPage, props: { initialCategory: 'principales' } }],
   ['/admin/contenido', { component: ImagenesPage }],
   ['/admin/galeria', { component: ImagenesPage }],
   ['/admin/reportes', { component: ReportesPage }],
@@ -84,23 +83,7 @@ const routes = new Map<
   ],
   [
     '/admin/adicionales',
-    {
-      component: AdminPlaceholderPage,
-      props: {
-        title: 'Servicios adicionales',
-        description: 'Aqui administraras los extras disponibles para cada cita y sus reglas de negocio.',
-      },
-    },
-  ],
-  [
-    '/admin/tarifas',
-    {
-      component: AdminPlaceholderPage,
-      props: {
-        title: 'Tarifas',
-        description: 'Aqui quedara la gestion de precios base, ajustes por tamano y configuraciones tarifarias.',
-      },
-    },
+    { component: ServiciosPage, props: { initialCategory: 'adicionales' } },
   ],
   ['/admin/bloqueos', { component: AdminAgendaPage, props: { initialSection: 'blocks' } }],
   [
@@ -117,8 +100,8 @@ const routes = new Map<
   ['/clientes.html', { component: ClientesPage }],
   ['/mascotas', { component: MascotasPage }],
   ['/mascotas.html', { component: MascotasPage }],
-  ['/servicios', { component: ServiciosPage }],
-  ['/servicios.html', { component: ServiciosPage }],
+  ['/servicios', { component: ServiciosPage, props: { initialCategory: 'principales' } }],
+  ['/servicios.html', { component: ServiciosPage, props: { initialCategory: 'principales' } }],
   ['/citas', { component: CitasPage }],
   ['/citas.html', { component: CitasPage }],
   ['/imagenes', { component: ImagenesPage }],
@@ -161,6 +144,12 @@ const currentRoute = computed(() => {
 
   const session = getSession()
   const path = currentPath.value
+
+  if (path === '/admin/tarifas') {
+    window.history.replaceState({}, '', '/admin/servicios')
+    currentPath.value = '/admin/servicios'
+    return routes.get('/admin/servicios') ?? { component: NotFoundPage }
+  }
 
   if (!session) {
     if (!publicRoutes.has(path)) {

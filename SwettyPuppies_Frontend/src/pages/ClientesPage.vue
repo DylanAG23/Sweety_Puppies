@@ -388,7 +388,7 @@ function formatLabel(value: string | null) {
                 <span>{{ item.mascotas_registradas }}</span>
               </div>
               <div>
-                <small>Servicios</small>
+                <small>Citas realizadas</small>
                 <span>{{ item.servicios_realizados }}</span>
               </div>
             </div>
@@ -464,7 +464,7 @@ function formatLabel(value: string | null) {
               </article>
               <article class="mini-summary">
                 <strong>{{ selectedClient.resumen.serviciosRealizados }}</strong>
-                <span>Servicios realizados</span>
+                <span>Citas realizadas</span>
               </article>
               <article class="mini-summary">
                 <strong>{{ formatDate(selectedClient.resumen.ultimaAtencion) }}</strong>

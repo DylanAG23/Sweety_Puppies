@@ -85,7 +85,7 @@ const summaryCards = computed(() => {
       helper: 'Familias activas en el portal',
     },
     {
-      label: 'Servicios del mes',
+      label: 'Citas realizadas del mes',
       value: String(summary?.serviciosMes ?? 0),
       helper: 'Atenciones ya completadas este mes',
     },
@@ -95,8 +95,8 @@ const summaryCards = computed(() => {
 const quickActions = [
   { title: 'Ver agenda de hoy', href: '/admin/agenda', tone: 'pink' },
   { title: 'Revisar citas pendientes', href: '/admin/agenda', tone: 'blue' },
-  { title: 'Gestionar tarifas', href: '/admin/tarifas', tone: 'pink' },
-  { title: 'Gestionar citas y servicios', href: '/admin/gestion', tone: 'blue' },
+  { title: 'Gestionar servicios', href: '/admin/servicios', tone: 'pink' },
+  { title: 'Gestionar citas', href: '/admin/gestion', tone: 'blue' },
 ]
 
 const moduleCards = [
@@ -119,28 +119,22 @@ const moduleCards = [
     badge: 'Mascotas',
   },
   {
-    title: 'Gestion de citas y servicios',
-    description: 'Opera citas, revisa atenciones en curso y consulta servicios ya realizados desde un mismo modulo.',
+    title: 'Gestion de citas',
+    description: 'Opera citas, revisa atenciones en curso y consulta citas ya realizadas desde un mismo modulo.',
     href: '/admin/gestion',
     badge: 'Gestion',
   },
   {
     title: 'Servicios',
-    description: 'Organiza los servicios principales que ofrece Sweety Puppies.',
+    description: 'Administra servicios fijos, adicionales y tarifas del catalogo real que ofrece Sweety Puppies.',
     href: '/admin/servicios',
     badge: 'Servicios',
   },
   {
     title: 'Servicios adicionales',
-    description: 'Prepara la gestion de extras y complementos del cuidado peludito.',
+    description: 'Abre directamente la vista de adicionales y sus precios por tamano.',
     href: '/admin/adicionales',
     badge: 'Adicionales',
-  },
-  {
-    title: 'Tarifas',
-    description: 'Configura valores base y ajustes del negocio segun tamano o pelaje.',
-    href: '/admin/tarifas',
-    badge: 'Tarifas',
   },
   {
     title: 'Bloqueos de agenda',
@@ -310,7 +304,7 @@ function formatLabel(value: string | null) {
             </div>
           </div>
           <div v-else class="empty-block">
-            <p>No hay citas activas para hoy. Puedes aprovechar para revisar tarifas, galeria o bloqueos.</p>
+            <p>No hay citas activas para hoy. Puedes aprovechar para revisar servicios, contenido o bloqueos.</p>
           </div>
         </article>
 

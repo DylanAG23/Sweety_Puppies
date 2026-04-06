@@ -59,7 +59,7 @@ class PostgresAdminPetsRepository {
           u.email AS cliente_email,
           (
             SELECT COUNT(*)
-            FROM historial_servicios hs
+            FROM historial_citas hs
             WHERE hs.mascota_id = m.id
           )::int AS servicios_realizados,
           (
@@ -71,7 +71,7 @@ class PostgresAdminPetsRepository {
           )::int AS citas_activas,
           (
             SELECT MAX(hs.fecha_servicio)
-            FROM historial_servicios hs
+            FROM historial_citas hs
             WHERE hs.mascota_id = m.id
           ) AS ultimo_servicio
         FROM mascotas m
@@ -131,7 +131,7 @@ class PostgresAdminPetsRepository {
           u.email AS cliente_email,
           (
             SELECT COUNT(*)
-            FROM historial_servicios hs
+            FROM historial_citas hs
             WHERE hs.mascota_id = m.id
           )::int AS servicios_realizados,
           (
@@ -143,7 +143,7 @@ class PostgresAdminPetsRepository {
           )::int AS citas_activas,
           (
             SELECT MAX(hs.fecha_servicio)
-            FROM historial_servicios hs
+            FROM historial_citas hs
             WHERE hs.mascota_id = m.id
           ) AS ultimo_servicio
         FROM mascotas m
@@ -173,7 +173,7 @@ class PostgresAdminPetsRepository {
           precio_base,
           precio_calculado,
           precio_final
-        FROM historial_servicios
+        FROM historial_citas
         WHERE mascota_id = $1::uuid
         ORDER BY fecha_servicio DESC, created_at DESC
       `,

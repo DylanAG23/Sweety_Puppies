@@ -97,7 +97,7 @@ const petForm = ref({
 const summaryCards = computed(() => [
   { label: 'Mascotas visibles', value: String(pets.value.length) },
   { label: 'Activas', value: String(pets.value.filter((item) => item.activo).length) },
-  { label: 'Con historial', value: String(pets.value.filter((item) => Number(item.servicios_realizados || 0) > 0).length) },
+  { label: 'Con citas realizadas', value: String(pets.value.filter((item) => Number(item.servicios_realizados || 0) > 0).length) },
   { label: 'Citas activas', value: String(pets.value.reduce((sum, item) => sum + Number(item.citas_activas || 0), 0)) },
 ])
 
@@ -300,7 +300,7 @@ function formatBoolean(value: boolean | null) {
         <div>
           <span class="pill">Mascotas del sistema</span>
           <h1>Perfil completo de cada peludito</h1>
-          <p>Consulta datos sanitarios, propietario, citas activas e historial real de servicios desde un solo lugar.</p>
+          <p>Consulta datos sanitarios, propietario, citas activas e historial real de citas realizadas desde un solo lugar.</p>
           <div class="hero-note">
             <strong>Busqueda operativa</strong>
             <span>Encuentra por nombre, raza, tamano, tipo de pelaje o por los datos del cliente propietario.</span>
@@ -356,9 +356,9 @@ function formatBoolean(value: boolean | null) {
               </div>
               <div class="pet-footer">
                 <div class="chip-row">
-                  <span class="chip">Servicios: {{ item.servicios_realizados }}</span>
+                  <span class="chip">Citas realizadas: {{ item.servicios_realizados }}</span>
                   <span class="chip">Citas activas: {{ item.citas_activas }}</span>
-                  <span class="chip">Ultimo servicio: {{ formatDate(item.ultimo_servicio) }}</span>
+                  <span class="chip">Ultima cita realizada: {{ formatDate(item.ultimo_servicio) }}</span>
                 </div>
                 <button type="button" class="btn main compact" @click="openPetDetail(item.id)">Ver detalle</button>
               </div>
@@ -412,9 +412,9 @@ function formatBoolean(value: boolean | null) {
               </article>
               <article class="detail-card">
                 <strong>Resumen operativo</strong>
-                <span>Servicios: {{ selectedPet.servicios_realizados }}</span>
+                <span>Citas realizadas: {{ selectedPet.servicios_realizados }}</span>
                 <small>Citas activas: {{ selectedPet.citas_activas }}</small>
-                <small>Ultimo servicio: {{ formatDate(selectedPet.ultimo_servicio) }}</small>
+                <small>Ultima cita realizada: {{ formatDate(selectedPet.ultimo_servicio) }}</small>
               </article>
             </div>
 
@@ -537,27 +537,27 @@ function formatBoolean(value: boolean | null) {
 
             <div class="detail-columns history-layout">
               <article class="detail-card">
-                <strong>Historial de servicios</strong>
+                <strong>Historial de citas realizadas</strong>
                 <div v-if="historyLoading" class="empty-state compact-state">
-                  <p>Estamos consultando el historial de servicios...</p>
+                  <p>Estamos consultando el historial de citas realizadas...</p>
                 </div>
                 <div v-else-if="petHistory.length" class="history-list">
                   <button v-for="entry in petHistory" :key="entry.id" type="button" class="history-item" :class="{ active: selectedHistory?.id === entry.id }" @click="selectHistoryEntry(entry)">
                     <div>
                       <strong>{{ formatDate(entry.fecha_servicio) }}</strong>
-                      <span>{{ entry.servicio_principal_nombre || 'Servicio por confirmar' }}</span>
+                      <span>{{ entry.servicio_principal_nombre || 'Cita por confirmar' }}</span>
                       <small>{{ formatCurrency(entry.precio_final || entry.precio_calculado || entry.precio_base) }}</small>
                     </div>
                     <span class="chip">{{ entry.id.slice(0, 8) }}</span>
                   </button>
                 </div>
                 <div v-else class="empty-state compact-state">
-                  <p>Esta mascota aun no tiene historial de servicios registrado.</p>
+                  <p>Esta mascota aun no tiene historial de citas realizadas registrado.</p>
                 </div>
               </article>
 
               <article class="detail-card">
-                <strong>Detalle del servicio historico</strong>
+                <strong>Detalle de la cita realizada</strong>
                 <template v-if="selectedHistory">
                   <div class="info-grid">
                     <div><small>Fecha</small><span>{{ formatDate(selectedHistory.fecha_servicio) }}</span></div>
@@ -574,7 +574,7 @@ function formatBoolean(value: boolean | null) {
                   </div>
                 </template>
                 <div v-else class="empty-state compact-state">
-                  <p>Selecciona un servicio del historial para ver su detalle completo.</p>
+                  <p>Selecciona una cita realizada del historial para ver su detalle completo.</p>
                 </div>
               </article>
             </div>

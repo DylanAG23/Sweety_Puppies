@@ -27,6 +27,7 @@ app.use('/api/admin/agenda', require('./routes/adminAgenda'));
 app.use('/api/admin/gestion', require('./routes/adminGestion'));
 app.use('/api/servicios', require('./routes/servicios'));
 app.use('/api/citas', require('./routes/citas'));
+app.use('/api/contenido', require('./routes/contenido'));
 app.use('/api/imagenes', require('./routes/imagenes'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/login', require('./routes/auth'));

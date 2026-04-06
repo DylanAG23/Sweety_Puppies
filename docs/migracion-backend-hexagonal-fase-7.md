@@ -1,4 +1,4 @@
-# Fase 7 - Gestion de citas y servicios
+# Fase 7 - Gestion de citas
 
 ## Modulo creado
 - `adminServiceManagement`
@@ -8,7 +8,7 @@ Reemplazar el antiguo concepto de `Historial` en admin por un modulo operativo r
 - gestionar citas
 - revisar servicios realizados
 - iniciar y finalizar atenciones
-- generar `historial_servicios` al completar una cita
+- generar `historial_citas` al completar una cita
 
 ## Cambios principales
 - Nuevo backend hexagonal en `adminServiceManagement/`
@@ -22,7 +22,7 @@ Reemplazar el antiguo concepto de `Historial` en admin por un modulo operativo r
   - `PATCH /api/admin/gestion/citas/:id/finalize`
   - `GET /api/admin/gestion/servicios`
   - `GET /api/admin/gestion/servicios/:id`
-- Flujo de finalizacion conectado a `historial_servicios`
+- Flujo de finalizacion conectado a `historial_citas`
 
 ## Compatibilidad
 - Se mantiene `/admin/historial` como alias visual hacia el nuevo modulo mientras el menu se actualiza

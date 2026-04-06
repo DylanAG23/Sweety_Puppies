@@ -109,7 +109,7 @@ class PostgresClientHistoryRepository {
           precio_base,
           precio_calculado,
           precio_final
-        FROM historial_servicios
+        FROM historial_citas
         WHERE cliente_id = ANY($1::uuid[])
         ORDER BY fecha_servicio DESC, created_at DESC
       `,
@@ -245,7 +245,7 @@ class PostgresClientHistoryRepository {
           hs.precio_base,
           hs.precio_calculado,
           hs.precio_final
-        FROM historial_servicios hs
+        FROM historial_citas hs
         WHERE hs.id = $1::uuid
           AND hs.cliente_id = ANY($2::uuid[])
         LIMIT 1

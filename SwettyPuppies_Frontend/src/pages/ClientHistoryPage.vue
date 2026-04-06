@@ -273,7 +273,7 @@ async function openCompletedServiceDetail(serviceId: string) {
     const data = await apiGet<CompletedServiceDetailResponse>(`/api/cliente/historial/servicios/${serviceId}`)
     selectedCompletedService.value = data.servicio
   } catch (caughtError) {
-    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar el detalle del servicio'
+    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cargar el detalle de la cita realizada'
     closeCompletedDetail()
   } finally {
     detailLoading.value = false
@@ -509,7 +509,7 @@ function statusClass(status: string) {
   <main class="history-page">
     <section v-if="loading" class="history-shell history-state-card">
       <h1>Cargando tu historial bonito...</h1>
-      <p>Estamos reuniendo tus citas actuales y los servicios realizados para ti.</p>
+      <p>Estamos reuniendo tus citas actuales y las citas realizadas para ti.</p>
     </section>
 
     <section v-else-if="error && !citasActuales.length && !serviciosRealizados.length" class="history-shell history-state-card">
@@ -526,7 +526,7 @@ function statusClass(status: string) {
 
       <section class="history-shell history-hero">
         <span class="history-pill">Mi historial</span>
-        <h1>Consulta tus citas activas y los servicios que ya disfrutaste</h1>
+        <h1>Consulta tus citas activas y las citas realizadas de tu peludito</h1>
         <p>
           Aqui puedes revisar el estado actual de tus citas, ver el detalle de cada visita y
           conservar una memoria linda del cuidado que ha recibido tu peludito.
@@ -540,7 +540,7 @@ function statusClass(status: string) {
             <span>{{ citasActuales.length }}</span>
           </button>
           <button type="button" class="tab-button" :class="{ active: currentTab === 'servicios' }" @click="currentTab = 'servicios'">
-            Servicios realizados
+            Citas realizadas
             <span>{{ serviciosRealizados.length }}</span>
           </button>
         </div>
@@ -622,10 +622,10 @@ function statusClass(status: string) {
 
       <section v-else class="history-section">
         <div v-if="!filteredCompletedServices.length" class="history-shell empty-card">
-          <span class="history-pill subtle">Servicios realizados</span>
-          <h2>Todavia no tienes servicios registrados</h2>
+          <span class="history-pill subtle">Citas realizadas</span>
+          <h2>Todavia no tienes citas realizadas registradas</h2>
           <p>
-            Cuando tu primera cita sea completada, aqui aparecera el resumen bonito de ese servicio
+            Cuando tu primera cita sea completada, aqui aparecera el resumen bonito de esa cita
             con recomendaciones y observaciones.
           </p>
           <div class="history-actions">
@@ -719,7 +719,7 @@ function statusClass(status: string) {
             </div>
 
             <div v-if="selectedAppointment.serviciosAdicionales.length" class="detail-panel">
-              <span class="history-pill subtle">Servicios adicionales</span>
+          <span class="history-pill subtle">Servicios adicionales</span>
               <div class="detail-pill-list">
                 <span v-for="additional in selectedAppointment.serviciosAdicionales" :key="additional.id">
                   {{ additional.nombre }} · {{ formatCurrency(additional.precio) }}
@@ -803,16 +803,16 @@ function statusClass(status: string) {
         <section class="history-shell modal-card">
           <div class="modal-head">
             <div>
-              <span class="history-pill">Servicio realizado</span>
+              <span class="history-pill">Cita realizada</span>
               <h2 v-if="selectedCompletedService">{{ selectedCompletedService.mascotaNombre }}</h2>
               <p v-if="selectedCompletedService" class="modal-copy">
-                Aqui puedes revisar el resumen final, observaciones y recomendaciones del servicio.
+                Aqui puedes revisar el resumen final, observaciones y recomendaciones de la cita realizada.
               </p>
             </div>
             <button type="button" class="modal-close" @click="closeCompletedDetail">×</button>
           </div>
 
-          <div v-if="detailLoading" class="detail-loading">Cargando la ficha del servicio...</div>
+          <div v-if="detailLoading" class="detail-loading">Cargando la ficha de la cita realizada...</div>
 
           <template v-else-if="selectedCompletedService">
             <div class="detail-info-grid large">
@@ -832,7 +832,7 @@ function statusClass(status: string) {
               <div><strong>Precio calculado</strong><span>{{ formatCurrency(selectedCompletedService.precioCalculado) }}</span></div>
               <div><strong>Precio final</strong><span>{{ formatCurrency(selectedCompletedService.precioFinal) }}</span></div>
               <div class="full-width">
-                <strong>Resumen del servicio realizado</strong>
+                <strong>Resumen de la cita realizada</strong>
                 <span>{{ selectedCompletedService.resumenServicioRealizado || 'Aun no se ha registrado un resumen final.' }}</span>
               </div>
               <div class="full-width">

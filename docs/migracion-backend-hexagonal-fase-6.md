@@ -43,7 +43,7 @@ Endpoints activos para el modulo:
 - los controladores solo delegan y responden
 - los casos de uso coordinan listado, detalle e historial
 - el repositorio encapsula consultas a PostgreSQL
-- el historial de la mascota sale directamente de `historial_servicios`
+- el historial de la mascota sale directamente de `historial_citas`
 
 ## Alcance funcional cubierto
 

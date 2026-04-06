@@ -11,9 +11,8 @@ const navItems = [
   { label: 'Agenda', href: '/admin/agenda' },
   { label: 'Clientes', href: '/admin/clientes' },
   { label: 'Mascotas', href: '/admin/mascotas' },
-  { label: 'Gestion de citas y servicios', href: '/admin/gestion' },
+  { label: 'Gestion de citas', href: '/admin/gestion' },
   { label: 'Servicios', href: '/admin/servicios' },
-  { label: 'Tarifas', href: '/admin/tarifas' },
   { label: 'Contenido', href: '/admin/contenido' },
   { label: 'Reportes', href: '/admin/reportes' },
 ]
@@ -28,6 +27,13 @@ function isActive(href: string) {
       props.currentPath === '/admin/gestion' ||
       props.currentPath === '/admin/historial' ||
       props.currentPath.startsWith('/admin/gestion/')
+    )
+  }
+
+  if (href === '/admin/servicios') {
+    return (
+      props.currentPath === '/admin/servicios' ||
+      props.currentPath === '/admin/adicionales'
     )
   }
 

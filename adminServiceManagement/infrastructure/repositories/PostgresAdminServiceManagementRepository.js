@@ -367,7 +367,7 @@ class PostgresAdminServiceManagementRepository {
     const result = await client.query(
       `
         SELECT id
-        FROM historial_servicios
+        FROM historial_citas
         WHERE cita_id = $1::uuid
         LIMIT 1
       `,
@@ -380,7 +380,7 @@ class PostgresAdminServiceManagementRepository {
   async createHistoryEntry(payload, db = client) {
     await db.query(
       `
-        INSERT INTO historial_servicios (
+        INSERT INTO historial_citas (
           cita_id,
           cliente_id,
           mascota_id,
@@ -511,7 +511,7 @@ class PostgresAdminServiceManagementRepository {
           hs.servicio_principal_nombre,
           hs.servicios_adicionales_resumen,
           hs.precio_final
-        FROM historial_servicios hs
+        FROM historial_citas hs
         WHERE ${where.join(' AND ')}
         ORDER BY hs.fecha_servicio DESC, hs.created_at DESC
       `,
@@ -557,7 +557,7 @@ class PostgresAdminServiceManagementRepository {
           hs.precio_base,
           hs.precio_calculado,
           hs.precio_final
-        FROM historial_servicios hs
+        FROM historial_citas hs
         WHERE hs.id = $1::uuid
         LIMIT 1
       `,

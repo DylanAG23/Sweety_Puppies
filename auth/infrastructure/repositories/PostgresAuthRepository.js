@@ -382,7 +382,7 @@ class PostgresAuthRepository {
             servicio_principal_nombre,
             mascota_nombre,
             precio_final
-          FROM historial_servicios
+          FROM historial_citas
           WHERE cliente_id = $1
           ORDER BY fecha_servicio DESC
           LIMIT 1
@@ -452,7 +452,7 @@ class PostgresAuthRepository {
             servicio_principal_nombre,
             mascota_nombre,
             precio_final
-          FROM historial_servicios
+          FROM historial_citas
           WHERE cliente_id = ANY($1::uuid[])
           ORDER BY fecha_servicio DESC
           LIMIT 1
@@ -512,7 +512,7 @@ class PostgresAuthRepository {
       client.query(
         `
           SELECT COUNT(*)::int AS total
-          FROM historial_servicios
+          FROM historial_citas
           WHERE date_trunc('month', fecha_servicio) = date_trunc('month', CURRENT_DATE)
         `
       ),
