@@ -610,6 +610,26 @@ class PostgresAuthRepository {
       [email, codigo, expiracion]
     );
   }
+
+  async markVerificationCodeAsUsed(id) {
+    await client.query('UPDATE codigos_verificacion SET usado = true WHERE id = $1', [id]);
+  }
+
+  async updateUserPasswordByEmail(email, passwordHash) {
+    const result = await client.query(
+      `
+        UPDATE usuarios
+        SET
+          password_hash = $2,
+          updated_at = NOW()
+        WHERE lower(email) = $1
+        RETURNING id
+      `,
+      [email, passwordHash]
+    );
+
+    return result.rowCount > 0;
+  }
 }
 
 module.exports = { PostgresAuthRepository };

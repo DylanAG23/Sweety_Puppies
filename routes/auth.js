@@ -9,6 +9,8 @@ router.post('/register/initiate', controller.initiateRegistration);
 router.post('/register/verify', controller.verifyRegistration);
 router.post('/login', controller.login);
 router.post('/password-recovery/request', controller.requestPasswordRecovery);
+router.post('/password-recovery/verify', controller.verifyPasswordRecoveryCode);
+router.post('/password-recovery/reset', controller.resetPasswordWithRecoveryCode);
 router.get('/me/admin-home', authenticateToken, authorizeRoles('administrador'), controller.getAdminHome);
 router.get('/me/client-home', authenticateToken, authorizeRoles('cliente'), controller.getClientHome);
 router.get('/me/profile', authenticateToken, authorizeRoles('cliente'), controller.getClientProfile);

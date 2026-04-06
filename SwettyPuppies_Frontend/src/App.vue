@@ -9,7 +9,6 @@ import AdminPlaceholderPage from './pages/AdminPlaceholderPage.vue'
 import ClientesPage from './pages/ClientesPage.vue'
 import MascotasPage from './pages/MascotasPage.vue'
 import ServiciosPage from './pages/ServiciosPage.vue'
-import CitasPage from './pages/CitasPage.vue'
 import ImagenesPage from './pages/ImagenesPage.vue'
 import ReportesPage from './pages/ReportesPage.vue'
 import ClienteDashboardPage from './pages/ClienteDashboardPage.vue'
@@ -102,8 +101,8 @@ const routes = new Map<
   ['/mascotas.html', { component: MascotasPage }],
   ['/servicios', { component: ServiciosPage, props: { initialCategory: 'principales' } }],
   ['/servicios.html', { component: ServiciosPage, props: { initialCategory: 'principales' } }],
-  ['/citas', { component: CitasPage }],
-  ['/citas.html', { component: CitasPage }],
+  ['/citas', { component: AdminManagementPage, props: { initialTab: 'citas' } }],
+  ['/citas.html', { component: AdminManagementPage, props: { initialTab: 'citas' } }],
   ['/imagenes', { component: ImagenesPage }],
   ['/imagenes.html', { component: ImagenesPage }],
   ['/reportes', { component: ReportesPage }],

@@ -5,8 +5,8 @@ async function requestPasswordRecovery(dependencies, payload) {
   const userExists = await authRepository.userExistsByEmail(email);
   if (!userExists) {
     return {
-      message:
-        'Si el correo existe, enviaremos un código de recuperación. El restablecimiento final quedará para el siguiente paso.'
+      message: 'Si el correo existe, enviaremos un codigo de recuperacion para continuar el proceso.',
+      email
     };
   }
 
@@ -23,8 +23,8 @@ async function requestPasswordRecovery(dependencies, payload) {
   });
 
   return {
-    message:
-      'Solicitud de recuperación registrada. El cambio de contraseña final queda preparado para implementarse en el siguiente paso.',
+    message: 'Te enviamos un codigo de recuperacion para continuar con el cambio de contrasena.',
+    email,
     developmentCode: emailResult.previewCode || null
   };
 }

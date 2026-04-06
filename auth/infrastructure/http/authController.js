@@ -14,7 +14,7 @@ function createAuthController(useCases) {
         const result = await useCases.verifyRegistrationCode(req.body);
         res.status(201).json({ success: true, ...result });
       } catch (error) {
-        handleError(res, error, 'Error al verificar el código');
+        handleError(res, error, 'Error al verificar el codigo');
       }
     },
 
@@ -23,7 +23,7 @@ function createAuthController(useCases) {
         const result = await useCases.loginUser(req.body);
         res.status(200).json({ success: true, ...result });
       } catch (error) {
-        handleError(res, error, 'Error al iniciar sesión');
+        handleError(res, error, 'Error al iniciar sesion');
       }
     },
 
@@ -32,7 +32,25 @@ function createAuthController(useCases) {
         const result = await useCases.requestPasswordRecovery(req.body);
         res.status(200).json({ success: true, ...result });
       } catch (error) {
-        handleError(res, error, 'Error al solicitar recuperación');
+        handleError(res, error, 'Error al solicitar recuperacion');
+      }
+    },
+
+    verifyPasswordRecoveryCode: async (req, res) => {
+      try {
+        const result = await useCases.verifyPasswordRecoveryCode(req.body);
+        res.status(200).json({ success: true, ...result });
+      } catch (error) {
+        handleError(res, error, 'Error al verificar el codigo de recuperacion');
+      }
+    },
+
+    resetPasswordWithRecoveryCode: async (req, res) => {
+      try {
+        const result = await useCases.resetPasswordWithRecoveryCode(req.body);
+        res.status(200).json({ success: true, ...result });
+      } catch (error) {
+        handleError(res, error, 'Error al cambiar la contrasena');
       }
     },
 

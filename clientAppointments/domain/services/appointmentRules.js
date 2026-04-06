@@ -180,8 +180,8 @@ function buildTimeSlots({ fecha, duracionMinutos, horario, bloqueos, citasOcupad
   const closeMinutes = timeToMinutes(horario.hora_cierre);
   const lastAppointmentMinutes = timeToMinutes(horario.ultima_cita);
   const stepMinutes = 30;
-  const now = new Date();
-  const isToday = fecha === now.toISOString().split('T')[0];
+  const businessNow = getBusinessNow();
+  const isToday = fecha === businessNow.date;
 
   for (let start = startMinutes; start <= lastAppointmentMinutes; start += stepMinutes) {
     const end = start + duracionMinutos;
@@ -190,7 +190,7 @@ function buildTimeSlots({ fecha, duracionMinutos, horario, bloqueos, citasOcupad
       continue;
     }
 
-    if (isToday && start <= now.getHours() * 60 + now.getMinutes()) {
+    if (isToday && start <= businessNow.totalMinutes) {
       continue;
     }
 

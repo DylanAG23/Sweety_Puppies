@@ -72,10 +72,44 @@ function validateRecoveryInput({ email }) {
   return { email: normalizedEmail };
 }
 
+function validatePasswordResetInput({ email, codigo, password, confirmPassword }) {
+  const normalizedEmail = normalizeEmail(email);
+  const cleanCode = sanitizeText(codigo);
+  const rawPassword = String(password || '');
+  const rawConfirmPassword = String(confirmPassword || '');
+
+  if (!normalizedEmail || !validateEmail(normalizedEmail)) {
+    throw new AuthError('Debes indicar un correo valido', 400);
+  }
+
+  if (!cleanCode) {
+    throw new AuthError('Debes escribir el codigo de recuperacion', 400);
+  }
+
+  if (!rawPassword || !rawConfirmPassword) {
+    throw new AuthError('Debes escribir y confirmar la nueva contrasena', 400);
+  }
+
+  if (rawPassword.length < 8) {
+    throw new AuthError('La contrasena debe tener al menos 8 caracteres', 400);
+  }
+
+  if (rawPassword !== rawConfirmPassword) {
+    throw new AuthError('Las contrasenas no coinciden', 400);
+  }
+
+  return {
+    email: normalizedEmail,
+    codigo: cleanCode,
+    password: rawPassword
+  };
+}
+
 module.exports = {
   normalizeEmail,
   validateRegistrationInput,
   validateLoginInput,
   validateVerificationInput,
-  validateRecoveryInput
+  validateRecoveryInput,
+  validatePasswordResetInput
 };
