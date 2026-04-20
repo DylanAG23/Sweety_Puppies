@@ -1,6 +1,6 @@
 const { AdminServiceManagementError } = require('../../domain/errors/AdminServiceManagementError');
 
-async function cancelAdminAppointment(dependencies, sessionUser, identifier) {
+async function cancelAdminAppointment(dependencies, sessionUser, identifier, payload = {}) {
   const adminContext = await dependencies.managementRepository.resolveAdminContext(sessionUser);
   const cita = await dependencies.managementRepository.findAppointmentDetail(identifier);
 
@@ -8,13 +8,26 @@ async function cancelAdminAppointment(dependencies, sessionUser, identifier) {
     throw new AdminServiceManagementError('No encontramos la cita solicitada', 404, 'APPOINTMENT_NOT_FOUND');
   }
 
-  if (cita.estado !== 'pendiente') {
-    throw new AdminServiceManagementError('Solo puedes cancelar citas que aun esten pendientes', 400, 'INVALID_STATUS_TRANSITION');
+  if (!['pendiente', 'confirmada'].includes(cita.estado)) {
+    throw new AdminServiceManagementError(
+      'Solo puedes cancelar citas pendientes o confirmadas',
+      400,
+      'INVALID_STATUS_TRANSITION'
+    );
   }
+
+  const cancellationReason = dependencies.rules.normalizeCancellationReason(
+    payload?.motivoCancelacion || payload?.motivo_cancelacion || payload?.motivo
+  );
+  const currentAttention = cita.atencion || {};
 
   await dependencies.managementRepository.updateAppointmentOperationalState(cita.id, adminContext.id, {
     estado: 'cancelada',
-    observacionesAdmin: cita.observacionesAdminRaw,
+    observacionesAdmin: dependencies.rules.serializeOperationalNotes({
+      ...currentAttention,
+      cancellationReason,
+      cancellationRequestedBy: 'administracion'
+    }),
     precioCalculado: cita.precioCalculado,
     precioFinal: cita.precioFinal
   });
@@ -22,11 +35,13 @@ async function cancelAdminAppointment(dependencies, sessionUser, identifier) {
   const actualizada = await dependencies.managementRepository.findAppointmentDetail(cita.id);
 
   try {
-    if (actualizada?.cliente?.email) {
+    if (actualizada) {
       await dependencies.notificationService.notifyAppointmentCancelled({
-        email: actualizada.cliente.email,
+        email: actualizada?.cliente?.email || null,
         appointment: dependencies.emailViewModelBuilder(actualizada),
-        flowType: cita.estado === 'reprogramada' ? 'reprogramacion' : 'nueva'
+        flowType: cita.estado === 'reprogramada' ? 'reprogramacion' : 'nueva',
+        cancellationReason,
+        cancelledBy: 'administracion'
       });
     }
   } catch (notificationError) {

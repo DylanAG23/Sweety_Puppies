@@ -39,7 +39,8 @@ function createAdminServiceManagementModule() {
     listAdminAppointments: (sessionUser, query) => listAdminAppointments(dependencies, sessionUser, query),
     getAdminAppointmentDetail: (sessionUser, identifier) => getAdminAppointmentDetail(dependencies, sessionUser, identifier),
     confirmAdminAppointment: (sessionUser, identifier) => confirmAdminAppointment(dependencies, sessionUser, identifier),
-    cancelAdminAppointment: (sessionUser, identifier) => cancelAdminAppointment(dependencies, sessionUser, identifier),
+    cancelAdminAppointment: (sessionUser, identifier, payload) =>
+      cancelAdminAppointment(dependencies, sessionUser, identifier, payload),
     startAdminAppointment: (sessionUser, identifier) => startAdminAppointment(dependencies, sessionUser, identifier),
     updateAdminAppointmentAttention: (sessionUser, identifier, payload) =>
       updateAdminAppointmentAttention(dependencies, sessionUser, identifier, payload),

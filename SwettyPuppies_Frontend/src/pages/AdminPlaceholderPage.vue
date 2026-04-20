@@ -44,7 +44,7 @@ function goTo(path: string) {
         <p>{{ description }}</p>
         <div class="placeholder-actions">
           <a href="/admin" class="btn-enviar" @click.prevent="goTo('/admin')">Volver al inicio</a>
-          <button type="button" class="btn-secundario" @click="logoutToLogin">Cerrar sesion</button>
+          <button type="button" class="btn-secundario" @click="logoutToLogin">Cerrar sesión</button>
         </div>
       </section>
     </template>

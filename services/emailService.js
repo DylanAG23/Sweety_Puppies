@@ -291,6 +291,94 @@ Precio estimado: ${formatCurrency(appointment.totalPrice)}
   });
 }
 
+async function sendAppointmentCancellationEmail({
+  email,
+  appointment,
+  cancelledBy = 'administracion',
+  cancellationReason,
+  recipientRole = 'cliente',
+  flowType = 'nueva'
+}) {
+  const isReschedule = flowType === 'reprogramacion';
+  const reasonLabel = cancellationReason || 'No se registro un motivo especifico.';
+  const cancelledByClient = cancelledBy === 'cliente';
+  const isBusinessRecipient = recipientRole === 'negocio';
+
+  let title = '';
+  let copy = '';
+  let subject = '';
+
+  if (isBusinessRecipient && cancelledByClient) {
+    title = `El cliente ${appointment.clientName} canceló la cita de ${appointment.petName}`;
+    copy = 'La cita fue retirada desde el portal del cliente. Te compartimos el motivo registrado para que puedas hacer el seguimiento correspondiente.';
+    subject = `Cliente canceló cita - ${appointment.petName}`;
+  } else if (isBusinessRecipient) {
+    title = `Se canceló la cita de ${appointment.petName} desde administración`;
+    copy = 'La cita fue cancelada desde el panel administrativo. Este correo sirve como soporte interno del movimiento realizado.';
+    subject = `Cita cancelada desde administración - ${appointment.petName}`;
+  } else if (cancelledByClient) {
+    title = isReschedule
+      ? `Has cancelado la reprogramación de la cita de ${appointment.petName}`
+      : `Has cancelado la cita de ${appointment.petName}`;
+    copy = 'Tu solicitud fue cancelada correctamente. Si deseas volver a reservar, puedes hacerlo desde tu portal cuando lo necesites.';
+    subject = `Has cancelado tu cita - ${appointment.petName}`;
+  } else {
+    title = isReschedule
+      ? `Sweety Puppies canceló la reprogramación de la cita de ${appointment.petName}`
+      : `Sweety Puppies canceló la cita de ${appointment.petName}`;
+    copy = 'La administracion de Sweety Puppies tuvo que cancelar esta cita. Te compartimos el motivo registrado para que tengas claridad sobre el cambio.';
+    subject = `Cita cancelada por Sweety Puppies - ${appointment.petName}`;
+  }
+
+  const html = `
+    <div style="margin:0; padding:32px 16px; background:linear-gradient(180deg,#fff7fb 0%,#fff0f8 100%); font-family:Arial,sans-serif; color:#4b2d40;">
+      <div style="max-width:620px; margin:0 auto; background:#ffffff; border-radius:28px; overflow:hidden; box-shadow:0 18px 50px rgba(188,93,160,0.18); border:1px solid #ffd9ed;">
+        <div style="padding:28px 32px; background:linear-gradient(135deg,#ffd7ec 0%,#ffeaf5 50%,#def7f4 100%); text-align:center;">
+          <div style="display:inline-block; background:#ffffff; color:#9c0076; font-weight:700; font-size:13px; padding:8px 14px; border-radius:999px; margin-bottom:14px;">
+            Sweety Puppies
+          </div>
+          <h1 style="margin:0; font-size:30px; line-height:1.1; color:#8f176e;">${title}</h1>
+          <p style="margin:14px 0 0; font-size:16px; color:#6e4b60;">${copy}</p>
+        </div>
+        <div style="padding:32px;">
+          <table style="width:100%; border-collapse:collapse;">
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700; width:180px;">Cliente</td><td style="padding:10px 0; color:#5f4557;">${appointment.clientName}</td></tr>
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Mascota</td><td style="padding:10px 0; color:#5f4557;">${appointment.petName}</td></tr>
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Servicio</td><td style="padding:10px 0; color:#5f4557;">${appointment.serviceName}</td></tr>
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Fecha</td><td style="padding:10px 0; color:#5f4557;">${appointment.dateLabel}</td></tr>
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Hora</td><td style="padding:10px 0; color:#5f4557;">${appointment.timeLabel}</td></tr>
+            <tr><td style="padding:10px 0; color:#8f176e; font-weight:700;">Motivo de cancelación</td><td style="padding:10px 0; color:#5f4557;">${reasonLabel}</td></tr>
+          </table>
+        </div>
+        <div style="padding:22px 32px; background:#fff7fb; border-top:1px solid #ffe2f1; text-align:center;">
+          <p style="margin:0; font-size:13px; color:#8a6a7c;">Sweety Puppies - cuidado tierno, seguro y con mucho estilo</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const text = `
+Sweety Puppies
+
+${title}
+
+Cliente: ${appointment.clientName}
+Mascota: ${appointment.petName}
+Servicio: ${appointment.serviceName}
+Fecha: ${appointment.dateLabel}
+Hora: ${appointment.timeLabel}
+Motivo de cancelación: ${reasonLabel}
+  `.trim();
+
+  return sendMail({
+    to: email,
+    subject,
+    html,
+    text,
+    fallbackLogLine: `[${new Date().toISOString()}] CITA_CANCELADA_${cancelledByClient ? 'CLIENTE' : 'ADMIN'}_${recipientRole.toUpperCase()} ${email} => ${appointment.petName} / ${appointment.dateLabel} ${appointment.timeLabel} / ${reasonLabel}\n`
+  });
+}
+
 async function sendMail({ to, subject, html, text, fallbackLogLine, previewCode = null }) {
   const mailFrom = process.env.MAIL_FROM;
   const resendApiKey = process.env.RESEND_API_KEY;
@@ -381,5 +469,6 @@ module.exports = {
   sendVerificationEmail,
   sendAppointmentRequestEmail,
   sendAppointmentStatusEmail,
+  sendAppointmentCancellationEmail,
   verificationLogPath
 };

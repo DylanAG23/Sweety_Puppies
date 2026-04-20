@@ -341,7 +341,8 @@ class PostgresClientAppointmentsRepository {
           hora_fin_estimada,
           estado::text AS estado,
           estado_pelaje_reportado::text AS estado_pelaje_reportado,
-          comportamiento_reportado::text AS comportamiento_reportado
+          comportamiento_reportado::text AS comportamiento_reportado,
+          observaciones_admin
         FROM citas
         WHERE id = $1::uuid
           AND cliente_id = ANY($2::uuid[])
@@ -364,7 +365,8 @@ class PostgresClientAppointmentsRepository {
       horaFinEstimada: result.rows[0].hora_fin_estimada,
       estado: result.rows[0].estado,
       estadoPelajeReportado: result.rows[0].estado_pelaje_reportado,
-      comportamientoReportado: result.rows[0].comportamiento_reportado
+      comportamientoReportado: result.rows[0].comportamiento_reportado,
+      observacionesAdminRaw: result.rows[0].observaciones_admin
     };
   }
 
@@ -382,16 +384,17 @@ class PostgresClientAppointmentsRepository {
     return result.rows.map((row) => row.servicio_adicional_id);
   }
 
-  async updateAppointmentStatus(appointmentId, status) {
+  async updateAppointmentStatus(appointmentId, status, options = {}) {
     await client.query(
       `
         UPDATE citas
         SET
           estado = $2,
+          observaciones_admin = COALESCE($3::text, observaciones_admin),
           updated_at = NOW()
         WHERE id = $1::uuid
       `,
-      [appointmentId, status]
+      [appointmentId, status, options.observacionesAdmin || null]
     );
   }
 

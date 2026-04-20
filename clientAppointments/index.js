@@ -31,8 +31,8 @@ function createClientAppointmentsModule() {
       getClientAppointmentAvailability(dependencies, sessionUser, payload),
     createClientAppointment: (sessionUser, payload, files) =>
       createClientAppointment(dependencies, sessionUser, payload, files),
-    cancelClientAppointment: (sessionUser, appointmentId) =>
-      cancelClientAppointment(dependencies, sessionUser, appointmentId),
+    cancelClientAppointment: (sessionUser, appointmentId, payload) =>
+      cancelClientAppointment(dependencies, sessionUser, appointmentId, payload),
     reprogramClientAppointment: (sessionUser, appointmentId, payload) =>
       reprogramClientAppointment(dependencies, sessionUser, appointmentId, payload),
     getAdminAppointmentReview: (token) => getAdminAppointmentReview(dependencies, token),

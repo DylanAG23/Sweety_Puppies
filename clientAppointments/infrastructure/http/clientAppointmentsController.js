@@ -135,7 +135,7 @@ function createClientAppointmentsController(useCases, reviewPageRenderer) {
 
     cancelAppointment: async (req, res) => {
       try {
-        const result = await useCases.cancelClientAppointment(req.user, req.params.id);
+        const result = await useCases.cancelClientAppointment(req.user, req.params.id, req.body);
         res.json({
           success: true,
           message: result.message

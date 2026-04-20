@@ -1,3 +1,19 @@
+:root {
+  --platform-sidebar-width: 272px;
+  --platform-sidebar-collapsed-width: 104px;
+  --platform-topbar-height: 86px;
+  --platform-page-padding: 28px;
+  --sp-primary-purple: #8f176e;
+  --sp-primary-purple-deep: #79135f;
+  --sp-primary-purple-hover: #9f207b;
+  --sp-primary-purple-hover-deep: #86176a;
+  --sp-primary-shadow: rgba(127, 31, 107, 0.26);
+  --sp-dark-button: #1a202c;
+  --sp-dark-button-deep: #111827;
+  --sp-dark-button-hover: #273142;
+  --sp-dark-shadow: rgba(17, 24, 39, 0.28);
+}
+
 html,
 body,
 #app {
@@ -7,8 +23,120 @@ body,
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 236, 0.26), transparent 18%),
+    linear-gradient(180deg, #f5f7fb 0%, #eef3f9 100%);
 }
 
 #app {
   min-height: 100vh;
+}
+
+.bounce-effect {
+  animation: none !important;
+}
+
+.btn-enviar,
+.btn-primary,
+.btn.main,
+.auth-primary-button {
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 16px 30px var(--sp-primary-shadow) !important;
+}
+
+.btn-enviar:hover,
+.btn-primary:hover,
+.btn.main:hover,
+.auth-primary-button:hover {
+  background: linear-gradient(135deg, var(--sp-primary-purple-hover) 0%, var(--sp-primary-purple-hover-deep) 100%) !important;
+}
+
+.btn-secundario,
+.btn-secondary,
+.btn.light,
+.gallery-button {
+  background: linear-gradient(135deg, var(--sp-dark-button) 0%, var(--sp-dark-button-deep) 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 14px 26px var(--sp-dark-shadow) !important;
+}
+
+.btn-secundario:hover,
+.btn-secondary:hover,
+.btn.light:hover,
+.gallery-button:hover,
+.btn-secundario:focus-visible,
+.btn-secondary:focus-visible,
+.btn.light:focus-visible,
+.gallery-button:focus-visible {
+  background: linear-gradient(135deg, var(--sp-dark-button-hover) 0%, var(--sp-dark-button) 100%) !important;
+  color: #fff !important;
+}
+
+.btn-secundario:disabled,
+.btn-secondary:disabled,
+.btn.light:disabled,
+.gallery-button:disabled,
+.btn-secundario.disabled {
+  opacity: 0.62;
+  cursor: not-allowed !important;
+}
+
+body.platform-shell-active {
+  --platform-current-sidebar-width: var(--platform-sidebar-width);
+}
+
+body.platform-shell-active.platform-shell-collapsed {
+  --platform-current-sidebar-width: var(--platform-sidebar-collapsed-width);
+}
+
+body.platform-shell-admin .admin-home-page,
+body.platform-shell-admin .admin-agenda-page,
+body.platform-shell-admin .admin-clients-page,
+body.platform-shell-admin .admin-pets-page,
+body.platform-shell-admin .admin-services-page,
+body.platform-shell-admin .admin-content-page,
+body.platform-shell-admin .admin-reports-page,
+body.platform-shell-admin .management-page,
+body.platform-shell-admin .admin-placeholder-page,
+body.platform-shell-client .cliente-portal,
+body.platform-shell-client .booking-page,
+body.platform-shell-client .history-page,
+body.platform-shell-client .pets-page,
+body.platform-shell-client .profile-page,
+body.platform-shell-client .placeholder-page {
+  min-height: 100vh;
+  padding-top: calc(var(--platform-topbar-height) + 18px);
+  padding-left: calc(var(--platform-current-sidebar-width, 0px) + var(--platform-page-padding));
+  padding-right: var(--platform-page-padding);
+  padding-bottom: 28px;
+  box-sizing: border-box;
+  transition: padding-left 0.24s ease;
+}
+
+@media (max-width: 980px) {
+  body.platform-shell-active {
+    --platform-current-sidebar-width: 0px;
+  }
+
+  body.platform-shell-admin .admin-home-page,
+  body.platform-shell-admin .admin-agenda-page,
+  body.platform-shell-admin .admin-clients-page,
+  body.platform-shell-admin .admin-pets-page,
+  body.platform-shell-admin .admin-services-page,
+  body.platform-shell-admin .admin-content-page,
+  body.platform-shell-admin .admin-reports-page,
+  body.platform-shell-admin .management-page,
+  body.platform-shell-admin .admin-placeholder-page,
+  body.platform-shell-client .cliente-portal,
+  body.platform-shell-client .booking-page,
+  body.platform-shell-client .history-page,
+  body.platform-shell-client .pets-page,
+  body.platform-shell-client .profile-page,
+  body.platform-shell-client .placeholder-page {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: calc(var(--platform-topbar-height) + 16px);
+  }
 }

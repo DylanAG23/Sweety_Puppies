@@ -148,8 +148,8 @@ const emptyStateTitle = computed(() =>
       ? 'No encontramos servicios fijos con esa busqueda'
       : 'No encontramos servicios adicionales con esa busqueda'
     : currentCategory.value === 'principales'
-      ? 'Aun no hay servicios fijos registrados'
-      : 'Aun no hay servicios adicionales registrados'
+      ? 'Aún no hay servicios fijos registrados'
+      : 'Aún no hay servicios adicionales registrados'
 )
 
 const emptyStateMessage = computed(() =>
@@ -574,7 +574,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
       <p>{{ error }}</p>
       <div class="state-actions">
         <button type="button" class="btn-secundario" @click="loadServices()">Intentar de nuevo</button>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -584,7 +584,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
       <section class="services-shell hero-card">
         <div class="hero-copy">
           <span class="services-pill">Catalogo y tarifas</span>
-          <h1>Servicios que ofrece la peluqueria</h1>
+          <h1>Servicios que ofrece la peluquería</h1>
           <p>
             Aqui administras los servicios fijos y los adicionales de Sweety Puppies. Las citas ya completadas se
             gestionan por aparte como citas realizadas, asi que este espacio queda solo para lo que el negocio ofrece.
@@ -965,7 +965,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
 .category-toggle { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .category-button,.btn-enviar,.btn-secundario { border:none; border-radius:999px; padding:14px 18px; font-family:'Montserrat',sans-serif; font-weight:700; cursor:pointer; }
 .category-button,.btn-secundario { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:#8f176e; border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); }
-.category-button.active,.btn-enviar { background:linear-gradient(135deg,#c1008f 0%,#e95adb 100%); color:#fff; box-shadow:0 16px 30px rgba(233,90,219,.24); }
+.category-button.active,.btn-enviar { background:linear-gradient(135deg,var(--sp-primary-purple) 0%,var(--sp-primary-purple-deep) 100%); color:#fff; box-shadow:0 16px 30px var(--sp-primary-shadow); }
 .btn-secundario.accent { background:linear-gradient(135deg,#eefafe 0%,#ffffff 100%); }
 .btn-enviar.compact,.btn-secundario.compact { padding-inline:16px; }
 .field-group { display:grid; gap:8px; }

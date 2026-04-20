@@ -23,7 +23,7 @@ onMounted(() => {
       <p>{{ subtitle }}</p>
       <div class="placeholder-actions">
         <a href="/cliente" class="btn-secundario">Volver al portal</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
   </main>

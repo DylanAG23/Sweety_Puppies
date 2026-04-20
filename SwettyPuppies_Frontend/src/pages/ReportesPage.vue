@@ -461,7 +461,7 @@ function formatCompactCurrency(value: number | null | undefined) {
       <p>{{ error }}</p>
       <div class="card-actions">
         <a href="/login" class="btn-secondary">Volver al acceso</a>
-        <button type="button" class="btn-primary" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-primary" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -814,9 +814,9 @@ function formatCompactCurrency(value: number | null | undefined) {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #c80f9b 0%, #de49d3 100%);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
   color: #fff;
-  box-shadow: 0 18px 28px rgba(222, 73, 211, 0.22);
+  box-shadow: 0 18px 28px var(--sp-primary-shadow);
 }
 
 .btn-secondary {

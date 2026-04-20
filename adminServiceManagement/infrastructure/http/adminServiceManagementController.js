@@ -46,7 +46,7 @@ function createAdminServiceManagementController(useCases) {
 
     cancelAppointment: async (req, res) => {
       try {
-        const result = await useCases.cancelAdminAppointment(req.user, req.params.id);
+        const result = await useCases.cancelAdminAppointment(req.user, req.params.id, req.body);
         res.json({ success: true, message: result.message, cita: result.cita });
       } catch (error) {
         handleHttpError(res, error, 'Error al cancelar la cita');

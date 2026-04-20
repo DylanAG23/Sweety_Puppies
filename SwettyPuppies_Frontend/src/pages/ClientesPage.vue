@@ -109,13 +109,13 @@ const summaryCards = computed(() => {
 const emptyStateTitle = computed(() =>
   appliedSearch.value
     ? 'No encontramos clientes con esa busqueda'
-    : 'Aun no hay clientes registrados en el portal'
+    : 'Aún no hay clientes registrados en el portal'
 )
 
 const emptyStateMessage = computed(() =>
   appliedSearch.value
     ? 'Prueba buscando por nombre, apellido, cedula, telefono o correo.'
-    : 'Cuando empiecen a registrarse, aqui apareceran sus fichas con mascotas, citas y actividad reciente.'
+    : 'Cuando empiecen a registrarse, aquí aparecerán sus fichas con mascotas, citas y actividad reciente.'
 )
 
 onMounted(async () => {
@@ -303,7 +303,7 @@ function formatLabel(value: string | null) {
       <p>{{ error }}</p>
       <div class="state-actions">
         <button type="button" class="btn-secundario" @click="loadClients()">Intentar de nuevo</button>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -313,14 +313,14 @@ function formatLabel(value: string | null) {
       <section class="clients-shell hero-card">
         <div class="hero-copy">
           <span class="clients-pill">Clientes del portal</span>
-          <h1>Relacion cercana con cada familia peluda</h1>
+          <h1>Relación cercana con cada familia peluda</h1>
           <p>
             Consulta las fichas de los clientes, sus mascotas registradas y un resumen rapido de su actividad dentro de
             Sweety Puppies.
           </p>
           <div class="hero-note">
             <strong>Busqueda operativa</strong>
-            <span>Encuentra por nombre, apellido, cedula, telefono o correo sin salir del panel administrativo.</span>
+            <span>Encuentra por nombre, apellido, cédula, teléfono o correo sin salir del panel administrativo.</span>
           </div>
         </div>
 
@@ -376,11 +376,11 @@ function formatLabel(value: string | null) {
 
             <div class="client-data-grid">
               <div>
-                <small>Cedula</small>
+                <small>Cédula</small>
                 <span>{{ item.cedula || 'Sin registro' }}</span>
               </div>
               <div>
-                <small>Telefono</small>
+                <small>Teléfono</small>
                 <span>{{ item.telefono || 'Sin registro' }}</span>
               </div>
               <div>
@@ -431,13 +431,13 @@ function formatLabel(value: string | null) {
               <article class="detail-card">
                 <strong>Nombre completo</strong>
                 <span>{{ selectedClient.nombre }} {{ selectedClient.apellido }}</span>
-                <small>Cedula: {{ selectedClient.cedula || 'Sin registro' }}</small>
+                <small>Cédula: {{ selectedClient.cedula || 'Sin registro' }}</small>
               </article>
 
               <article class="detail-card">
                 <strong>Contacto principal</strong>
-                <span>{{ selectedClient.telefono || 'Sin telefono principal' }}</span>
-                <small>{{ selectedClient.telefono_secundario || 'Sin telefono secundario' }}</small>
+                <span>{{ selectedClient.telefono || 'Sin teléfono principal' }}</span>
+                <small>{{ selectedClient.telefono_secundario || 'Sin teléfono secundario' }}</small>
               </article>
 
               <article class="detail-card">
@@ -447,8 +447,8 @@ function formatLabel(value: string | null) {
               </article>
 
               <article class="detail-card">
-                <strong>Direccion</strong>
-                <span>{{ selectedClient.direccion || 'Aun no registrada' }}</span>
+                <strong>Dirección</strong>
+                <span>{{ selectedClient.direccion || 'Aún no registrada' }}</span>
                 <small>Alta en portal: {{ formatDate(selectedClient.created_at) }}</small>
               </article>
             </div>
@@ -543,11 +543,11 @@ function formatLabel(value: string | null) {
                   <input v-model="clientForm.apellido" type="text">
                 </label>
                 <label class="field-group">
-                  <span>Telefono principal</span>
+                  <span>Teléfono principal</span>
                   <input v-model="clientForm.telefono" type="text">
                 </label>
                 <label class="field-group">
-                  <span>Telefono secundario</span>
+                  <span>Teléfono secundario</span>
                   <input v-model="clientForm.telefono_secundario" type="text">
                 </label>
                 <label class="field-group">
@@ -562,7 +562,7 @@ function formatLabel(value: string | null) {
                   </select>
                 </label>
                 <label class="field-group full">
-                  <span>Direccion</span>
+                  <span>Dirección</span>
                   <textarea v-model="clientForm.direccion" rows="3" />
                 </label>
               </div>
@@ -769,9 +769,9 @@ function formatLabel(value: string | null) {
 }
 
 .btn-enviar {
-  background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
   color: #fff;
-  box-shadow: 0 16px 30px rgba(233, 90, 219, 0.24);
+  box-shadow: 0 16px 30px var(--sp-primary-shadow);
 }
 
 .btn-enviar.compact {

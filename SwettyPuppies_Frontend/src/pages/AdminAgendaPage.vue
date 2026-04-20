@@ -585,7 +585,7 @@ function formatDateInput(value: Date) {
       <p>{{ error }}</p>
       <div class="state-actions">
         <button type="button" class="btn-secundario" @click="goTo('/admin')">Volver al panel</button>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -737,7 +737,7 @@ function formatDateInput(value: Date) {
           </div>
 
           <div v-else class="empty-state">
-            <h3>Aun no hay movimientos para esta fecha</h3>
+            <h3>Aún no hay movimientos para esta fecha</h3>
             <p>La agenda esta despejada. Puedes aprovechar para revisar bloqueos o confirmar nuevas solicitudes.</p>
           </div>
 
@@ -888,7 +888,7 @@ function formatDateInput(value: Date) {
               <article class="detail-card">
                 <strong>Cliente</strong>
                 <span>{{ selectedAppointment.cliente.nombre || 'Cliente por revisar' }}</span>
-                <small>{{ selectedAppointment.cliente.telefono || 'Telefono por confirmar' }}</small>
+                <small>{{ selectedAppointment.cliente.telefono || 'Teléfono por confirmar' }}</small>
                 <small>{{ selectedAppointment.cliente.email || 'Correo por confirmar' }}</small>
               </article>
 
@@ -1130,9 +1130,9 @@ function formatDateInput(value: Date) {
 
 .date-nav.active,
 .btn-enviar {
-  background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
   color: #fff;
-  box-shadow: 0 16px 30px rgba(233, 90, 219, 0.24);
+  box-shadow: 0 16px 30px var(--sp-primary-shadow);
 }
 
 .btn-secundario.disabled {

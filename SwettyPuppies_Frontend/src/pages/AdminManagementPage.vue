@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
@@ -103,7 +103,10 @@ const selectedAppointment = ref<AppointmentDetail | null>(null)
 const selectedCompletedService = ref<CompletedServiceDetail | null>(null)
 const isAppointmentModalOpen = ref(false)
 const isCompletedServiceModalOpen = ref(false)
+const isCancelConfirmOpen = ref(false)
 const showFinalizePanel = ref(false)
+const cancelReason = ref('')
+const cancelMessage = ref('')
 const appointmentFilters = ref({ estado: 'todas', q: '' })
 const serviceFilters = ref({ q: '', cliente: '', mascota: '', servicio: '', fechaDesde: '', fechaHasta: '' })
 const attentionForm = ref({
@@ -129,7 +132,7 @@ const serviceSummary = computed(() => ({
 }))
 
 const canConfirmAppointment = computed(() => selectedAppointment.value?.estado === 'pendiente')
-const canCancelAppointment = computed(() => selectedAppointment.value?.estado === 'pendiente')
+const canCancelAppointment = computed(() => ['pendiente', 'confirmada'].includes(selectedAppointment.value?.estado || ''))
 const canStartAppointment = computed(() => {
   if (selectedAppointment.value?.estado !== 'confirmada') {
     return false
@@ -247,7 +250,37 @@ function confirmAppointment() {
 
 function cancelAppointment() {
   if (!selectedAppointment.value) return
-  return runAppointmentAction(`/api/admin/gestion/citas/${selectedAppointment.value.id}/cancel`, {}, 'La cita fue cancelada')
+  return runAppointmentAction(
+    `/api/admin/gestion/citas/${selectedAppointment.value.id}/cancel`,
+    { motivoCancelacion: cancelReason.value },
+    'La cita fue cancelada'
+  )
+}
+
+function requestCancelAppointment() {
+  if (!selectedAppointment.value) return
+  cancelReason.value = ''
+  cancelMessage.value = `Indica el motivo de cancelacion para la cita de ${selectedAppointment.value.mascota.nombre}.`
+  isCancelConfirmOpen.value = true
+}
+
+function closeCancelConfirm() {
+  isCancelConfirmOpen.value = false
+  cancelReason.value = ''
+}
+
+async function confirmCancelAppointment() {
+  if (!cancelReason.value.trim()) {
+    error.value = 'Debes indicar el motivo de cancelación'
+    return
+  }
+
+  try {
+    await cancelAppointment()
+    closeCancelConfirm()
+  } catch (error) {
+    // runAppointmentAction already manages the visible error state
+  }
 }
 
 function startAppointment() {
@@ -308,6 +341,7 @@ function closeAppointmentModal() {
   isAppointmentModalOpen.value = false
   selectedAppointment.value = null
   showFinalizePanel.value = false
+  closeCancelConfirm()
 }
 
 function closeCompletedServiceModal() {
@@ -422,7 +456,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
       <p>{{ error }}</p>
       <div class="row-actions">
         <button type="button" class="btn-secundario" @click="goTo('/admin')">Volver al inicio</button>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -431,9 +465,9 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 
       <section class="management-shell hero-card">
         <div>
-          <span class="soft-pill">Gestion de citas</span>
+          <span class="soft-pill">Gestión de citas</span>
           <h1>El corazon operativo de Sweety Puppies</h1>
-          <p>Aqui administras la operacion de citas y consultas el historial real de citas ya realizadas.</p>
+          <p>Aquí administras la operación de citas y consultas el historial real de citas ya realizadas.</p>
           <div class="hero-note">
             <strong>Operacion central</strong>
             <span>Confirma, inicia, atiende y finaliza citas; luego revisa la cita ya completada desde su propio historial.</span>
@@ -472,7 +506,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             </label>
             <label class="field-block">
               <span>Buscar cita</span>
-              <input v-model.trim="appointmentFilters.q" type="text" placeholder="Cliente, mascota, servicio, correo o telefono...">
+              <input v-model.trim="appointmentFilters.q" type="text" placeholder="Cliente, mascota, servicio, correo o teléfono...">
             </label>
           </div>
           <div class="row-actions">
@@ -561,8 +595,8 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
           </article>
           <article v-if="!completedServices.length" class="management-shell empty-card">
             <span class="soft-pill subtle">Citas realizadas</span>
-            <h2>Aun no hay citas finalizadas</h2>
-            <p>Cuando completes las primeras citas, aqui aparecera el historial operativo real del negocio.</p>
+            <h2>Aún no hay citas finalizadas</h2>
+            <p>Cuando completes las primeras citas, aquí aparecerá el historial operativo real del negocio.</p>
           </article>
         </section>
       </template>
@@ -572,16 +606,39 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
             <div>
               <span class="soft-pill subtle">Detalle de cita</span>
               <h2>{{ selectedAppointment?.mascota.nombre || 'Cargando cita...' }}</h2>
-              <p class="modal-copy">Desde aqui se opera la cita de principio a fin.</p>
+              <p class="modal-copy">Desde aquí se opera la cita de principio a fin.</p>
             </div>
             <button type="button" class="modal-close" @click="closeAppointmentModal">×</button>
           </div>
           <div v-if="detailLoading" class="empty-card compact"><p>Cargando detalle...</p></div>
           <template v-else-if="selectedAppointment">
             <div class="detail-grid">
-              <article class="detail-card"><strong>Cliente</strong><span>{{ selectedAppointment.cliente.nombre || 'Cliente por revisar' }}</span><small>{{ selectedAppointment.cliente.cedula || 'Cedula por confirmar' }}</small><small>{{ selectedAppointment.cliente.telefono || 'Telefono por confirmar' }}</small><small>{{ selectedAppointment.cliente.email || 'Correo por confirmar' }}</small></article>
-              <article class="detail-card"><strong>Mascota</strong><span>{{ selectedAppointment.mascota.nombre }}</span><small>{{ selectedAppointment.mascota.raza || 'Raza por confirmar' }}</small><small>{{ formatLabel(selectedAppointment.mascota.tamano) }} · {{ formatLabel(selectedAppointment.mascota.tipoPelaje) }}</small></article>
-              <article class="detail-card"><strong>Servicio solicitado</strong><span>{{ selectedAppointment.servicioPrincipal.nombre }}</span><small>{{ formatDate(selectedAppointment.fecha) }}</small><small>{{ formatTime(selectedAppointment.horaInicio) }} - {{ formatTime(selectedAppointment.horaFinEstimada) }}</small></article>
+              <article class="detail-card">
+                <strong>Cliente</strong>
+                <span>{{ selectedAppointment.cliente.nombre || 'Cliente por revisar' }}</span>
+                <div class="detail-meta">
+                  <small><b>Cédula:</b> {{ selectedAppointment.cliente.cedula || 'Por confirmar' }}</small>
+                  <small><b>Teléfono:</b> {{ selectedAppointment.cliente.telefono || 'Por confirmar' }}</small>
+                  <small><b>Correo:</b> {{ selectedAppointment.cliente.email || 'Por confirmar' }}</small>
+                </div>
+              </article>
+              <article class="detail-card">
+                <strong>Mascota</strong>
+                <span>{{ selectedAppointment.mascota.nombre }}</span>
+                <div class="detail-meta">
+                  <small><b>Raza:</b> {{ selectedAppointment.mascota.raza || 'Por confirmar' }}</small>
+                  <small><b>Tamaño:</b> {{ formatLabel(selectedAppointment.mascota.tamano) }}</small>
+                  <small><b>Pelaje:</b> {{ formatLabel(selectedAppointment.mascota.tipoPelaje) }}</small>
+                </div>
+              </article>
+              <article class="detail-card">
+                <strong>Servicio solicitado</strong>
+                <span>{{ selectedAppointment.servicioPrincipal.nombre }}</span>
+                <div class="detail-meta">
+                  <small><b>Fecha:</b> {{ formatDate(selectedAppointment.fecha) }}</small>
+                  <small><b>Horario:</b> {{ formatTime(selectedAppointment.horaInicio) }} - {{ formatTime(selectedAppointment.horaFinEstimada) }}</small>
+                </div>
+              </article>
               <article class="detail-card"><strong>Estado</strong><span class="status-badge inline" :class="statusClass(selectedAppointment.estado)">{{ formatLabel(selectedAppointment.estado) }}</span><small>{{ formatLabel(selectedAppointment.estadoPelajeReportado) }} · {{ formatLabel(selectedAppointment.comportamientoReportado) }}</small></article>
               <article class="detail-card"><strong>Precio base</strong><span>{{ formatCurrency(selectedAppointment.precioBase) }}</span></article>
               <article class="detail-card"><strong>Calculado</strong><span>{{ formatCurrency(selectedAppointment.precioCalculado) }}</span></article>
@@ -605,7 +662,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
                   type="button"
                   class="btn-soft-cancel"
                   :disabled="actionLoading"
-                  @click="cancelAppointment"
+                  @click="requestCancelAppointment"
                 >
                   Cancelar cita
                 </button>
@@ -628,7 +685,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
                 <label class="field-block"><span>Comportamiento observado</span><select v-model="attentionForm.comportamientoObservado"><option value="normal">Normal</option><option value="sensible">Sensible</option><option value="agresivo">Agresivo</option></select></label>
                 <label class="field-block"><span>Precio final provisional</span><input v-model="attentionForm.precioFinalProvisional" type="number" min="0" step="1000"></label>
               </div>
-              <label class="field-block"><span>Observaciones durante el servicio</span><textarea v-model="attentionForm.observacionesDuranteServicio" rows="4" placeholder="Anota aqui lo que vas observando durante la atencion..." /></label>
+              <label class="field-block"><span>Observaciones durante el servicio</span><textarea v-model="attentionForm.observacionesDuranteServicio" rows="4" placeholder="Anota aquí lo que vas observando durante la atención..." /></label>
               <div class="catalog-grid">
                 <button v-for="additional in selectedAppointment.catalogoAdicionales" :key="additional.id" type="button" class="catalog-card" :class="{ active: attentionForm.servicioAdicionalIds.includes(additional.id) }" @click="toggleAdditionalService(additional.id)">
                   <strong>{{ additional.nombre }}</strong>
@@ -654,6 +711,33 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         </section>
       </div>
 
+      <div v-if="isCancelConfirmOpen" class="modal-overlay" @click.self="closeCancelConfirm">
+        <section class="management-shell modal-card cancel-confirm-card">
+          <div class="modal-head">
+            <div>
+              <span class="soft-pill subtle">Confirmación</span>
+              <h2>Cancelar cita</h2>
+            </div>
+            <button type="button" class="modal-close" @click="closeCancelConfirm">×</button>
+          </div>
+          <p class="cancel-confirm-copy">{{ cancelMessage }}</p>
+          <label class="field-block">
+            <span>Motivo de cancelación</span>
+            <textarea
+              v-model="cancelReason"
+              rows="4"
+              placeholder="Escribe aquí el motivo de cancelación para enviarlo por correo..."
+            />
+          </label>
+          <div class="row-actions right">
+            <button type="button" class="btn-secundario" :disabled="actionLoading" @click="closeCancelConfirm">Cerrar</button>
+            <button type="button" class="btn-soft-cancel" :disabled="actionLoading" @click="confirmCancelAppointment">
+              {{ actionLoading ? 'Procesando...' : 'Sí, cancelar' }}
+            </button>
+          </div>
+        </section>
+      </div>
+
       <div v-if="isCompletedServiceModalOpen" class="modal-overlay" @click.self="closeCompletedServiceModal">
         <section class="management-shell modal-card">
           <div class="modal-head">
@@ -666,7 +750,14 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
           <div v-if="detailLoading" class="empty-card compact"><p>Cargando detalle...</p></div>
           <template v-else-if="selectedCompletedService">
             <div class="detail-grid">
-              <article class="detail-card"><strong>Cliente</strong><span>{{ selectedCompletedService.clienteNombreCompleto || 'No registrado' }}</span><small>{{ selectedCompletedService.clienteEmail || 'Correo no registrado' }}</small><small>{{ selectedCompletedService.clienteTelefono || 'Telefono no registrado' }}</small></article>
+              <article class="detail-card">
+                <strong>Cliente</strong>
+                <span>{{ selectedCompletedService.clienteNombreCompleto || 'No registrado' }}</span>
+                <div class="detail-meta">
+                  <small><b>Correo:</b> {{ selectedCompletedService.clienteEmail || 'No registrado' }}</small>
+                  <small><b>Teléfono:</b> {{ selectedCompletedService.clienteTelefono || 'No registrado' }}</small>
+                </div>
+              </article>
               <article class="detail-card"><strong>Mascota</strong><span>{{ selectedCompletedService.mascotaNombre }}</span><small>{{ selectedCompletedService.mascotaRaza || 'Raza no registrada' }}</small><small>{{ formatLabel(selectedCompletedService.mascotaTamano) }} · {{ formatLabel(selectedCompletedService.mascotaTipoPelaje) }}</small></article>
               <article class="detail-card"><strong>Fecha de la cita realizada</strong><span>{{ formatDate(selectedCompletedService.fechaServicio) }}</span></article>
               <article class="detail-card"><strong>Servicio principal</strong><span>{{ selectedCompletedService.servicioPrincipalNombre }}</span><small>{{ selectedCompletedService.serviciosAdicionalesResumen || 'Sin adicionales' }}</small></article>
@@ -700,6 +791,9 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .hero-note,.detail-card,.catalog-card,.finalize-card { border-radius:24px; }
 .hero-note { margin-top:18px; padding:18px 20px; }
 .hero-note strong,.mini-grid strong,.detail-card strong { display:block; color:#9c0076; margin-bottom:6px; }
+.detail-meta { display:grid; gap:6px; margin-top:10px; }
+.detail-meta small { margin:0; display:block; word-break:break-word; }
+.detail-meta b { color:#8f176e; font-weight:700; }
 .tab-grid,.row-actions,.item-top,.pet-mini,.modal-head { display:flex; gap:12px; }
 .item-top,.modal-head { justify-content:space-between; align-items:flex-start; }
 .pet-mini { align-items:center; }
@@ -707,7 +801,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .tab-button,.btn-enviar,.btn-secundario,.btn-soft-cancel { border:none; border-radius:999px; padding:14px 18px; font-family:'Montserrat',sans-serif; font-weight:700; cursor:pointer; }
 .tab-button,.btn-secundario { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:#8f176e; border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); display:flex; justify-content:space-between; align-items:center; }
 .tab-button span { min-width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.92); display:inline-flex; align-items:center; justify-content:center; }
-.tab-button.active,.btn-enviar { background:linear-gradient(135deg,#c1008f 0%,#e95adb 100%); color:#fff; box-shadow:0 16px 30px rgba(233,90,219,.24); }
+.tab-button.active,.btn-enviar { background:linear-gradient(135deg,var(--sp-primary-purple) 0%,var(--sp-primary-purple-deep) 100%); color:#fff; box-shadow:0 16px 30px var(--sp-primary-shadow); }
 .btn-soft-cancel { background:linear-gradient(135deg,#fff0f6 0%,#ffdcea 100%); color:#c23c7b; }
 .filter-card,.detail-panel,.finalize-card { margin-top:24px; display:grid; gap:16px; }
 .form-grid,.summary-grid,.mini-grid,.detail-grid,.catalog-grid { display:grid; gap:12px; }
@@ -744,6 +838,8 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .modal-overlay { position:fixed; inset:0; z-index:80; background:rgba(77,45,71,.26); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:24px; }
 .modal-card { width:min(1180px,100%); max-height:min(92vh,980px); overflow-y:auto; }
 .modal-close { width:46px; height:46px; border-radius:50%; border:none; cursor:pointer; font-size:1.6rem; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:#8f176e; }
+.cancel-confirm-card { width:min(560px,100%); }
+.cancel-confirm-copy { margin:12px 0 0; color:#6e5064; line-height:1.7; }
 .feedback { margin-top:16px; padding:16px 18px; border-radius:20px; font-weight:600; }
 .feedback.success { background:rgba(233,251,247,.94); border:1px solid rgba(115,214,177,.9); color:#0b8a77; }
 .feedback.error { background:rgba(255,240,245,.96); border:1px solid rgba(255,176,214,.96); color:#b33c70; }
@@ -751,3 +847,4 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 @media (max-width: 1180px) { .hero-card,.form-grid,.form-grid.short,.summary-grid,.summary-grid.services,.mini-grid,.detail-grid,.catalog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width: 760px) { .management-page { width:min(100vw - 20px,100%); padding-top:12px; } .state-card,.hero-card,.filter-card,.summary-card,.item-card,.modal-card,.detail-panel,.empty-card { padding:22px; border-radius:24px; } .hero-card,.form-grid,.form-grid.short,.summary-grid,.summary-grid.services,.mini-grid,.detail-grid,.catalog-grid { grid-template-columns:1fr; } .tab-grid,.row-actions,.item-top,.pet-mini,.modal-head { flex-direction:column; align-items:stretch; } }
 </style>
+

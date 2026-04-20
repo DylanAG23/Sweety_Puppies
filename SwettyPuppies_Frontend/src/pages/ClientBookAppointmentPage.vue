@@ -1014,8 +1014,8 @@ function formatDateLabel(value: string) {
 
 .slot-button.active {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
-  box-shadow: 0 16px 26px rgba(233, 90, 219, 0.24);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
+  box-shadow: 0 16px 26px var(--sp-primary-shadow);
 }
 
 .slot-button.active strong,

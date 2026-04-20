@@ -590,7 +590,7 @@ function goTo(path: string) {
       <p>{{ error }}</p>
       <div class="pets-actions-row">
         <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Ir a inicio</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -1348,6 +1348,7 @@ function goTo(path: string) {
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
+  border: none;
   border-radius: 999px;
   background: #eefcf8;
   color: #0b9f93;
@@ -1356,8 +1357,9 @@ function goTo(path: string) {
 }
 
 .status-switch.inactive {
-  background: #fff1f6;
-  color: #c23c7b;
+  background: #eefcf8;
+  color: var(--sp-dark-button);
+  box-shadow: none;
 }
 
 .status-switch.busy {
@@ -1383,7 +1385,11 @@ function goTo(path: string) {
 }
 
 .status-switch.inactive .status-switch-track {
-  background: linear-gradient(135deg, #f2bfd9 0%, #e47abb 100%);
+  background: rgba(26, 32, 44, 0.2);
+}
+
+.status-switch.inactive .status-switch-thumb {
+  background: var(--sp-dark-button);
 }
 
 .status-switch-thumb {

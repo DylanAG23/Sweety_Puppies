@@ -119,7 +119,7 @@ const moduleCards = [
     badge: 'Mascotas',
   },
   {
-    title: 'Gestion de citas',
+    title: 'Gestión de citas',
     description: 'Opera citas, revisa atenciones en curso y consulta citas ya realizadas desde un mismo modulo.',
     href: '/admin/gestion',
     badge: 'Gestion',
@@ -217,7 +217,7 @@ function formatLabel(value: string | null) {
   <main class="admin-home-page">
     <section v-if="loading" class="admin-shell state-card">
       <h1>Cargando el centro de control...</h1>
-      <p>Estamos preparando tu panel administrativo con la informacion del negocio.</p>
+      <p>Estamos preparando tu panel administrativo con la información del negocio.</p>
     </section>
 
     <section v-else-if="error" class="admin-shell state-card">
@@ -225,7 +225,7 @@ function formatLabel(value: string | null) {
       <p>{{ error }}</p>
       <div class="card-actions">
         <a href="/login" class="btn-secundario" @click.prevent="goTo('/login')">Volver al acceso</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -254,7 +254,7 @@ function formatLabel(value: string | null) {
                 <span>{{ payload.profile.email }}</span>
               </div>
               <div>
-                <strong>Telefono</strong>
+                <strong>Teléfono</strong>
                 <span>{{ payload.profile.telefono || 'Pendiente por actualizar' }}</span>
               </div>
               <div>

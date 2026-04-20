@@ -289,7 +289,7 @@ function formatBoolean(value: boolean | null) {
       <p>{{ error }}</p>
       <div class="row-actions">
         <button type="button" class="btn light" @click="loadPets()">Intentar de nuevo</button>
-        <button type="button" class="btn main" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn main" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -352,7 +352,7 @@ function formatBoolean(value: boolean | null) {
                 <div><small>Tamano</small><span>{{ formatLabel(item.tamano) }}</span></div>
                 <div><small>Pelaje</small><span>{{ formatLabel(item.tipo_pelaje) }}</span></div>
                 <div><small>Propietario</small><span>{{ item.cliente_nombre }} {{ item.cliente_apellido }}</span></div>
-                <div><small>Cedula</small><span>{{ item.cliente_cedula || 'Sin registro' }}</span></div>
+                <div><small>Cédula</small><span>{{ item.cliente_cedula || 'Sin registro' }}</span></div>
               </div>
               <div class="pet-footer">
                 <div class="chip-row">
@@ -367,8 +367,8 @@ function formatBoolean(value: boolean | null) {
         </div>
 
         <div v-else class="empty-state">
-          <h3>{{ appliedSearch ? 'No encontramos peluditos con esa busqueda' : 'Aun no hay mascotas registradas' }}</h3>
-          <p>{{ appliedSearch ? 'Prueba por nombre, raza, tamano o datos del cliente.' : 'Cuando se registren mascotas desde el portal, aqui apareceran sus fichas completas.' }}</p>
+          <h3>{{ appliedSearch ? 'No encontramos peluditos con esa búsqueda' : 'Aún no hay mascotas registradas' }}</h3>
+          <p>{{ appliedSearch ? 'Prueba por nombre, raza, tamaño o datos del cliente.' : 'Cuando se registren mascotas desde el portal, aquí aparecerán sus fichas completas.' }}</p>
         </div>
       </section>
 
@@ -433,11 +433,11 @@ function formatBoolean(value: boolean | null) {
                 <strong>Cliente propietario</strong>
                 <div class="info-grid">
                   <div><small>Nombre</small><span>{{ selectedPet.cliente_nombre }} {{ selectedPet.cliente_apellido }}</span></div>
-                  <div><small>Cedula</small><span>{{ selectedPet.cliente_cedula || 'Sin registro' }}</span></div>
-                  <div><small>Telefono</small><span>{{ selectedPet.cliente_telefono || 'Sin registro' }}</span></div>
+                  <div><small>Cédula</small><span>{{ selectedPet.cliente_cedula || 'Sin registro' }}</span></div>
+                  <div><small>Teléfono</small><span>{{ selectedPet.cliente_telefono || 'Sin registro' }}</span></div>
                   <div><small>Secundario</small><span>{{ selectedPet.cliente_telefono_secundario || 'Sin registro' }}</span></div>
                   <div><small>Correo</small><span>{{ selectedPet.cliente_email || 'Sin correo' }}</span></div>
-                  <div><small>Direccion</small><span>{{ selectedPet.cliente_direccion || 'Aun no registrada' }}</span></div>
+                  <div><small>Dirección</small><span>{{ selectedPet.cliente_direccion || 'Aún no registrada' }}</span></div>
                 </div>
               </article>
             </div>
@@ -636,7 +636,7 @@ function formatBoolean(value: boolean | null) {
 .field select,.field textarea { border-radius:18px; border:1px solid rgba(243,203,228,.9); padding:14px 16px; font:inherit; background:rgba(255,255,255,.95); color:#5b4256; }
 .btn { border:none; border-radius:999px; padding:14px 18px; font-family:'Montserrat',sans-serif; font-weight:700; cursor:pointer; }
 .btn.light { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:#8f176e; border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); }
-.btn.main { background:linear-gradient(135deg,#c1008f 0%,#e95adb 100%); color:#fff; box-shadow:0 16px 30px rgba(233,90,219,.24); }
+.btn.main { background:linear-gradient(135deg,var(--sp-primary-purple) 0%,var(--sp-primary-purple-deep) 100%); color:#fff; box-shadow:0 16px 30px var(--sp-primary-shadow); }
 .btn.compact { padding-inline:16px; }
 .search-panel .row-actions {
   align-items: center;

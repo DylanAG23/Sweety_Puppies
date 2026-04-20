@@ -102,7 +102,7 @@ function goTo(path: string) {
       <p>{{ error }}</p>
       <div class="profile-actions">
         <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Ir a inicio</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -135,34 +135,34 @@ function goTo(path: string) {
               <span>{{ profile.email }}</span>
             </div>
             <div>
-              <strong>Cedula</strong>
+              <strong>Cédula</strong>
               <span>{{ profile.cedula }}</span>
             </div>
           </div>
           <p class="profile-note">
             Nombre, apellido, correo y cedula se mantienen bloqueados por ahora para conservar
-            la consistencia de tu registro. En esta etapa puedes actualizar telefono y direccion.
+            la consistencia de tu registro. En esta etapa puedes actualizar teléfono y dirección.
           </p>
         </article>
 
         <article class="profile-shell profile-form-card">
           <span class="profile-pill">Editar contacto</span>
-          <h2>Actualiza tu telefono y direccion</h2>
+          <h2>Actualiza tu teléfono y dirección</h2>
 
           <form class="profile-form" @submit.prevent="saveProfile">
             <label class="field-block">
-              <span>Telefono</span>
+              <span>Teléfono</span>
               <input
                 v-model.trim="form.telefono"
                 type="text"
                 name="telefono"
-                placeholder="Escribe tu telefono"
+                placeholder="Escribe tu teléfono"
                 maxlength="20"
               >
             </label>
 
             <label class="field-block">
-              <span>Direccion</span>
+              <span>Dirección</span>
               <textarea
                 v-model.trim="form.direccion"
                 name="direccion"

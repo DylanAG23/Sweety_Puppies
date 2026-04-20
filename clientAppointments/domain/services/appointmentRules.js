@@ -24,6 +24,16 @@ function normalizeOptionalText(value) {
   return normalized || null;
 }
 
+function normalizeCancellationReason(value) {
+  const normalized = normalizeOptionalText(value);
+
+  if (!normalized) {
+    throw new AppointmentError('Debes indicar el motivo de cancelacion', 400, 'VALIDATION_ERROR');
+  }
+
+  return normalized;
+}
+
 function normalizeBasicValue(value) {
   return String(value || '')
     .normalize('NFD')
@@ -274,9 +284,27 @@ function buildAppointmentEmailViewModel(appointment, options = {}) {
   };
 }
 
+function parseAppointmentAdminNotes(serializedValue) {
+  if (!serializedValue) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(serializedValue);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function serializeAppointmentAdminNotes(payload) {
+  return JSON.stringify(payload || {});
+}
+
 module.exports = {
   DAY_NAMES,
   normalizeOptionalText,
+  normalizeCancellationReason,
   normalizeBasicValue,
   dedupeIds,
   normalizeBehaviorValue,
@@ -296,5 +324,7 @@ module.exports = {
   formatDateLabel,
   formatStatusLabel,
   formatCurrency,
-  buildAppointmentEmailViewModel
+  buildAppointmentEmailViewModel,
+  parseAppointmentAdminNotes,
+  serializeAppointmentAdminNotes
 };

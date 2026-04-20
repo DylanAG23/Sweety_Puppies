@@ -1,18 +1,81 @@
 <script setup lang="ts">
-import { logoutToLogin } from '@/lib/session'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { getSession, logoutToLogin } from '@/lib/session'
 import { navigateTo } from '@/lib/navigation'
 
 const props = defineProps<{
   currentPath: string
 }>()
 
+const STORAGE_KEY = 'sweety-client-sidebar-collapsed'
+const mobileBreakpoint = 980
+
 const navItems = [
-  { label: 'Inicio', href: '/cliente' },
-  { label: 'Mi perfil', href: '/cliente/perfil' },
-  { label: 'Mis mascotas', href: '/cliente/mascotas' },
-  { label: 'Agendar cita', href: '/cliente/citas/nueva' },
-  { label: 'Historial', href: '/cliente/historial' },
+  { label: 'Inicio', href: '/cliente', icon: 'IN' },
+  { label: 'Mi perfil', href: '/cliente/perfil', icon: 'PF' },
+  { label: 'Mis mascotas', href: '/cliente/mascotas', icon: 'MS' },
+  { label: 'Agendar cita', href: '/cliente/citas/nueva', icon: 'CT' },
+  { label: 'Historial', href: '/cliente/historial', icon: 'HC' },
 ]
+
+const collapsed = ref(false)
+const mobileOpen = ref(false)
+const isMobile = ref(false)
+
+const activeItem = computed(() => navItems.find((item) => isActive(item.href)) ?? navItems[0])
+const session = computed(() => getSession())
+const clientDisplayName = computed(() => {
+  const nombre = session.value?.userData.nombre?.trim()
+  const apellido = session.value?.userData.apellido?.trim()
+
+  if (nombre && apellido) {
+    return `${nombre} ${apellido}`
+  }
+
+  if (nombre) {
+    return nombre
+  }
+
+  return 'Cliente'
+})
+
+const clientShortName = computed(() => {
+  const nombre = session.value?.userData.nombre?.trim()
+  return nombre || 'Cliente'
+})
+
+const clientInitial = computed(() => {
+  return clientShortName.value.charAt(0).toUpperCase() || 'C'
+})
+
+function syncViewport() {
+  isMobile.value = window.innerWidth <= mobileBreakpoint
+  applyBodyState()
+}
+
+function applyBodyState() {
+  document.body.classList.add('platform-shell-active', 'platform-shell-client')
+  document.body.classList.remove('platform-shell-admin')
+  document.body.classList.toggle('platform-shell-collapsed', !isMobile.value && collapsed.value)
+
+  const sidebarWidth = !isMobile.value && collapsed.value ? '104px' : '272px'
+  document.documentElement.style.setProperty('--platform-sidebar-width', sidebarWidth)
+}
+
+function clearBodyState() {
+  document.body.classList.remove('platform-shell-active', 'platform-shell-client', 'platform-shell-collapsed')
+  document.documentElement.style.removeProperty('--platform-sidebar-width')
+}
+
+function toggleSidebar() {
+  if (isMobile.value) {
+    mobileOpen.value = !mobileOpen.value
+    return
+  }
+
+  collapsed.value = !collapsed.value
+  window.localStorage.setItem(STORAGE_KEY, collapsed.value ? '1' : '0')
+}
 
 function isActive(href: string) {
   if (href === '/cliente') {
@@ -24,226 +87,505 @@ function isActive(href: string) {
 
 function handleNavigate(event: Event, href: string) {
   event.preventDefault()
+  mobileOpen.value = false
   navigateTo(href)
 }
 
+watch(collapsed, () => {
+  applyBodyState()
+})
+
+watch(isMobile, () => {
+  if (!isMobile.value) {
+    mobileOpen.value = false
+  }
+  applyBodyState()
+})
+
+onMounted(() => {
+  collapsed.value = window.localStorage.getItem(STORAGE_KEY) === '1'
+  syncViewport()
+  window.addEventListener('resize', syncViewport)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', syncViewport)
+  clearBodyState()
+})
 </script>
 
 <template>
-  <header class="client-site-header">
-    <a href="/cliente" class="header-brand" @click="handleNavigate($event, '/cliente')">
-      <div class="brand-logo-shell">
-        <img src="/img/logo.png" alt="Logo de Sweety Puppies" class="brand-logo">
+  <div v-if="mobileOpen" class="platform-overlay" @click="mobileOpen = false"></div>
+
+  <aside
+    class="platform-sidebar client-sidebar"
+    :class="{
+      collapsed: collapsed && !isMobile,
+      'mobile-open': mobileOpen,
+    }"
+  >
+    <a href="/cliente" class="sidebar-brand" @click="handleNavigate($event, '/cliente')">
+      <div class="sidebar-brand-logo">
+        <img src="/img/logo.png" alt="Logo de Sweety Puppies" class="sidebar-logo">
       </div>
-      <div class="brand-copy">
+      <div v-if="!collapsed || isMobile" class="sidebar-brand-copy">
         <strong>Sweety Puppies</strong>
-        <small>Portal tierno para consentir a tus peluditos</small>
+        <small>Portal del cliente</small>
       </div>
     </a>
 
-    <nav class="header-nav">
-      <a
-        v-for="item in navItems"
-        :key="item.href"
-        :href="item.href"
-        class="header-nav-link"
-        :class="{ active: isActive(item.href) }"
-        @click="handleNavigate($event, item.href)"
-      >
-        {{ item.label }}
-      </a>
-    </nav>
+    <div class="sidebar-group">
+      <span v-if="!collapsed || isMobile" class="sidebar-group-label">Tu espacio</span>
+      <nav class="sidebar-nav">
+        <a
+          v-for="item in navItems"
+          :key="item.href"
+          :href="item.href"
+          class="sidebar-link"
+          :class="{ active: isActive(item.href) }"
+          :title="collapsed && !isMobile ? item.label : ''"
+          @click="handleNavigate($event, item.href)"
+        >
+          <span class="sidebar-link-icon" aria-hidden="true">{{ item.icon }}</span>
+          <span v-if="!collapsed || isMobile" class="sidebar-link-label">{{ item.label }}</span>
+        </a>
+      </nav>
+    </div>
 
-    <div class="header-actions">
-      <button type="button" class="header-logout" @click="logoutToLogin">Cerrar sesion</button>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <span class="sidebar-user-avatar">{{ clientInitial }}</span>
+        <div v-if="!collapsed || isMobile" class="sidebar-user-copy">
+          <strong>{{ clientShortName }}</strong>
+          <small>Glamour para cada pelaje</small>
+        </div>
+      </div>
+      <button v-if="!collapsed || isMobile" type="button" class="sidebar-logout" @click="logoutToLogin">
+        <span class="sidebar-logout-label">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <header class="platform-topbar client-topbar" :class="{ collapsed: collapsed && !isMobile }">
+    <div class="topbar-left">
+      <button
+        type="button"
+        class="sidebar-toggle"
+        :aria-label="collapsed ? 'Expandir menu' : 'Contraer menu'"
+        @click="toggleSidebar"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="topbar-breadcrumb">
+        <span class="topbar-brand">Sweety Puppies</span>
+        <span>/</span>
+        <strong>{{ activeItem.label }}</strong>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="topbar-profile">
+        <span class="topbar-profile-avatar">{{ clientInitial }}</span>
+        <div class="topbar-profile-copy">
+          <strong>{{ clientShortName }}</strong>
+          <small>Cuenta activa</small>
+        </div>
+      </div>
     </div>
   </header>
 </template>
 
 <style scoped>
-.client-site-header {
-  position: sticky;
-  top: 12px;
-  z-index: 20;
-  margin-bottom: 22px;
-  padding: 16px 20px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 20px;
-  align-items: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.985) 0%, rgba(255, 252, 254, 0.985) 100%);
-  border: 1px solid rgba(255, 214, 235, 0.98);
-  border-radius: 32px;
-  box-shadow:
-    0 20px 46px rgba(204, 115, 174, 0.16),
-    0 8px 18px rgba(155, 214, 232, 0.08);
-  backdrop-filter: blur(22px);
-  isolation: isolate;
+.platform-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 16, 37, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 48;
 }
 
-.client-site-header::after {
-  content: '';
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: -10px;
-  height: 18px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 214, 235, 0.36) 0%, rgba(255, 214, 235, 0) 100%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.client-site-header::before {
-  content: '';
-  position: absolute;
-  left: 18px;
-  right: 18px;
+.platform-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
   bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(236, 165, 207, 0.75) 20%, rgba(160, 226, 241, 0.75) 80%, rgba(255, 255, 255, 0) 100%);
+  width: 272px;
+  min-width: 272px;
+  max-width: 272px;
+  padding: 22px 16px 18px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: hidden;
+  transition: width 0.24s ease, transform 0.24s ease;
+}
+
+.client-sidebar {
+  border-radius: 0;
+  background:
+    radial-gradient(circle at top right, rgba(118, 241, 216, 0.12), transparent 28%),
+    linear-gradient(180deg, #95267c 0%, #7f1f6b 100%);
+  box-shadow:
+    18px 0 46px rgba(127, 31, 107, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.client-sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: none;
   pointer-events: none;
 }
 
-.header-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  text-decoration: none;
-  color: inherit;
-  min-width: 310px;
+.platform-sidebar.collapsed {
+  width: 104px;
+  min-width: 104px;
+  max-width: 104px;
 }
 
-.brand-logo-shell {
-  width: 84px;
-  height: 84px;
-  border-radius: 28px;
-  background: linear-gradient(145deg, rgba(255, 234, 244, 0.96) 0%, rgba(231, 248, 255, 0.96) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    0 18px 32px rgba(221, 120, 181, 0.14),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.88);
+.sidebar-brand,
+.sidebar-link,
+.sidebar-user,
+.sidebar-logout {
+  position: relative;
+  z-index: 1;
 }
 
-.brand-logo {
-  width: 58px;
-  height: auto;
-}
-
-.brand-copy strong,
-.brand-copy small {
-  display: block;
-}
-
-.brand-copy strong {
-  color: #8f176e;
-  font-size: 1.18rem;
-}
-
-.brand-copy small {
-  margin-top: 4px;
-  color: #6f6170;
-  font-size: 0.9rem;
-}
-
-.header-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-
-.header-nav-link {
-  text-decoration: none;
-  padding: 13px 17px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #fff4fb 0%, #ffffff 100%);
-  color: #8f176e;
-  font-weight: 700;
-  font-size: 0.92rem;
-  border: 1px solid rgba(243, 203, 228, 0.9);
-  box-shadow: 0 10px 22px rgba(219, 126, 183, 0.1);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.header-nav-link:hover,
-.header-nav-link.active {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 28px rgba(233, 90, 219, 0.24);
-  background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
-  color: #fff;
-  border-color: rgba(193, 0, 143, 0.9);
-}
-
-.header-actions {
+.sidebar-brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: flex-end;
+  text-decoration: none;
+  color: #fff;
+  padding: 8px 8px 18px;
 }
 
-.header-logout {
-  border: none;
+.sidebar-brand-logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-logo {
+  width: 64px;
+  height: auto;
+}
+
+.sidebar-brand-copy strong,
+.sidebar-brand-copy small {
+  display: block;
+}
+
+.sidebar-brand-copy strong {
+  font-size: 1.08rem;
+}
+
+.sidebar-brand-copy small {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sidebar-group {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.sidebar-group-label {
+  display: block;
+  margin: 0 10px 14px;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.44);
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 0 14px;
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(126, 239, 214, 0.14) 100%);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.sidebar-link-icon {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.sidebar-link-label {
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 12px;
+}
+
+.sidebar-group::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-group::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.24);
   border-radius: 999px;
-  padding: 14px 22px;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.sidebar-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f7d8ef 0%, #bff3ea 100%);
+  color: #7b1d72;
+  font-weight: 800;
+}
+
+.sidebar-user-copy strong,
+.sidebar-user-copy small {
+  display: block;
+}
+
+.sidebar-user-copy small {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sidebar-logout {
+  min-height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.82);
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   cursor: pointer;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
-.header-logout {
-  background: linear-gradient(135deg, #2db9c9 0%, #60d7df 100%);
+.sidebar-logout:hover,
+.sidebar-logout:focus-visible {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(126, 239, 214, 0.14) 100%);
   color: #fff;
-  box-shadow: 0 14px 26px rgba(45, 185, 201, 0.26);
+  transform: translateX(2px);
+  outline: none;
 }
 
-.header-logout:hover {
-  transform: translateY(-2px);
+.sidebar-logout:active {
+  transform: translateX(1px) scale(0.99);
 }
 
-@media (max-width: 1180px) {
-  .client-site-header {
-    grid-template-columns: 1fr;
+.sidebar-logout-label {
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.platform-topbar {
+  position: fixed;
+  top: 0;
+  left: var(--platform-sidebar-width, 272px);
+  right: 0;
+  min-height: 74px;
+  padding: 0 24px 0 34px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(224, 229, 240, 0.95);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  transition: left 0.24s ease;
+}
+
+.platform-topbar.collapsed {
+  left: var(--platform-sidebar-collapsed-width, 104px);
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.topbar-right {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.sidebar-toggle {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(224, 229, 240, 0.98);
+  border-radius: 14px;
+  background: #fff;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 11px;
+  cursor: pointer;
+}
+
+.sidebar-toggle span {
+  display: block;
+  height: 2px;
+  border-radius: 999px;
+  background: #8f176e;
+}
+
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #7f8ba0;
+  font-size: 0.96rem;
+}
+
+.topbar-brand,
+.topbar-breadcrumb strong {
+  color: #8f176e;
+  font-weight: 800;
+}
+
+.topbar-status {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(115, 222, 176, 0.14);
+  color: #178464;
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+.topbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(224, 229, 240, 0.98);
+}
+
+.topbar-profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f7d8ef 0%, #bff3ea 100%);
+  color: #7b1d72;
+  font-weight: 800;
+}
+
+.topbar-profile-copy strong,
+.topbar-profile-copy small {
+  display: block;
+}
+
+.topbar-profile-copy strong {
+  color: #22354b;
+  font-size: 0.95rem;
+}
+
+.topbar-profile-copy small {
+  color: #8a97a8;
+  font-size: 0.76rem;
+}
+
+@media (max-width: 980px) {
+  .platform-sidebar {
+    transform: translateX(-100%);
   }
 
-  .header-nav {
-    justify-content: flex-start;
+  .platform-sidebar.mobile-open {
+    transform: translateX(0);
   }
 
-  .header-actions {
-    justify-content: flex-start;
-    flex-wrap: wrap;
+  .platform-topbar,
+  .platform-topbar.collapsed {
+    left: 0;
+    right: 0;
   }
 }
 
 @media (max-width: 720px) {
-  .client-site-header {
-    padding: 18px;
-    border-radius: 24px;
-  }
-
-  .header-brand {
-    min-width: 0;
-  }
-
-  .header-actions,
-  .header-nav {
+  .platform-topbar {
+    min-height: auto;
+    padding: 14px 16px;
+    align-items: flex-start;
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .header-nav-link,
-  .header-logout {
+  .topbar-left,
+  .topbar-right {
     width: 100%;
-    text-align: center;
+    justify-content: space-between;
+  }
+
+  .topbar-breadcrumb {
+    flex-wrap: wrap;
   }
 }
 </style>

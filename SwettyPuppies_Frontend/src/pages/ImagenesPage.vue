@@ -78,14 +78,14 @@ const summaryCards = computed(() => {
     { label: 'Publicaciones visibles', value: String(total), tone: 'pink' },
     { label: 'Activas', value: String(active), tone: 'mint' },
     { label: 'Categorias', value: String(categories), tone: 'lavender' },
-    { label: 'Primera en lobby', value: featured?.titulo || 'Aun sin destacada', tone: 'sky' },
+    { label: 'Primera en lobby', value: featured?.titulo || 'Aún sin destacada', tone: 'sky' },
   ]
 })
 
 const emptyStateTitle = computed(() =>
   appliedSearch.value
     ? 'No encontramos publicaciones con esa busqueda'
-    : 'Aun no hay contenido publicado en el lobby'
+    : 'Aún no hay contenido publicado en el lobby'
 )
 
 const emptyStateMessage = computed(() =>
@@ -380,7 +380,7 @@ function formatDate(value: string | null) {
       <p>{{ error }}</p>
       <div class="card-actions">
         <a href="/login" class="btn-secundario">Volver al acceso</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -392,7 +392,7 @@ function formatDate(value: string | null) {
           <span class="hero-kicker">Contenido del portal</span>
           <h1>Lobby visual para enamorar a cada familia peluda</h1>
           <p>
-            Aqui Sara podra publicar peluditos del mes, promociones e imagenes destacadas
+            Aquí Sara podrá publicar peluditos del mes, promociones e imágenes destacadas
             que se veran en el inicio del cliente autenticado.
           </p>
 
@@ -400,7 +400,7 @@ function formatDate(value: string | null) {
             <strong>Lobby activo</strong>
             <p>
               Las publicaciones activas se muestran en el home cliente ordenadas segun el
-              campo de visualizacion que configures aqui.
+              campo de visualización que configures aquí.
             </p>
           </div>
         </div>
@@ -744,9 +744,9 @@ function formatDate(value: string | null) {
 
 .btn-primary,
 .btn-enviar {
-  background: linear-gradient(135deg, #c80f9b 0%, #de49d3 100%);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
   color: #fff;
-  box-shadow: 0 18px 28px rgba(222, 73, 211, 0.22);
+  box-shadow: 0 18px 28px var(--sp-primary-shadow);
 }
 
 .btn-secondary,

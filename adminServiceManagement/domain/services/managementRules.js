@@ -21,6 +21,16 @@ function normalizeOptionalText(value) {
   return normalized || null;
 }
 
+function normalizeCancellationReason(value) {
+  const normalized = normalizeOptionalText(value);
+
+  if (!normalized) {
+    throw new AdminServiceManagementError('Debes indicar un motivo de cancelacion', 400, 'INVALID_CANCELLATION_REASON');
+  }
+
+  return normalized;
+}
+
 function normalizeBasicValue(value) {
   return String(value || '')
     .normalize('NFD')
@@ -130,7 +140,9 @@ function parseOperationalNotes(serializedValue) {
       servicioAdicionalIds: [],
       observacionesFinales: null,
       recomendaciones: null,
-      resumenServicioRealizado: null
+      resumenServicioRealizado: null,
+      cancellationReason: null,
+      cancellationRequestedBy: null
     };
   }
 
@@ -145,7 +157,9 @@ function parseOperationalNotes(serializedValue) {
       servicioAdicionalIds: Array.isArray(parsed.servicioAdicionalIds) ? parsed.servicioAdicionalIds : [],
       observacionesFinales: parsed.observacionesFinales || null,
       recomendaciones: parsed.recomendaciones || null,
-      resumenServicioRealizado: parsed.resumenServicioRealizado || null
+      resumenServicioRealizado: parsed.resumenServicioRealizado || null,
+      cancellationReason: parsed.cancellationReason || null,
+      cancellationRequestedBy: parsed.cancellationRequestedBy || null
     };
   } catch (error) {
     return {
@@ -157,7 +171,9 @@ function parseOperationalNotes(serializedValue) {
       servicioAdicionalIds: [],
       observacionesFinales: null,
       recomendaciones: null,
-      resumenServicioRealizado: null
+      resumenServicioRealizado: null,
+      cancellationReason: null,
+      cancellationRequestedBy: null
     };
   }
 }
@@ -172,7 +188,9 @@ function serializeOperationalNotes(payload) {
     servicioAdicionalIds: Array.isArray(payload.servicioAdicionalIds) ? payload.servicioAdicionalIds : [],
     observacionesFinales: payload.observacionesFinales || null,
     recomendaciones: payload.recomendaciones || null,
-    resumenServicioRealizado: payload.resumenServicioRealizado || null
+    resumenServicioRealizado: payload.resumenServicioRealizado || null,
+    cancellationReason: payload.cancellationReason || null,
+    cancellationRequestedBy: payload.cancellationRequestedBy || null
   });
 }
 
@@ -330,6 +348,7 @@ function canStartAppointmentNow({ fecha, horaInicio }) {
 module.exports = {
   APPOINTMENT_STATES,
   normalizeOptionalText,
+  normalizeCancellationReason,
   normalizeBasicValue,
   normalizeStateFilter,
   normalizeAppointmentFilters,

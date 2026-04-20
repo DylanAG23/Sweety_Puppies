@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const {
   sendAppointmentRequestEmail,
-  sendAppointmentStatusEmail
+  sendAppointmentStatusEmail,
+  sendAppointmentCancellationEmail
 } = require('../../../services/emailService');
 const {
   buildAppointmentEmailViewModel
@@ -80,6 +81,42 @@ class EmailAppointmentNotificationService {
       appointment: buildAppointmentEmailViewModel(appointment),
       flowType
     });
+  }
+
+  async sendAppointmentCancellationNotifications(appointment, options = {}) {
+    const emailViewModel = buildAppointmentEmailViewModel(appointment);
+    const cancellationReason = options.cancellationReason || null;
+    const cancelledBy = options.cancelledBy || 'cliente';
+    const businessEmail = this.getAdministrativeEmail();
+    const tasks = [];
+
+    if (appointment.clientEmail) {
+      tasks.push(
+        sendAppointmentCancellationEmail({
+          email: appointment.clientEmail,
+          appointment: emailViewModel,
+          cancelledBy,
+          cancellationReason,
+          recipientRole: 'cliente',
+          flowType: options.flowType || 'nueva'
+        })
+      );
+    }
+
+    if (businessEmail) {
+      tasks.push(
+        sendAppointmentCancellationEmail({
+          email: businessEmail,
+          appointment: emailViewModel,
+          cancelledBy,
+          cancellationReason,
+          recipientRole: 'negocio',
+          flowType: options.flowType || 'nueva'
+        })
+      );
+    }
+
+    return Promise.allSettled(tasks);
   }
 }
 

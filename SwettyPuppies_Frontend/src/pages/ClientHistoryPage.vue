@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
@@ -164,11 +164,18 @@ const selectedAppointment = ref<CurrentAppointmentDetail | null>(null)
 const selectedCompletedService = ref<CompletedServiceDetail | null>(null)
 const isAppointmentDetailOpen = ref(false)
 const isCompletedDetailOpen = ref(false)
+const isCancelConfirmOpen = ref(false)
 const isReprogramPanelOpen = ref(false)
 const reprogramDate = ref('')
 const reprogramTime = ref('')
 const reprogramMessage = ref('')
 const reprogramSlots = ref<AvailabilityResponse['slots']>([])
+const cancellationReason = ref('')
+const cancelDialog = reactive({
+  title: 'Cancelar cita',
+  message: '',
+  confirmLabel: 'Sí, cancelar',
+})
 
 const filteredCurrentAppointments = computed(() =>
   citasActuales.value.filter((appointment) => {
@@ -345,15 +352,13 @@ async function cancelAppointment() {
     return
   }
 
-  if (!window.confirm('¿Deseas cancelar esta cita? Esta accion retirara la solicitud de tus citas actuales.')) {
-    return
-  }
-
   actionLoading.value = true
   error.value = ''
 
   try {
-    const data = await apiPatch<AppointmentActionResponse>(`/api/cliente/citas/${selectedAppointment.value.id}/cancel`, {})
+    const data = await apiPatch<AppointmentActionResponse>(`/api/cliente/citas/${selectedAppointment.value.id}/cancel`, {
+      motivoCancelacion: cancellationReason.value,
+    })
     toast.value = data.message
     closeAppointmentDetail()
     await loadHistory()
@@ -361,6 +366,36 @@ async function cancelAppointment() {
     error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo cancelar la cita'
   } finally {
     actionLoading.value = false
+  }
+}
+
+function requestCancelAppointment() {
+  if (!selectedAppointment.value || !canManageSelectedAppointment.value) {
+    return
+  }
+
+  cancelDialog.title = 'Cancelar cita'
+  cancelDialog.message = `¿Deseas cancelar la cita de ${selectedAppointment.value.mascota.nombre}? Esta acción retirará la solicitud de tus citas actuales.`
+  cancelDialog.confirmLabel = 'Sí, cancelar'
+  cancellationReason.value = ''
+  isCancelConfirmOpen.value = true
+}
+
+function closeCancelConfirm() {
+  isCancelConfirmOpen.value = false
+  cancellationReason.value = ''
+}
+
+async function confirmCancelAppointment() {
+  if (!cancellationReason.value.trim()) {
+    error.value = 'Debes escribir el motivo de cancelación'
+    return
+  }
+
+  try {
+    await cancelAppointment()
+  } finally {
+    closeCancelConfirm()
   }
 }
 
@@ -517,7 +552,7 @@ function statusClass(status: string) {
       <p>{{ error }}</p>
       <div class="history-actions">
         <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Ir a inicio</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -569,9 +604,9 @@ function statusClass(status: string) {
       <section v-if="currentTab === 'citas'" class="history-section">
         <div v-if="!filteredCurrentAppointments.length" class="history-shell empty-card">
           <span class="history-pill subtle">Citas actuales</span>
-          <h2>Aun no tienes citas activas</h2>
+          <h2>Aún no tienes citas activas</h2>
           <p>
-            Cuando agendes una nueva visita, aqui podras consultar si esta pendiente, confirmada o
+            Cuando agendes una nueva visita, aquí podrás consultar si está pendiente, confirmada o
             en atencion.
           </p>
           <div class="history-actions">
@@ -625,7 +660,7 @@ function statusClass(status: string) {
           <span class="history-pill subtle">Citas realizadas</span>
           <h2>Todavia no tienes citas realizadas registradas</h2>
           <p>
-            Cuando tu primera cita sea completada, aqui aparecera el resumen bonito de esa cita
+            Cuando tu primera cita sea completada, aquí aparecerá el resumen bonito de esa cita
             con recomendaciones y observaciones.
           </p>
           <div class="history-actions">
@@ -736,7 +771,7 @@ function statusClass(status: string) {
               <span class="history-pill subtle">Gestiona tu cita</span>
               <p class="modal-copy">
                 Si necesitas cambiar la fecha u hora, puedes reprogramarla. Si ya no la necesitas,
-                tambien puedes cancelarla desde aqui.
+                también puedes cancelarla desde aquí.
               </p>
 
               <div class="history-actions">
@@ -744,7 +779,7 @@ function statusClass(status: string) {
                   type="button"
                   class="btn-soft-cancel"
                   :disabled="actionLoading"
-                  @click="cancelAppointment"
+                  @click="requestCancelAppointment"
                 >
                   {{ actionLoading ? 'Procesando...' : 'Cancelar cita' }}
                 </button>
@@ -818,7 +853,7 @@ function statusClass(status: string) {
             <div class="detail-info-grid large">
               <div><strong>Cliente</strong><span>{{ selectedCompletedService.clienteNombreCompleto || 'No registrado' }}</span></div>
               <div><strong>Correo</strong><span>{{ selectedCompletedService.clienteEmail || 'No registrado' }}</span></div>
-              <div><strong>Telefono</strong><span>{{ selectedCompletedService.clienteTelefono || 'No registrado' }}</span></div>
+              <div><strong>Teléfono</strong><span>{{ selectedCompletedService.clienteTelefono || 'No registrado' }}</span></div>
               <div><strong>Mascota</strong><span>{{ selectedCompletedService.mascotaNombre }}</span></div>
               <div><strong>Raza</strong><span>{{ selectedCompletedService.mascotaRaza || 'No registrada' }}</span></div>
               <div><strong>Tamano</strong><span>{{ formatLabel(selectedCompletedService.mascotaTamano) }}</span></div>
@@ -833,7 +868,7 @@ function statusClass(status: string) {
               <div><strong>Precio final</strong><span>{{ formatCurrency(selectedCompletedService.precioFinal) }}</span></div>
               <div class="full-width">
                 <strong>Resumen de la cita realizada</strong>
-                <span>{{ selectedCompletedService.resumenServicioRealizado || 'Aun no se ha registrado un resumen final.' }}</span>
+                <span>{{ selectedCompletedService.resumenServicioRealizado || 'Aún no se ha registrado un resumen final.' }}</span>
               </div>
               <div class="full-width">
                 <strong>Observaciones finales</strong>
@@ -850,6 +885,29 @@ function statusClass(status: string) {
               <button type="button" class="btn-secundario" @click="closeCompletedDetail">Cerrar</button>
             </div>
           </template>
+        </section>
+      </div>
+
+      <div v-if="isCancelConfirmOpen" class="modal-overlay confirm-overlay" @click.self="closeCancelConfirm">
+        <section class="history-shell confirm-card">
+          <div class="confirm-icon danger">!</div>
+          <span class="history-pill subtle">Confirmación</span>
+          <h2>{{ cancelDialog.title }}</h2>
+          <p>{{ cancelDialog.message }}</p>
+          <label class="field-block confirm-reason-field">
+            <span>Motivo de cancelación</span>
+            <textarea
+              v-model="cancellationReason"
+              rows="4"
+              placeholder="Cuéntanos por qué deseas cancelar esta cita..."
+            />
+          </label>
+          <div class="history-actions modal-actions confirm-actions">
+            <button type="button" class="btn-secundario" @click="closeCancelConfirm">Cerrar</button>
+            <button type="button" class="btn-soft-cancel" :disabled="actionLoading" @click="confirmCancelAppointment">
+              {{ actionLoading ? 'Procesando...' : cancelDialog.confirmLabel }}
+            </button>
+          </div>
         </section>
       </div>
     </template>
@@ -961,9 +1019,9 @@ function statusClass(status: string) {
 
 .tab-button.active {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
   color: #fff;
-  box-shadow: 0 18px 28px rgba(233, 90, 219, 0.24);
+  box-shadow: 0 18px 28px var(--sp-primary-shadow);
 }
 
 .filter-card {
@@ -1259,8 +1317,8 @@ function statusClass(status: string) {
 
 .slot-button.active {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #c1008f 0%, #e95adb 100%);
-  box-shadow: 0 16px 26px rgba(233, 90, 219, 0.24);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
+  box-shadow: 0 16px 26px var(--sp-primary-shadow);
 }
 
 .slot-button.active strong,
@@ -1293,6 +1351,50 @@ function statusClass(status: string) {
 .btn-soft-cancel:disabled {
   opacity: 0.72;
   cursor: wait;
+}
+
+.confirm-overlay {
+  z-index: 140;
+}
+
+.confirm-card {
+  width: min(520px, 100%);
+  padding: 32px;
+  text-align: center;
+}
+
+.confirm-card h2 {
+  margin: 16px 0 12px;
+  color: #8f176e;
+}
+
+.confirm-card p {
+  color: #6e5064;
+  line-height: 1.75;
+}
+
+.confirm-reason-field {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.confirm-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  border-radius: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff0f6 0%, #ffdcea 100%);
+  color: #c23c7b;
+  box-shadow: 0 14px 28px rgba(194, 60, 123, 0.16);
+}
+
+.confirm-actions {
+  justify-content: center;
 }
 
 @media (max-width: 1120px) {

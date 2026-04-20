@@ -86,15 +86,6 @@ const greeting = computed(() => {
   return `Hola, ${payload.value.profile.nombre}`
 })
 
-const heroSubtitle = computed(() => {
-  const email = payload.value?.profile.email
-  if (!email) {
-    return 'Tu portal privado esta listo para consentir a tu peludito.'
-  }
-
-  return `Tu portal privado esta listo para consentir a tu peludito. Te acompanamos desde ${email}.`
-})
-
 const currentImage = computed(() => {
   if (!activeContent.value.length) {
     return null
@@ -118,13 +109,13 @@ const summaryCards = computed(() => {
         : 'Sin citas por ahora',
       helper: summary?.nextAppointment
         ? `${summary.nextAppointment.mascota_nombre ?? 'Tu mascota'} · ${summary.nextAppointment.servicio_nombre ?? 'Servicio pendiente'}`
-        : 'Cuando agendas una, la veras aqui',
+        : 'Cuando agendas una, la verás aquí',
     },
     {
       label: 'Ultimo servicio',
       value: summary?.lastService
         ? summary.lastService.servicio_principal_nombre
-        : 'Aun sin historial',
+        : 'Aún sin historial',
       helper: summary?.lastService
         ? `${summary.lastService.mascota_nombre} · ${formatDateTime(summary.lastService.fecha_servicio)}`
         : 'Aqui apareceran sus ultimos cuidados',
@@ -216,7 +207,7 @@ function goTo(path: string) {
   <main class="cliente-portal">
     <section v-if="loading" class="cliente-state-card">
       <h1>Cargando tu espacio lindo...</h1>
-      <p>Estamos preparando la bienvenida y la informacion de tu portal.</p>
+      <p>Estamos preparando la bienvenida y la información de tu portal.</p>
     </section>
 
     <section v-else-if="error" class="cliente-state-card">
@@ -224,7 +215,7 @@ function goTo(path: string) {
       <p>{{ error }}</p>
       <div class="state-actions">
         <a href="/login" class="btn-secundario">Volver al acceso</a>
-        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesion</button>
+        <button type="button" class="btn-enviar" @click="logoutToLogin">Cerrar sesión</button>
       </div>
     </section>
 
@@ -238,11 +229,10 @@ function goTo(path: string) {
         <div class="hero-main">
           <span class="cliente-pill">Bienvenida especial</span>
           <h1>{{ greeting }}</h1>
-          <p class="hero-subtitle">{{ heroSubtitle }}</p>
 
           <div class="hero-business-card">
             <div>
-              <span class="hero-section-title">Sobre la peluqueria</span>
+              <span class="hero-section-title">Sobre la peluquería</span>
               <h2>{{ payload.about.title }}</h2>
             </div>
             <p>{{ payload.about.description }}</p>
@@ -288,16 +278,16 @@ function goTo(path: string) {
                 <span>{{ payload.profile.email }}</span>
               </div>
               <div>
-                <strong>Telefono</strong>
+                <strong>Teléfono</strong>
                 <span>{{ payload.profile.telefono || 'Pendiente por actualizar' }}</span>
               </div>
               <div>
-                <strong>Cedula</strong>
+                <strong>Cédula</strong>
                 <span>{{ payload.profile.cedula }}</span>
               </div>
               <div>
-                <strong>Direccion</strong>
-                <span>{{ payload.profile.direccion || 'Aun no registrada' }}</span>
+                <strong>Dirección</strong>
+                <span>{{ payload.profile.direccion || 'Aún no registrada' }}</span>
               </div>
             </div>
           </div>
@@ -337,7 +327,7 @@ function goTo(path: string) {
         </div>
 
         <div v-else class="gallery-empty">
-          <p>Muy pronto veras aqui las fotos mas lindas de nuestros peluditos felices.</p>
+          <p>Muy pronto verás aquí las fotos más lindas de nuestros peluditos felices.</p>
         </div>
 
         <div v-if="activeContent.length" class="gallery-thumbs">
@@ -561,9 +551,9 @@ function goTo(path: string) {
   justify-content: center;
   border-radius: 16px;
   text-decoration: none;
-  background: linear-gradient(135deg, #9c0076 0%, #c94ac3 100%);
+  background: linear-gradient(135deg, var(--sp-primary-purple) 0%, var(--sp-primary-purple-deep) 100%);
   color: #fff;
-  box-shadow: 0 14px 26px rgba(156, 0, 118, 0.22);
+  box-shadow: 0 14px 26px var(--sp-primary-shadow);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,

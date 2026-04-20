@@ -303,7 +303,16 @@ class PostgresClientPetsRepository {
   }
 
   async delete(petId) {
-    await client.query('DELETE FROM mascotas WHERE id = $1', [petId]);
+    await client.query(
+      `
+        UPDATE mascotas
+        SET
+          activo = false,
+          updated_at = NOW()
+        WHERE id = $1
+      `,
+      [petId]
+    );
   }
 }
 
