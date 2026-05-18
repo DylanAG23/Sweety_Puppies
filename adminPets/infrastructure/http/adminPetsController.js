@@ -30,6 +30,18 @@ function createAdminPetsController(useCases) {
       }
     },
 
+    listPetBreeds: async (_req, res) => {
+      try {
+        const result = await useCases.listAdminPetBreeds();
+        res.json({
+          success: true,
+          razas: result.razas
+        });
+      } catch (error) {
+        handleHttpError(res, error, 'Error al cargar el catalogo de razas');
+      }
+    },
+
     getPetDetail: async (req, res) => {
       try {
         const result = await useCases.getAdminPetDetail(req.user, req.params.id);

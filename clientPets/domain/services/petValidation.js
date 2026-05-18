@@ -1,4 +1,5 @@
 const { PetError } = require('../errors/PetError');
+const { resolveDogBreed } = require('../../../shared/pets/dogBreedCatalog');
 
 const PET_SIZE_MAP = new Map([
   ['miniatura', 'miniatura'],
@@ -62,7 +63,8 @@ function normalizePetPayload(payload) {
 
   return {
     nombre: String(payload.nombre || '').trim(),
-    raza: normalizeOptionalText(payload.raza),
+    raza: resolveDogBreed(payload.raza),
+    raza_input: normalizeOptionalText(payload.raza),
     tamano: normalizeDatabasePetSize(payload.tamano),
     sexo: normalizeEnumValue(payload.sexo),
     edad: ageValue ? Number.parseInt(ageValue, 10) : Number.NaN,
@@ -86,6 +88,10 @@ function validatePetPayload(payload) {
 
   if (!payload.tamano) {
     throw new PetError('Debes seleccionar el tamano de la mascota', 400, 'VALIDATION_ERROR');
+  }
+
+  if (payload.raza_input && !payload.raza) {
+    throw new PetError('Debes seleccionar una raza valida del catalogo', 400, 'VALIDATION_ERROR');
   }
 
   if (!PET_SIZE_MAP.has(payload.tamano) && !Array.from(PET_SIZE_MAP.values()).includes(payload.tamano)) {

@@ -4,6 +4,7 @@ import { apiDelete, apiForm, apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
+import PetBreedSelect from '@/components/PetBreedSelect.vue'
 
 type Pet = {
   id: string
@@ -41,9 +42,21 @@ type PetResponse = {
   mascota: Pet
 }
 
+type BreedOption = {
+  value: string
+  label: string
+  aliases?: string[]
+}
+
+type BreedCatalogResponse = {
+  success: boolean
+  razas: BreedOption[]
+}
+
 const fallbackPetImage = '/img/mascota1.png'
 const currentPath = window.location.pathname.toLowerCase()
 const todayDate = new Date().toISOString().split('T')[0]
+const breedOptions = ref<BreedOption[]>([])
 
 const tamanoOptions = [
   { value: 'miniatura', label: 'Miniatura' },
@@ -149,12 +162,42 @@ onMounted(async () => {
     return
   }
 
-  await loadPets()
+  await Promise.allSettled([loadBreedOptions(), loadPets()])
 
   if (window.location.pathname.toLowerCase() === '/cliente/mascotas/nueva') {
     openCreateSection()
   }
 })
+
+function normalizeText(value: string | null | undefined) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+}
+
+function resolveBreedValue(value: string | null | undefined) {
+  const normalizedValue = normalizeText(value)
+  if (!normalizedValue) return ''
+
+  const option = breedOptions.value.find((breed) => {
+    if (normalizeText(breed.value) === normalizedValue) return true
+    if (normalizeText(breed.label) === normalizedValue) return true
+    return (breed.aliases || []).some((alias) => normalizeText(alias) === normalizedValue)
+  })
+
+  return option?.value || String(value || '')
+}
+
+async function loadBreedOptions() {
+  try {
+    const data = await apiGet<BreedCatalogResponse>('/api/cliente/mascotas/catalogs/breeds')
+    breedOptions.value = data.razas
+  } catch (caughtError) {
+    console.warn('No se pudo cargar el catalogo de razas:', caughtError)
+  }
+}
 
 async function loadPets() {
   loading.value = true
@@ -185,7 +228,7 @@ function openEditModal(pet: Pet) {
   modalMode.value = 'edit'
   form.id = pet.id
   form.nombre = pet.nombre
-  form.raza = pet.raza || ''
+  form.raza = resolveBreedValue(pet.raza)
   form.tamano = pet.tamano
   form.sexo = pet.sexo || ''
   form.edad = String(pet.edad)
@@ -634,10 +677,12 @@ function goTo(path: string) {
               <input v-model.trim="form.nombre" type="text" maxlength="80" placeholder="Ejemplo: Lulu">
             </label>
 
-            <label class="field-block">
-              <span>Raza</span>
-              <input v-model.trim="form.raza" type="text" maxlength="80" placeholder="Ejemplo: Shih Tzu">
-            </label>
+            <PetBreedSelect
+              v-model="form.raza"
+              :options="breedOptions"
+              label="Raza"
+              placeholder="Busca una raza o selecciona Criollo"
+            />
 
             <label class="field-block">
               <span>Tamaño *</span>
@@ -887,10 +932,12 @@ function goTo(path: string) {
               <input v-model.trim="form.nombre" type="text" maxlength="80" placeholder="Ejemplo: Lulu">
             </label>
 
-            <label class="field-block">
-              <span>Raza</span>
-              <input v-model.trim="form.raza" type="text" maxlength="80" placeholder="Ejemplo: Shih Tzu">
-            </label>
+            <PetBreedSelect
+              v-model="form.raza"
+              :options="breedOptions"
+              label="Raza"
+              placeholder="Busca una raza o selecciona Criollo"
+            />
 
             <label class="field-block">
               <span>Tamaño *</span>

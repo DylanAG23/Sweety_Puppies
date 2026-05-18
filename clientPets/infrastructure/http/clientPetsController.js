@@ -42,6 +42,18 @@ function createClientPetsController(useCases) {
       }
     },
 
+    listPetBreeds: async (_req, res) => {
+      try {
+        const result = await useCases.listClientPetBreeds();
+        res.json({
+          success: true,
+          razas: result.razas
+        });
+      } catch (error) {
+        handleHttpError(error, res);
+      }
+    },
+
     getPet: async (req, res) => {
       try {
         const result = await useCases.getClientPet(req.user, req.params.id);

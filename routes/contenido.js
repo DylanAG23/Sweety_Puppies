@@ -34,6 +34,251 @@ function runContentUpload(req, res, next) {
   });
 }
 
+/**
+ * @openapi
+ * tags:
+ *   - name: Contenido
+ *     description: Publicaciones visuales del portal y contenido activo para clientes.
+ *
+ * /contenido/activo:
+ *   get:
+ *     summary: Lista el contenido activo visible para el cliente
+ *     tags: [Contenido]
+ *     responses:
+ *       200:
+ *         description: Contenido activo obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 publicaciones:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     additionalProperties: true
+ *
+ * /contenido:
+ *   get:
+ *     summary: Lista publicaciones visuales para administración
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Publicaciones obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 publicaciones:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     additionalProperties: true
+ *                 search:
+ *                   type: string
+ *   post:
+ *     summary: Crea una nueva publicación visual
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [titulo, categoria, orden, imagen]
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *               descripcion:
+ *                 type: string
+ *               categoria:
+ *                 type: string
+ *               orden:
+ *                 type: integer
+ *               activo:
+ *                 type: boolean
+ *               imagen:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Publicación creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *
+ * /contenido/reordenar:
+ *   post:
+ *     summary: Reordena visualmente las publicaciones
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [publicaciones]
+ *             properties:
+ *               publicaciones:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     orden:
+ *                       type: integer
+ *     responses:
+ *       200:
+ *         description: Orden visual actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *
+ * /contenido/{id}:
+ *   get:
+ *     summary: Obtiene el detalle de una publicación
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Publicación obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *   patch:
+ *     summary: Actualiza una publicación visual
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *               descripcion:
+ *                 type: string
+ *               categoria:
+ *                 type: string
+ *               orden:
+ *                 type: integer
+ *               activo:
+ *                 type: boolean
+ *               imagen:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Publicación actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *   put:
+ *     summary: Actualiza completamente una publicación visual
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             additionalProperties: true
+ *     responses:
+ *       200:
+ *         description: Publicación actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *
+ * /contenido/{id}/status:
+ *   patch:
+ *     summary: Activa o desactiva una publicación
+ *     tags: [Contenido]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activo:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Estado de publicación actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ */
+
 router.get('/activo', controller.listActiveContent);
 
 router.use(authenticateToken, authorizeRoles('administrador'));

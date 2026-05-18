@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { apiGet, apiPatch } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PetBreedSelect from '@/components/PetBreedSelect.vue'
 
 type PetListItem = {
   id: string
@@ -58,6 +59,8 @@ type PetsListResponse = { success: boolean; mascotas: PetListItem[]; search: str
 type PetDetailResponse = { success: boolean; mascota: PetDetail }
 type PetHistoryResponse = { success: boolean; mascotaId: string; historial: PetHistoryItem[] }
 type PetUpdateResponse = { success: boolean; message: string; mascota: PetDetail }
+type BreedOption = { value: string; label: string; aliases?: string[] }
+type BreedCatalogResponse = { success: boolean; razas: BreedOption[] }
 
 const currentPath = window.location.pathname.toLowerCase()
 const loading = ref(true)
@@ -75,6 +78,7 @@ const selectedHistory = ref<PetHistoryItem | null>(null)
 const petHistory = ref<PetHistoryItem[]>([])
 const isDetailOpen = ref(false)
 const fallbackPetImage = '/img/mascota1.png'
+const breedOptions = ref<BreedOption[]>([])
 const petForm = ref({
   nombre: '',
   raza: '',
@@ -108,8 +112,38 @@ onMounted(async () => {
     loading.value = false
     return
   }
-  await loadPets()
+  await Promise.allSettled([loadBreedOptions(), loadPets()])
 })
+
+function normalizeText(value: string | null | undefined) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+}
+
+function resolveBreedValue(value: string | null | undefined) {
+  const normalizedValue = normalizeText(value)
+  if (!normalizedValue) return ''
+
+  const option = breedOptions.value.find((breed) => {
+    if (normalizeText(breed.value) === normalizedValue) return true
+    if (normalizeText(breed.label) === normalizedValue) return true
+    return (breed.aliases || []).some((alias) => normalizeText(alias) === normalizedValue)
+  })
+
+  return option?.value || String(value || '')
+}
+
+async function loadBreedOptions() {
+  try {
+    const data = await apiGet<BreedCatalogResponse>('/api/mascotas/catalogs/breeds')
+    breedOptions.value = data.razas
+  } catch (caughtError) {
+    console.warn('No se pudo cargar el catalogo de razas:', caughtError)
+  }
+}
 
 async function loadPets(search = appliedSearch.value) {
   loading.value = true
@@ -177,7 +211,7 @@ function selectHistoryEntry(entry: PetHistoryItem) {
 function fillPetForm(pet: PetDetail) {
   petForm.value = {
     nombre: pet.nombre || '',
-    raza: pet.raza || '',
+    raza: resolveBreedValue(pet.raza),
     tamano: pet.tamano || '',
     sexo: pet.sexo || '',
     edad: pet.edad === null || pet.edad === undefined ? '' : String(pet.edad),
@@ -447,7 +481,12 @@ function formatBoolean(value: boolean | null) {
                 <strong>Editar mascota</strong>
                 <div class="edit-grid">
                   <label class="field"><span>Nombre</span><input v-model="petForm.nombre" type="text"></label>
-                  <label class="field"><span>Raza</span><input v-model="petForm.raza" type="text"></label>
+                  <PetBreedSelect
+                    v-model="petForm.raza"
+                    :options="breedOptions"
+                    label="Raza"
+                    placeholder="Busca una raza o selecciona Criollo"
+                  />
                   <label class="field">
                     <span>Tamano</span>
                     <select v-model="petForm.tamano">
