@@ -165,9 +165,106 @@ const { controller } = createAdminReportsModule();
  *                 mejorEtiqueta:
  *                   type: string
  *                   example: 12 Abr
+ *     AdminDashboardReportResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         tipo:
+ *           type: string
+ *           example: dashboard
+ *         filtro:
+ *           allOf:
+ *             - $ref: '#/components/schemas/AdminReportFilters'
+ *             - type: object
+ *               properties:
+ *                 servicioId:
+ *                   type: string
+ *                   format: uuid
+ *                   nullable: true
+ *                 servicioAdicionalId:
+ *                   type: string
+ *                   format: uuid
+ *                   nullable: true
+ *                 clienteId:
+ *                   type: string
+ *                   format: uuid
+ *                   nullable: true
+ *                 mascotaId:
+ *                   type: string
+ *                   format: uuid
+ *                   nullable: true
+ *                 estadoCita:
+ *                   type: string
+ *                   example: todas
  * tags:
  *   - name: Reportes
  *     description: Reportes financieros y operativos del negocio.
+ *
+ * /reportes/catalogos:
+ *   get:
+ *     summary: Obtiene catalogos para filtros del dashboard
+ *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Catalogos cargados correctamente
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *
+ * /reportes/dashboard:
+ *   get:
+ *     summary: Obtiene el dashboard completo de reportes con KPIs, graficas y tablas
+ *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/ReportPeriod'
+ *       - $ref: '#/components/parameters/ReportDate'
+ *       - $ref: '#/components/parameters/ReportStartDate'
+ *       - $ref: '#/components/parameters/ReportEndDate'
+ *       - in: query
+ *         name: servicioId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: servicioAdicionalId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: clienteId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: mascotaId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: estadoCita
+ *         schema:
+ *           type: string
+ *           enum: [todas, pendiente, confirmada, en_atencion, completada, cancelada, reprogramada]
+ *     responses:
+ *       200:
+ *         description: Dashboard generado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AdminDashboardReportResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *
  * /reportes/ganancias:
  *   get:
@@ -323,7 +420,7 @@ const { controller } = createAdminReportsModule();
  *         name: tipo
  *         schema:
  *           type: string
- *           enum: [ganancias, adicionales, citas, resumen]
+ *           enum: [ganancias, adicionales, citas, resumen, dashboard]
  *       - $ref: '#/components/parameters/ReportPeriod'
  *       - $ref: '#/components/parameters/ReportDate'
  *       - $ref: '#/components/parameters/ReportStartDate'
@@ -346,6 +443,8 @@ const { controller } = createAdminReportsModule();
 
 router.use(authenticateToken, authorizeRoles('administrador'));
 
+router.get('/catalogos', controller.getFilterCatalogs);
+router.get('/dashboard', controller.getDashboardReport);
 router.get('/ganancias', controller.getRevenueReport);
 router.get('/adicionales', controller.getAdditionalRevenueReport);
 router.get('/citas-realizadas', controller.getCompletedServicesReport);

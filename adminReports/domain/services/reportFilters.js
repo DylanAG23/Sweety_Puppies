@@ -1,8 +1,43 @@
 const { AdminReportError } = require('../errors/AdminReportError');
 
-const REPORT_TYPES = ['ganancias', 'adicionales', 'citas', 'resumen'];
+const REPORT_TYPES = ['ganancias', 'adicionales', 'citas', 'resumen', 'dashboard'];
 const PERIOD_TYPES = ['day', 'week', 'month', 'range'];
 const BOGOTA_TIME_ZONE = 'America/Bogota';
+const APPOINTMENT_STATES = [
+  'todas',
+  'pendiente',
+  'confirmada',
+  'en_atencion',
+  'completada',
+  'cancelada',
+  'reprogramada'
+];
+const APPOINTMENT_STATE_ALIASES = {
+  all: 'todas',
+  todas: 'todas',
+  todos: 'todas',
+  pendiente: 'pendiente',
+  pendientes: 'pendiente',
+  confirmada: 'confirmada',
+  confirmadas: 'confirmada',
+  'en_atencion': 'en_atencion',
+  'en-atencion': 'en_atencion',
+  atencion: 'en_atencion',
+  atencion_en_curso: 'en_atencion',
+  completada: 'completada',
+  completadas: 'completada',
+  finalizada: 'completada',
+  finalizadas: 'completada',
+  realizada: 'completada',
+  realizadas: 'completada',
+  pagada: 'completada',
+  pagadas: 'completada',
+  cancelada: 'cancelada',
+  canceladas: 'cancelada',
+  reprogramada: 'reprogramada',
+  reprogramadas: 'reprogramada'
+};
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function formatBogotaToday() {
   const formatter = new Intl.DateTimeFormat('en-CA', {
@@ -90,6 +125,47 @@ function normalizePeriod(value) {
   return normalized;
 }
 
+function normalizeUuid(value, fieldName) {
+  if (value == null || value === '') {
+    return null;
+  }
+
+  const normalized = String(value).trim();
+
+  if (!UUID_PATTERN.test(normalized)) {
+    throw new AdminReportError(`Debes indicar un ${fieldName} valido`, 400, 'INVALID_FILTER_UUID');
+  }
+
+  return normalized;
+}
+
+function normalizeAppointmentState(value) {
+  const normalized = String(value || 'todas').trim().toLowerCase();
+  const resolved = APPOINTMENT_STATE_ALIASES[normalized];
+
+  if (!resolved || !APPOINTMENT_STATES.includes(resolved)) {
+    throw new AdminReportError('Debes indicar un estado de cita valido para filtrar', 400, 'INVALID_APPOINTMENT_STATE');
+  }
+
+  return resolved;
+}
+
+function normalizeDashboardFilters(query) {
+  const baseFilters = normalizeReportFilters(query);
+
+  return {
+    ...baseFilters,
+    servicioId: normalizeUuid(query?.servicioId || query?.servicio_id, 'servicio principal'),
+    servicioAdicionalId: normalizeUuid(
+      query?.servicioAdicionalId || query?.servicio_adicional_id,
+      'servicio adicional'
+    ),
+    clienteId: normalizeUuid(query?.clienteId || query?.cliente_id, 'cliente'),
+    mascotaId: normalizeUuid(query?.mascotaId || query?.mascota_id, 'mascota'),
+    estadoCita: normalizeAppointmentState(query?.estadoCita || query?.estado || 'todas')
+  };
+}
+
 function normalizeReportFilters(query) {
   const periodo = normalizePeriod(query?.periodo || query?.period);
 
@@ -149,5 +225,7 @@ function normalizeReportFilters(query) {
 
 module.exports = {
   normalizeReportType,
-  normalizeReportFilters
+  normalizeReportFilters,
+  normalizeDashboardFilters,
+  normalizeAppointmentState
 };

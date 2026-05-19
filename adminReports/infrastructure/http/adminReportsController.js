@@ -62,6 +62,24 @@ function createAdminReportsController(useCases) {
       }
     },
 
+    getDashboardReport: async (req, res) => {
+      try {
+        const result = await useCases.getAdminDashboardReport(req.user, req.query);
+        res.json({ success: true, tipo: 'dashboard', ...result });
+      } catch (error) {
+        handleHttpError(res, error, 'Error al generar el dashboard de reportes');
+      }
+    },
+
+    getFilterCatalogs: async (req, res) => {
+      try {
+        const result = await useCases.getAdminReportFilterCatalogs(req.user);
+        res.json({ success: true, catalogos: result });
+      } catch (error) {
+        handleHttpError(res, error, 'Error al cargar los catalogos de filtros');
+      }
+    },
+
     downloadReportPdf: async (req, res) => {
       try {
         const result = await useCases.generateAdminReportPdf(req.user, req.query);

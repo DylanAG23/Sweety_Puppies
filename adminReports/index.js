@@ -4,6 +4,8 @@ const { getAdminCompletedServicesReport } = require('./application/useCases/getA
 const { getAdminFinancialSummaryReport } = require('./application/useCases/getAdminFinancialSummaryReport');
 const { getAdminTrendReport } = require('./application/useCases/getAdminTrendReport');
 const { generateAdminReportPdf } = require('./application/useCases/generateAdminReportPdf');
+const { getAdminDashboardReport } = require('./application/useCases/getAdminDashboardReport');
+const { getAdminReportFilterCatalogs } = require('./application/useCases/getAdminReportFilterCatalogs');
 const { createAdminReportsController } = require('./infrastructure/http/adminReportsController');
 const { PostgresAdminReportsRepository } = require('./infrastructure/repositories/PostgresAdminReportsRepository');
 const { SimplePdfReportService } = require('./infrastructure/services/SimplePdfReportService');
@@ -29,7 +31,9 @@ function createAdminReportsModule() {
     getAdminFinancialSummaryReport: (sessionUser, query) =>
       getAdminFinancialSummaryReport(dependencies, sessionUser, query),
     getAdminTrendReport: (sessionUser, query) => getAdminTrendReport(dependencies, sessionUser, query),
-    generateAdminReportPdf: (sessionUser, query) => generateAdminReportPdf(dependencies, sessionUser, query)
+    generateAdminReportPdf: (sessionUser, query) => generateAdminReportPdf(dependencies, sessionUser, query),
+    getAdminDashboardReport: (sessionUser, query) => getAdminDashboardReport(dependencies, sessionUser, query),
+    getAdminReportFilterCatalogs: (sessionUser) => getAdminReportFilterCatalogs(dependencies, sessionUser)
   };
 
   return {

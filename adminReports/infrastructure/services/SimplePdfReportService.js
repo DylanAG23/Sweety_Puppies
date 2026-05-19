@@ -49,6 +49,9 @@ function formatDateTime() {
 }
 
 function humanizeReportType(reportType) {
+  if (reportType === 'dashboard') {
+    return 'Dashboard administrativo de reportes';
+  }
   if (reportType === 'adicionales') {
     return 'Reporte de ingresos por servicios adicionales';
   }
@@ -62,6 +65,18 @@ function humanizeReportType(reportType) {
 }
 
 function buildSummaryRows(reportType, reporte) {
+  if (reportType === 'dashboard') {
+    const kpis = reporte.kpis || {};
+    return [
+      ['Total ingresado', formatMoney(kpis.totalIngresado)],
+      ['70% ganancia neta estimada', formatMoney(kpis.gananciaNeta)],
+      ['30% insumos / reserva', formatMoney(kpis.reservaInsumos)],
+      ['Citas realizadas', formatNumber(kpis.totalCitasRealizadas)],
+      ['Citas canceladas', formatNumber(kpis.totalCitasCanceladas)],
+      ['Promedio por cita', formatMoney(kpis.promedioIngresoPorCita)]
+    ];
+  }
+
   if (reportType === 'adicionales') {
     return [
       ['Ingreso por adicionales', formatMoney(reporte.totalIngresado)],
@@ -96,6 +111,28 @@ function buildSummaryRows(reportType, reporte) {
 }
 
 function buildDetailRows(reportType, reporte) {
+  if (reportType === 'dashboard') {
+    const rows = [];
+
+    (reporte.tablas?.serviciosPrincipales || []).slice(0, 4).forEach((item) => {
+      rows.push({
+        nombre: `Servicio: ${item.nombre}`,
+        detalle: `${formatNumber(item.totalCitas)} citas`,
+        valor: formatMoney(item.totalIngresado)
+      });
+    });
+
+    (reporte.tablas?.serviciosAdicionales || []).slice(0, 4).forEach((item) => {
+      rows.push({
+        nombre: `Adicional: ${item.nombre}`,
+        detalle: `${formatNumber(item.totalAplicaciones)} aplicaciones`,
+        valor: formatMoney(item.totalIngresado)
+      });
+    });
+
+    return rows;
+  }
+
   if (reportType === 'adicionales') {
     return (reporte.adicionales || []).map((item) => ({
       nombre: item.nombre,
@@ -208,11 +245,7 @@ function drawHeader(doc, payload) {
 function drawMetaSection(doc, payload) {
   ensureSpace(doc, 90);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(13)
-    .fillColor(COLORS.purple)
-    .text('Detalles del reporte', PAGE_MARGIN, doc.y);
+  doc.font('Helvetica-Bold').fontSize(13).fillColor(COLORS.purple).text('Detalles del reporte', PAGE_MARGIN, doc.y);
 
   doc.y += 10;
 
@@ -223,22 +256,11 @@ function drawMetaSection(doc, payload) {
   drawMetaRow(doc, leftX, startY, 'Tipo', humanizeReportType(payload.reportType));
   drawMetaRow(doc, leftX, startY + 20, 'Periodo consultado', payload.filtro.label);
   drawMetaRow(doc, rightX, startY, 'Fecha de generacion', formatDateTime());
-  drawMetaRow(
-    doc,
-    rightX,
-    startY + 20,
-    'Fuente',
-    'Historial de citas realizadas y servicios adicionales aplicados'
-  );
+  drawMetaRow(doc, rightX, startY + 20, 'Fuente', 'Historial de citas realizadas y servicios adicionales aplicados');
 
   doc.y = startY + 54;
 
-  doc
-    .moveTo(PAGE_MARGIN, doc.y)
-    .lineTo(doc.page.width - PAGE_MARGIN, doc.y)
-    .strokeColor(COLORS.lightLine)
-    .lineWidth(1)
-    .stroke();
+  doc.moveTo(PAGE_MARGIN, doc.y).lineTo(doc.page.width - PAGE_MARGIN, doc.y).strokeColor(COLORS.lightLine).lineWidth(1).stroke();
 
   doc.y += 18;
 }
@@ -251,41 +273,24 @@ function drawMetaRow(doc, x, y, label, value) {
 function drawSummarySection(doc, rows) {
   ensureSpace(doc, 120);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(13)
-    .fillColor(COLORS.purple)
-    .text('Resumen principal', PAGE_MARGIN, doc.y);
+  doc.font('Helvetica-Bold').fontSize(13).fillColor(COLORS.purple).text('Resumen principal', PAGE_MARGIN, doc.y);
 
   doc.y += 12;
 
   rows.forEach(([label, value], index) => {
     const y = doc.y;
 
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(11)
-      .fillColor(COLORS.black)
-      .text(label, PAGE_MARGIN, y, { width: 250 });
+    doc.font('Helvetica-Bold').fontSize(11).fillColor(COLORS.black).text(label, PAGE_MARGIN, y, { width: 250 });
 
-    doc
-      .font('Helvetica')
-      .fontSize(11)
-      .fillColor(COLORS.black)
-      .text(value, doc.page.width - PAGE_MARGIN - 180, y, {
-        width: 180,
-        align: 'right'
-      });
+    doc.font('Helvetica').fontSize(11).fillColor(COLORS.black).text(value, doc.page.width - PAGE_MARGIN - 180, y, {
+      width: 180,
+      align: 'right'
+    });
 
     doc.y += 18;
 
     if (index < rows.length - 1) {
-      doc
-        .moveTo(PAGE_MARGIN, doc.y - 4)
-        .lineTo(doc.page.width - PAGE_MARGIN, doc.y - 4)
-        .strokeColor('#EFE7EC')
-        .lineWidth(0.8)
-        .stroke();
+      doc.moveTo(PAGE_MARGIN, doc.y - 4).lineTo(doc.page.width - PAGE_MARGIN, doc.y - 4).strokeColor('#EFE7EC').lineWidth(0.8).stroke();
     }
   });
 
@@ -298,36 +303,37 @@ function drawNotesSection(doc, reportType, reporte) {
   const notes = [];
 
   if (reportType === 'ganancias') {
-    notes.push(`Las ganancias reportadas provienen unicamente de citas ya completadas y registradas en historial.`);
+    notes.push('Las ganancias reportadas provienen unicamente de citas ya completadas y registradas en historial.');
     notes.push(`El promedio por cita del periodo fue ${formatMoney(reporte.promedioPorCita)}.`);
+  } else if (reportType === 'dashboard') {
+    const kpis = reporte.kpis || {};
+    notes.push('Este documento resume el dashboard administrativo aplicando exactamente los filtros seleccionados.');
+    notes.push(
+      `El servicio principal mas solicitado fue ${kpis.servicioMasSolicitado?.nombre || 'sin registros'} y el adicional mas vendido fue ${kpis.servicioAdicionalMasVendido?.nombre || 'sin registros'}.`
+    );
+    notes.push(
+      `El mejor dia por ingreso fue ${kpis.diaMayorIngreso?.label || 'sin datos'} y el de mayor volumen de citas fue ${kpis.diaMayorCantidadCitas?.label || 'sin datos'}.`
+    );
   } else if (reportType === 'adicionales') {
-    notes.push(`Este reporte muestra el ingreso generado por servicios adicionales ya cobrados al negocio.`);
+    notes.push('Este reporte muestra el ingreso generado por servicios adicionales ya cobrados al negocio.');
     notes.push(`Se registraron ${formatNumber(reporte.totalAplicaciones)} aplicaciones en el periodo consultado.`);
   } else if (reportType === 'citas') {
-    notes.push(`El volumen operativo se calcula solo con citas realizadas y cerradas en el sistema.`);
-    notes.push(`Los servicios principales listados ayudan a identificar en que se concentra la demanda.`);
+    notes.push('El volumen operativo se calcula solo con citas realizadas y cerradas en el sistema.');
+    notes.push('Los servicios principales listados ayudan a identificar en que se concentra la demanda.');
   } else {
-    notes.push(`La distribucion 30 / 70 es una lectura interna para administracion, no reemplaza contabilidad formal.`);
-    notes.push(`El 30% se propone como reserva operativa y el 70% como ganancia neta considerada.`);
+    notes.push('La distribucion 30 / 70 es una lectura interna para administracion, no reemplaza contabilidad formal.');
+    notes.push('El 30% se propone como reserva operativa y el 70% como ganancia neta considerada.');
   }
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(13)
-    .fillColor(COLORS.purple)
-    .text('Observaciones', PAGE_MARGIN, doc.y);
+  doc.font('Helvetica-Bold').fontSize(13).fillColor(COLORS.purple).text('Observaciones', PAGE_MARGIN, doc.y);
 
   doc.y += 10;
 
   notes.forEach((note) => {
-    doc
-      .font('Helvetica')
-      .fontSize(10.5)
-      .fillColor(COLORS.black)
-      .text(`• ${note}`, PAGE_MARGIN, doc.y, {
-        width: doc.page.width - PAGE_MARGIN * 2,
-        lineGap: 3
-      });
+    doc.font('Helvetica').fontSize(10.5).fillColor(COLORS.black).text(`- ${note}`, PAGE_MARGIN, doc.y, {
+      width: doc.page.width - PAGE_MARGIN * 2,
+      lineGap: 3
+    });
     doc.y += 8;
   });
 
@@ -337,11 +343,7 @@ function drawNotesSection(doc, reportType, reporte) {
 function drawDetailTable(doc, title, rows) {
   ensureSpace(doc, 110);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(13)
-    .fillColor(COLORS.purple)
-    .text(title, PAGE_MARGIN, doc.y);
+  doc.font('Helvetica-Bold').fontSize(13).fillColor(COLORS.purple).text(title, PAGE_MARGIN, doc.y);
 
   doc.y += 12;
 
@@ -352,9 +354,7 @@ function drawDetailTable(doc, title, rows) {
   const valueWidth = tableWidth - nameWidth - detailWidth;
   const headerY = doc.y;
 
-  doc
-    .rect(tableX, headerY, tableWidth, 24)
-    .fill(COLORS.green);
+  doc.rect(tableX, headerY, tableWidth, 24).fill(COLORS.green);
 
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(10.5);
   doc.text('Concepto', tableX + 10, headerY + 7, { width: nameWidth - 12 });
@@ -367,13 +367,9 @@ function drawDetailTable(doc, title, rows) {
   doc.y = headerY + 28;
 
   if (!rows.length) {
-    doc
-      .font('Helvetica')
-      .fontSize(10.5)
-      .fillColor(COLORS.black)
-      .text('No se encontraron registros para este periodo.', tableX, doc.y + 8, {
-        width: tableWidth
-      });
+    doc.font('Helvetica').fontSize(10.5).fillColor(COLORS.black).text('No se encontraron registros para este periodo.', tableX, doc.y + 8, {
+      width: tableWidth
+    });
     doc.y += 28;
     return;
   }
@@ -398,12 +394,7 @@ function drawDetailTable(doc, title, rows) {
       align: 'right'
     });
 
-    doc
-      .moveTo(tableX, rowY + 24)
-      .lineTo(tableX + tableWidth, rowY + 24)
-      .strokeColor('#EEE7EC')
-      .lineWidth(0.8)
-      .stroke();
+    doc.moveTo(tableX, rowY + 24).lineTo(tableX + tableWidth, rowY + 24).strokeColor('#EEE7EC').lineWidth(0.8).stroke();
 
     doc.y += 24;
   });
@@ -414,26 +405,17 @@ function drawDetailTable(doc, title, rows) {
 function drawFooter(doc) {
   const footerY = doc.page.height - PAGE_MARGIN + 8;
 
-  doc
-    .moveTo(PAGE_MARGIN, footerY - 10)
-    .lineTo(doc.page.width - PAGE_MARGIN, footerY - 10)
-    .strokeColor(COLORS.lightLine)
-    .lineWidth(1)
-    .stroke();
+  doc.moveTo(PAGE_MARGIN, footerY - 10).lineTo(doc.page.width - PAGE_MARGIN, footerY - 10).strokeColor(COLORS.lightLine).lineWidth(1).stroke();
 
-  doc
-    .font('Helvetica')
-    .fontSize(9)
-    .fillColor(COLORS.gray)
-    .text(
-      'Sweety Puppies | Documento generado desde el ERP administrativo del negocio',
-      PAGE_MARGIN,
-      footerY,
-      {
-        width: doc.page.width - PAGE_MARGIN * 2,
-        align: 'center'
-      }
-    );
+  doc.font('Helvetica').fontSize(9).fillColor(COLORS.gray).text(
+    'Sweety Puppies | Documento generado desde el ERP administrativo del negocio',
+    PAGE_MARGIN,
+    footerY,
+    {
+      width: doc.page.width - PAGE_MARGIN * 2,
+      align: 'center'
+    }
+  );
 }
 
 class SimplePdfReportService {
@@ -441,11 +423,13 @@ class SimplePdfReportService {
     const summaryRows = buildSummaryRows(payload.reportType, payload.reporte);
     const detailRows = buildDetailRows(payload.reportType, payload.reporte);
     const detailTitle =
-      payload.reportType === 'adicionales'
-        ? 'Detalle de servicios adicionales'
-        : payload.reportType === 'resumen'
-          ? 'Distribucion financiera'
-          : 'Detalle del periodo';
+      payload.reportType === 'dashboard'
+        ? 'Servicios y adicionales destacados'
+        : payload.reportType === 'adicionales'
+          ? 'Detalle de servicios adicionales'
+          : payload.reportType === 'resumen'
+            ? 'Distribucion financiera'
+            : 'Detalle del periodo';
 
     const doc = new PDFDocument({
       size: 'A4',

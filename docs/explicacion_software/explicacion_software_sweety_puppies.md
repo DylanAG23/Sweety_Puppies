@@ -1017,3 +1017,118 @@ Mejoras técnicas recomendadas:
 ## 12. Cierre
 
 Sweety Puppies es un sistema web modular orientado a operación real de una peluquería canina. La arquitectura actual ya separa en gran medida la lógica del negocio de la infraestructura, lo que facilita su mantenimiento y lo vuelve defendible en una sustentación técnica. Aun así, conserva algunos rastros de compatibilidad heredada y algunos puntos sensibles de configuración que conviene presentar como oportunidades de mejora, no como fallas del modelo arquitectónico.
+
+---
+
+## 13. Actualizacion del modulo de reportes
+
+El modulo de reportes evoluciono desde reportes aislados hacia un **dashboard administrativo dinamico**. Esta mejora mantiene la arquitectura hexagonal y concentra los calculos de negocio en backend, de modo que el frontend solo consume estructuras ya agregadas.
+
+### 13.1 Endpoint agregado del dashboard
+
+El backend expone un endpoint agregado para el tablero administrativo:
+
+- `GET /api/reportes/dashboard`
+
+Tambien expone un endpoint auxiliar para poblar filtros:
+
+- `GET /api/reportes/catalogos`
+
+### 13.2 Filtros disponibles
+
+El dashboard puede consultarse por:
+
+- dia
+- semana
+- mes
+- rango personalizado
+- servicio principal
+- servicio adicional
+- estado de cita
+- cliente
+- mascota
+
+### 13.3 KPIs principales
+
+El dashboard calcula y muestra:
+
+- ingresos totales del periodo
+- ganancia neta estimada del 70%
+- reserva / insumos del 30%
+- total de citas realizadas
+- total de citas canceladas
+- total de citas pendientes
+- total de citas confirmadas
+- servicio principal mas solicitado
+- servicio adicional mas vendido
+- promedio de ingreso por cita
+- dia con mayor cantidad de citas
+- dia con mayor ingreso
+
+### 13.4 Regla de calculo de ingresos
+
+La regla sigue siendo estricta:
+
+- los ingresos solo se calculan desde `historial_citas`
+- por tanto, solo se cuentan citas ya realizadas o finalizadas
+- nunca se usan citas pendientes, canceladas o en atencion para ingresos reales
+
+La distribucion financiera se calcula asi:
+
+- `totalIngresado = 100%`
+- `reservaInsumos = 30%`
+- `gananciaNeta = 70%`
+
+Este calculo se implementa en:
+
+- `adminReports/domain/services/reportFinance.js`
+
+### 13.5 Libreria de graficos utilizada
+
+Para el dashboard se utilizo:
+
+- `apexcharts`
+- `vue3-apexcharts`
+
+Esto permite una visualizacion moderna, responsive y mantenible en Vue 3 sin trasladar calculos de negocio al frontend.
+
+### 13.6 Graficas del dashboard
+
+Las visualizaciones implementadas incluyen:
+
+- grafico de barras para ingresos por periodo
+- grafico de linea para evolucion de ingresos
+- grafico de dona para distribucion de servicios principales
+- grafico de dona para distribucion de servicios adicionales
+- grafico de barras para citas por estado
+- grafico comparativo entre ingresos por servicios principales y adicionales
+- grafico de ranking de servicios mas vendidos
+- grafico de tendencia mensual con ingresos y volumen
+
+### 13.7 Tablas dinamicas
+
+El modulo ahora incluye tablas dinamicas de:
+
+- citas realizadas
+- servicios principales mas solicitados
+- servicios adicionales mas vendidos
+- resumen de ingresos
+- citas por estado
+
+Estas tablas reaccionan a los mismos filtros del dashboard y permiten ordenamiento desde frontend sin recalcular negocio.
+
+### 13.8 Exportacion PDF
+
+La exportacion se mantiene con:
+
+- `PDFKit`
+
+El PDF ahora puede representar tambien el estado del dashboard respetando los filtros activos, incluyendo:
+
+- rango de fechas
+- total ingresado
+- ganancia neta 70%
+- reserva / insumos 30%
+- citas realizadas
+- servicios y adicionales destacados
+- observaciones del periodo

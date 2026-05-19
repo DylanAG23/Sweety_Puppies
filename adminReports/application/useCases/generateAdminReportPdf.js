@@ -4,17 +4,24 @@ const {
   buildCompletedServicesReport,
   buildFinancialSummaryReport
 } = require('../services/reportBuilders');
+const { buildAdminDashboardReport } = require('../services/dashboardBuilders');
 
 async function generateAdminReportPdf(dependencies, sessionUser, query) {
   await dependencies.reportsRepository.resolveAdminContext(sessionUser);
 
   const tipo = dependencies.filters.normalizeReportType(query?.tipo || query?.reportType);
-  const filters = dependencies.filters.normalizeReportFilters(query);
+  const filters =
+    tipo === 'dashboard'
+      ? dependencies.filters.normalizeDashboardFilters(query)
+      : dependencies.filters.normalizeReportFilters(query);
 
   let result;
   let reportTitle;
 
-  if (tipo === 'adicionales') {
+  if (tipo === 'dashboard') {
+    result = await buildAdminDashboardReport(dependencies, filters);
+    reportTitle = 'Dashboard administrativo de reportes';
+  } else if (tipo === 'adicionales') {
     result = await buildAdditionalRevenueReport(dependencies, filters);
     reportTitle = 'Reporte de ingresos por servicios adicionales';
   } else if (tipo === 'citas') {
@@ -32,7 +39,7 @@ async function generateAdminReportPdf(dependencies, sessionUser, query) {
     reportTitle,
     reportType: tipo,
     filtro: result.filtro,
-    reporte: result.reporte
+    reporte: result.reporte || result
   });
 
   return {
