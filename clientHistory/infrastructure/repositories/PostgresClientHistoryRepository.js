@@ -93,25 +93,27 @@ class PostgresClientHistoryRepository {
     const result = await client.query(
       `
         SELECT
-          id,
-          cita_id,
-          mascota_id,
-          fecha_servicio,
-          mascota_nombre,
-          mascota_raza,
-          mascota_tamano::text AS mascota_tamano,
-          mascota_tipo_pelaje::text AS mascota_tipo_pelaje,
-          servicio_principal_nombre,
-          servicios_adicionales_resumen,
-          resumen_servicio_realizado,
-          observaciones_finales,
-          recomendaciones,
-          precio_base,
-          precio_calculado,
-          precio_final
-        FROM historial_citas
-        WHERE cliente_id = ANY($1::uuid[])
-        ORDER BY fecha_servicio DESC, created_at DESC
+          hs.id,
+          hs.cita_id,
+          hs.mascota_id,
+          hs.fecha_servicio,
+          hs.mascota_nombre,
+          hs.mascota_raza,
+          hs.mascota_tamano::text AS mascota_tamano,
+          hs.mascota_tipo_pelaje::text AS mascota_tipo_pelaje,
+          hs.servicio_principal_nombre,
+          hs.servicios_adicionales_resumen,
+          hs.resumen_servicio_realizado,
+          hs.observaciones_finales,
+          hs.recomendaciones,
+          hs.precio_base,
+          hs.precio_calculado,
+          hs.precio_final,
+          m.foto_mascota_url AS mascota_foto_url
+        FROM historial_citas hs
+        LEFT JOIN mascotas m ON m.id = hs.mascota_id
+        WHERE hs.cliente_id = ANY($1::uuid[])
+        ORDER BY hs.fecha_servicio DESC, hs.created_at DESC
       `,
       [clientIds]
     );
@@ -125,6 +127,7 @@ class PostgresClientHistoryRepository {
       mascotaRaza: row.mascota_raza,
       mascotaTamano: row.mascota_tamano,
       mascotaTipoPelaje: row.mascota_tipo_pelaje,
+      mascotaFotoUrl: row.mascota_foto_url,
       servicioPrincipalNombre: row.servicio_principal_nombre,
       serviciosAdicionalesResumen: row.servicios_adicionales_resumen,
       resumenServicioRealizado: row.resumen_servicio_realizado,
@@ -227,8 +230,10 @@ class PostgresClientHistoryRepository {
         SELECT
           hs.id,
           hs.cita_id,
+          hs.mascota_id,
           hs.fecha_servicio,
           hs.cliente_nombre_completo,
+          hs.cliente_cedula,
           hs.cliente_email,
           hs.cliente_telefono,
           hs.mascota_nombre,
@@ -244,8 +249,10 @@ class PostgresClientHistoryRepository {
           hs.recomendaciones,
           hs.precio_base,
           hs.precio_calculado,
-          hs.precio_final
+          hs.precio_final,
+          m.foto_mascota_url AS mascota_foto_url
         FROM historial_citas hs
+        LEFT JOIN mascotas m ON m.id = hs.mascota_id
         WHERE hs.id = $1::uuid
           AND hs.cliente_id = ANY($2::uuid[])
         LIMIT 1
@@ -260,14 +267,17 @@ class PostgresClientHistoryRepository {
     return {
       id: result.rows[0].id,
       citaId: result.rows[0].cita_id,
+      mascotaId: result.rows[0].mascota_id,
       fechaServicio: result.rows[0].fecha_servicio,
       clienteNombreCompleto: result.rows[0].cliente_nombre_completo,
+      clienteCedula: result.rows[0].cliente_cedula,
       clienteEmail: result.rows[0].cliente_email,
       clienteTelefono: result.rows[0].cliente_telefono,
       mascotaNombre: result.rows[0].mascota_nombre,
       mascotaRaza: result.rows[0].mascota_raza,
       mascotaTamano: result.rows[0].mascota_tamano,
       mascotaTipoPelaje: result.rows[0].mascota_tipo_pelaje,
+      mascotaFotoUrl: result.rows[0].mascota_foto_url,
       servicioPrincipalNombre: result.rows[0].servicio_principal_nombre,
       serviciosAdicionalesResumen: result.rows[0].servicios_adicionales_resumen,
       resumenServicioRealizado: result.rows[0].resumen_servicio_realizado,

@@ -18,14 +18,6 @@ function formatMonthLabel(dateValue) {
   return `${MONTH_LABELS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 
-function buildAppointmentCountLookup(rows) {
-  const lookup = new Map();
-  (rows || []).forEach((row) => {
-    lookup.set(String(row.fecha).slice(0, 10), Number(row.totalCitas) || 0);
-  });
-  return lookup;
-}
-
 function buildStatusLookup(rows) {
   const lookup = new Map();
   (rows || []).forEach((row) => {
@@ -59,20 +51,72 @@ function buildIncomeSummaryTable(revenueSummary, additionalSummary, distribution
   ];
 }
 
-function buildDashboardKpis(filters, revenueSummary, additionalSummary, statusSummary, dailySummary, distribution) {
+function buildPeakDailyPoint(rows, valueKey, labelKey) {
+  const positivePoints = (rows || []).filter((item) => Number(item[valueKey]) > 0);
+
+  if (!positivePoints.length) {
+    return null;
+  }
+
+  const bestPoint = positivePoints.reduce(
+    (best, item) => (Number(item[valueKey]) > Number(best?.[valueKey] || 0) ? item : best),
+    null
+  );
+
+  if (!bestPoint) {
+    return null;
+  }
+
+  return {
+    fecha: String(bestPoint.fecha).slice(0, 10),
+    label: labelKey(bestPoint),
+    [valueKey]: Number(bestPoint[valueKey]) || 0
+  };
+}
+
+function buildPeakTrendPoint(trend, fieldName) {
+  const positivePoints = (trend?.serie || []).filter((item) => item.value > 0);
+
+  if (!positivePoints.length) {
+    return null;
+  }
+
+  const bestPoint = positivePoints.reduce(
+    (best, item) => (item.value > (best?.value || 0) ? item : best),
+    null
+  );
+
+  if (!bestPoint) {
+    return null;
+  }
+
+  return {
+    fecha: String(bestPoint.key).slice(0, 10),
+    label: bestPoint.label,
+    [fieldName]: bestPoint.value
+  };
+}
+
+function buildDashboardKpis(
+  filters,
+  revenueSummary,
+  additionalSummary,
+  statusSummary,
+  dailySummary,
+  revenueTrend,
+  distribution
+) {
   const statusLookup = buildStatusLookup(statusSummary);
   const topService = revenueSummary.serviciosPrincipales[0] || null;
   const topAdditional = additionalSummary.adicionales[0] || null;
   const bestIncomeDay =
-    (dailySummary.ingresosPorDia || []).reduce(
-      (best, item) => (item.totalIngresado > (best?.totalIngresado || 0) ? item : best),
-      null
-    ) || null;
-  const bestAppointmentsDay =
-    (dailySummary.citasPorDia || []).reduce(
-      (best, item) => (item.totalCitas > (best?.totalCitas || 0) ? item : best),
-      null
-    ) || null;
+    buildPeakDailyPoint(dailySummary.ingresosPorDia, 'totalIngresado', (item) => formatDateLabel(item.fecha)) ||
+    buildPeakTrendPoint(revenueTrend, 'totalIngresado');
+  const bestAppointmentsDay = buildPeakDailyPoint(
+    dailySummary.citasPorDia,
+    'totalCitas',
+    (item) => formatDateLabel(item.fecha)
+  );
 
   return {
     periodo: filters.label,
@@ -98,20 +142,8 @@ function buildDashboardKpis(filters, revenueSummary, additionalSummary, statusSu
         }
       : null,
     promedioIngresoPorCita: revenueSummary.promedioPorCita,
-    diaMayorCantidadCitas: bestAppointmentsDay
-      ? {
-          fecha: String(bestAppointmentsDay.fecha).slice(0, 10),
-          label: formatDateLabel(bestAppointmentsDay.fecha),
-          totalCitas: bestAppointmentsDay.totalCitas
-        }
-      : null,
+    diaMayorCantidadCitas: bestAppointmentsDay,
     diaMayorIngreso: bestIncomeDay
-      ? {
-          fecha: String(bestIncomeDay.fecha).slice(0, 10),
-          label: formatDateLabel(bestIncomeDay.fecha),
-          totalIngresado: bestIncomeDay.totalIngresado
-        }
-      : null
   };
 }
 
@@ -130,13 +162,44 @@ function buildStatusChart(statusSummary) {
   }));
 }
 
-function buildMonthlyTrend(monthlyRows) {
-  return (monthlyRows || []).map((row) => ({
-    key: String(row.periodo).slice(0, 10),
-    label: formatMonthLabel(row.periodo),
-    ingresos: Number(row.totalIngresado) || 0,
-    citas: Number(row.totalCitas) || 0
-  }));
+function buildMonthlyTrendBuckets(filters, monthlyRows) {
+  const valuesByMonth = new Map(
+    (monthlyRows || []).map((row) => [
+      String(row.periodo).slice(0, 7),
+      {
+        ingresos: Number(row.totalIngresado) || 0,
+        citas: Number(row.totalCitas) || 0
+      }
+    ])
+  );
+
+  const [startYear, startMonth] = String(filters.fechaInicio).slice(0, 7).split('-').map(Number);
+  const [endYear, endMonth] = String(filters.fechaFin).slice(0, 7).split('-').map(Number);
+
+  const buckets = [];
+  let year = startYear;
+  let month = startMonth;
+
+  while (year < endYear || (year === endYear && month <= endMonth)) {
+    const key = `${year}-${String(month).padStart(2, '0')}-01`;
+    const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+    const current = valuesByMonth.get(monthKey) || { ingresos: 0, citas: 0 };
+
+    buckets.push({
+      key,
+      label: formatMonthLabel(key),
+      ingresos: current.ingresos,
+      citas: current.citas
+    });
+
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+
+  return buckets;
 }
 
 function buildStatusTable(statusSummary) {
@@ -147,13 +210,14 @@ function buildStatusTable(statusSummary) {
 }
 
 async function buildAdminDashboardReport(dependencies, filters) {
-  const [revenueSummary, additionalSummary, statusSummary, completedSummary, dailySummary, monthlyTrend, completedAppointments] =
+  const [revenueSummary, additionalSummary, statusSummary, completedSummary, dailySummary, revenueTrendRows, monthlyTrend, completedAppointments] =
     await Promise.all([
       dependencies.reportsRepository.getRevenueSummary(filters),
       dependencies.reportsRepository.getAdditionalRevenueSummary(filters),
       dependencies.reportsRepository.getAppointmentStatusSummary(filters),
       dependencies.reportsRepository.getCompletedServicesSummary(filters),
       dependencies.reportsRepository.getDailyOperationalSummary(filters),
+      dependencies.reportsRepository.getTrendSeries(filters, 'ganancias'),
       dependencies.reportsRepository.getMonthlyRevenueTrend(filters),
       dependencies.reportsRepository.getCompletedAppointmentsTable(filters)
     ]);
@@ -162,10 +226,7 @@ async function buildAdminDashboardReport(dependencies, filters) {
   const revenueLine = dependencies.trends.buildTrendSeries(
     filters,
     'ganancias',
-    (dailySummary.ingresosPorDia || []).map((item) => ({
-      key: String(item.fecha).slice(0, 10),
-      value: Number(item.totalIngresado) || 0
-    }))
+    revenueTrendRows
   );
 
   return {
@@ -176,6 +237,7 @@ async function buildAdminDashboardReport(dependencies, filters) {
       additionalSummary,
       statusSummary,
       dailySummary,
+      revenueLine,
       distribution
     ),
     graficas: {
@@ -202,7 +264,7 @@ async function buildAdminDashboardReport(dependencies, filters) {
         value: item.totalCitas,
         ingreso: item.totalIngresado
       })),
-      tendenciaMensual: buildMonthlyTrend(monthlyTrend)
+      tendenciaMensual: buildMonthlyTrendBuckets(filters, monthlyTrend)
     },
     tablas: {
       citasRealizadas: completedAppointments,

@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
-import { logoutToLogin, requireRole } from '@/lib/session'
+import { getSession, logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
 
 type PetOption = {
@@ -72,6 +72,7 @@ type CompletedService = {
   mascotaRaza: string | null
   mascotaTamano: string | null
   mascotaTipoPelaje: string | null
+  mascotaFotoUrl: string | null
   servicioPrincipalNombre: string
   serviciosAdicionalesResumen: string | null
   resumenServicioRealizado: string | null
@@ -85,14 +86,17 @@ type CompletedService = {
 type CompletedServiceDetail = {
   id: string
   citaId: string | null
+  mascotaId: string | null
   fechaServicio: string
   clienteNombreCompleto: string | null
+  clienteCedula: string | null
   clienteEmail: string | null
   clienteTelefono: string | null
   mascotaNombre: string
   mascotaRaza: string | null
   mascotaTamano: string | null
   mascotaTipoPelaje: string | null
+  mascotaFotoUrl: string | null
   servicioPrincipalNombre: string
   serviciosAdicionalesResumen: string | null
   resumenServicioRealizado: string | null
@@ -152,6 +156,7 @@ const currentTab = ref<'citas' | 'servicios'>('citas')
 const loading = ref(true)
 const detailLoading = ref(false)
 const actionLoading = ref(false)
+const receiptLoading = ref(false)
 const reprogramAvailabilityLoading = ref(false)
 const error = ref('')
 const toast = ref('')
@@ -302,6 +307,55 @@ function closeCompletedDetail() {
   selectedCompletedService.value = null
 }
 
+async function downloadCompletedServiceReceipt() {
+  if (!selectedCompletedService.value) {
+    return
+  }
+
+  const session = getSession()
+  if (!session) {
+    logoutToLogin()
+    return
+  }
+
+  receiptLoading.value = true
+  error.value = ''
+
+  try {
+    const response = await fetch(`/api/cliente/historial/servicios/${selectedCompletedService.value.id}/comprobante`, {
+      headers: {
+        Authorization: `Bearer ${session.token}`,
+      },
+    })
+
+    if (response.status === 401 || response.status === 403) {
+      logoutToLogin()
+      return
+    }
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}))
+      throw new Error(payload.message || 'No se pudo generar el comprobante')
+    }
+
+    const blob = await response.blob()
+    const objectUrl = URL.createObjectURL(blob)
+    const fileName = sanitizeFileSegment(selectedCompletedService.value.mascotaNombre)
+    const anchor = document.createElement('a')
+    anchor.href = objectUrl
+    anchor.download = `comprobante-${fileName}.pdf`
+    document.body.appendChild(anchor)
+    anchor.click()
+    document.body.removeChild(anchor)
+    URL.revokeObjectURL(objectUrl)
+    toast.value = 'Tu comprobante se descargó correctamente'
+  } catch (caughtError) {
+    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo descargar el comprobante'
+  } finally {
+    receiptLoading.value = false
+  }
+}
+
 async function loadReprogramAvailability() {
   if (!selectedAppointment.value || !reprogramDate.value) {
     return
@@ -443,6 +497,15 @@ function petImage(url: string | null) {
 
 function normalizeText(value: string | null | undefined) {
   return (value || '').toLowerCase()
+}
+
+function sanitizeFileSegment(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 function formatCurrency(value: number | null) {
@@ -673,7 +736,7 @@ function statusClass(status: string) {
           <article v-for="service in filteredCompletedServices" :key="service.id" class="history-shell history-card">
             <div class="card-top">
               <div class="card-pet">
-                <div class="service-icon">HC</div>
+                <img :src="petImage(service.mascotaFotoUrl)" :alt="service.mascotaNombre" class="card-pet-image">
                 <div>
                   <h2>{{ service.mascotaNombre }}</h2>
                   <p>{{ service.servicioPrincipalNombre }}</p>
@@ -881,7 +944,9 @@ function statusClass(status: string) {
             </div>
 
             <div class="history-actions modal-actions">
-              <button type="button" class="btn-disabled" disabled>Descargar comprobante (proximamente)</button>
+              <button type="button" class="btn-enviar" :disabled="receiptLoading" @click="downloadCompletedServiceReceipt">
+                {{ receiptLoading ? 'Generando comprobante...' : 'Descargar comprobante' }}
+              </button>
               <button type="button" class="btn-secundario" @click="closeCompletedDetail">Cerrar</button>
             </div>
           </template>

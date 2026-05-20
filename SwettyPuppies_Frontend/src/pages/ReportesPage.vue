@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 import type { ApexOptions } from 'apexcharts'
@@ -200,20 +200,24 @@ const kpiCards = computed(() => {
     { label: 'Promedio por cita', value: formatCurrency(kpis.promedioIngresoPorCita), helper: 'Solo sobre citas realizadas', tone: 'mint' },
     {
       label: 'Día con más citas',
-      value: kpis.diaMayorCantidadCitas?.label || 'Sin datos',
-      helper: kpis.diaMayorCantidadCitas ? `${formatNumber(kpis.diaMayorCantidadCitas.totalCitas)} citas` : 'Sin volumen registrado',
+      value: kpis.diaMayorCantidadCitas?.label || 'Sin citas en el periodo',
+      helper: kpis.diaMayorCantidadCitas ? `${formatNumber(kpis.diaMayorCantidadCitas.totalCitas)} citas` : currentFilterLabel.value,
       tone: 'sand'
     },
     {
       label: 'Día con mayor ingreso',
-      value: kpis.diaMayorIngreso?.label || 'Sin datos',
-      helper: kpis.diaMayorIngreso ? formatCurrency(kpis.diaMayorIngreso.totalIngresado) : 'Sin ingresos registrados',
+      value: kpis.diaMayorIngreso?.label || 'Sin ingresos en el periodo',
+      helper: kpis.diaMayorIngreso ? formatCurrency(kpis.diaMayorIngreso.totalIngresado) : currentFilterLabel.value,
       tone: 'rose'
     }
   ]
 })
 
 const currentFilterLabel = computed(() => dashboard.value?.filtro.label || buildCurrentFilterLabel())
+const currentFilterDetails = computed(() => {
+  const activeFilter = dashboard.value?.filtro
+  return activeFilter ? buildFilterDescriptionFromState(activeFilter) : buildCurrentFilterDescription()
+})
 
 const serviceOptions = computed(() => filterCatalogs.value?.serviciosPrincipales || [])
 const additionalOptions = computed(() => filterCatalogs.value?.serviciosAdicionales || [])
@@ -570,6 +574,10 @@ function hasChartData(rows: Array<{ value?: number; ingresos?: number; citas?: n
   return rows.some((item) => (Number(item.value) || Number(item.ingresos) || Number(item.citas) || 0) > 0)
 }
 
+function hasChartRows(rows: Array<unknown>) {
+  return rows.length > 0
+}
+
 function compareValues(left: unknown, right: unknown, direction: 'asc' | 'desc') {
   const factor = direction === 'asc' ? 1 : -1
 
@@ -694,6 +702,90 @@ function buildCurrentFilterLabel() {
   }
 
   return `Dia ${filters.fecha}`
+}
+
+function buildFilterDescriptionFromState(filterState: ReportFilter) {
+  const details = [`Desde ${formatDateOnly(filterState.fechaInicio)} hasta ${formatDateOnly(filterState.fechaFin)}`]
+
+  const selectedService = serviceOptions.value.find((item) => item.id === filterState.servicioId)
+  const selectedAdditional = additionalOptions.value.find((item) => item.id === filterState.servicioAdicionalId)
+  const selectedClient = clientOptions.value.find((item) => item.id === filterState.clienteId)
+  const selectedPet = petOptions.value.find((item) => item.id === filterState.mascotaId)
+
+  if (selectedService) details.push(`Servicio principal: ${selectedService.nombre}`)
+  if (selectedAdditional) details.push(`Adicional: ${selectedAdditional.nombre}`)
+  if (filterState.estadoCita !== 'todas') details.push(`Estado: ${formatAppointmentState(filterState.estadoCita)}`)
+  if (selectedClient) details.push(`Cliente: ${selectedClient.nombre}`)
+  if (selectedPet) details.push(`Mascota: ${selectedPet.nombre}`)
+
+  return details.join(' · ')
+}
+
+function buildCurrentFilterDescription() {
+  const currentRange = resolveCurrentFilterRange()
+
+  return buildFilterDescriptionFromState({
+    periodo: filters.periodo,
+    fechaReferencia: filters.periodo === 'range' ? null : filters.fecha,
+    fechaInicio: filters.periodo === 'range' ? filters.fechaInicio : currentRange.fechaInicio,
+    fechaFin: filters.periodo === 'range' ? filters.fechaFin : currentRange.fechaFin,
+    label: buildCurrentFilterLabel(),
+    servicioId: filters.servicioId || null,
+    servicioAdicionalId: filters.servicioAdicionalId || null,
+    clienteId: filters.clienteId || null,
+    mascotaId: filters.mascotaId || null,
+    estadoCita: filters.estadoCita
+  })
+}
+
+function resolveCurrentFilterRange() {
+  if (filters.periodo === 'day') {
+    return { fechaInicio: filters.fecha, fechaFin: filters.fecha }
+  }
+
+  if (filters.periodo === 'week') {
+    const date = new Date(`${filters.fecha}T00:00:00`)
+    const dayIndex = (date.getDay() + 6) % 7
+    const start = new Date(date)
+    start.setDate(date.getDate() - dayIndex)
+    const end = new Date(start)
+    end.setDate(start.getDate() + 6)
+
+    return {
+      fechaInicio: toDateInput(start),
+      fechaFin: toDateInput(end)
+    }
+  }
+
+  return {
+    fechaInicio: startOfMonth(filters.fecha),
+    fechaFin: endOfMonth(filters.fecha)
+  }
+}
+
+function toDateInput(date: Date) {
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString().slice(0, 10)
+}
+
+function formatDateOnly(value: string) {
+  return new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'medium',
+    timeZone: 'America/Bogota'
+  }).format(new Date(`${value}T00:00:00`))
+}
+
+function formatAppointmentState(value: AppointmentState) {
+  const labels: Record<AppointmentState, string> = {
+    todas: 'Todas',
+    pendiente: 'Pendiente',
+    confirmada: 'Confirmada',
+    en_atencion: 'En atención',
+    completada: 'Finalizada',
+    cancelada: 'Cancelada',
+    reprogramada: 'Reprogramada'
+  }
+
+  return labels[value]
 }
 
 function baseChartOptions(type: 'bar' | 'line'): NonNullable<ApexOptions['chart']> {
@@ -941,6 +1033,7 @@ function donutOptions(labels: string[]): ApexOptions {
           <div>
             <span class="section-kicker">Lectura del periodo</span>
             <h2>{{ currentFilterLabel }}</h2>
+            <p class="period-reading">{{ currentFilterDetails }}</p>
           </div>
           <small class="period-label">Actualizado con filtros en vivo</small>
         </div>
@@ -960,11 +1053,11 @@ function donutOptions(labels: string[]): ApexOptions {
               </div>
             </div>
             <div class="chart-stage">
-              <div class="chart-wrapper" :class="{ muted: !hasChartData(incomeByPeriodSeries) }">
+              <div class="chart-wrapper" :class="{ muted: hasChartRows(incomeByPeriodSeries) && !hasChartData(incomeByPeriodSeries) }">
                 <VueApexCharts type="bar" height="320" :options="incomeBarOptions" :series="incomeBarSeries" />
               </div>
-              <div v-if="!hasChartData(incomeByPeriodSeries)" class="chart-overlay">
-                No hay ingresos finalizados en este rango para construir la gr�fica.
+              <div v-if="hasChartRows(incomeByPeriodSeries) && !hasChartData(incomeByPeriodSeries)" class="chart-overlay">
+                No hay ingresos finalizados en este rango para construir la gráfica.
               </div>
             </div>
           </article>
@@ -977,11 +1070,11 @@ function donutOptions(labels: string[]): ApexOptions {
               </div>
             </div>
             <div class="chart-stage">
-              <div class="chart-wrapper" :class="{ muted: !hasChartData(revenueEvolutionSeries) }">
+              <div class="chart-wrapper" :class="{ muted: hasChartRows(revenueEvolutionSeries) && !hasChartData(revenueEvolutionSeries) }">
                 <VueApexCharts type="line" height="320" :options="incomeLineOptions" :series="incomeLineSeries" />
               </div>
-              <div v-if="!hasChartData(revenueEvolutionSeries)" class="chart-overlay">
-                A�n no hay suficiente historial de ingresos para mostrar evoluci�n.
+              <div v-if="hasChartRows(revenueEvolutionSeries) && !hasChartData(revenueEvolutionSeries)" class="chart-overlay">
+                El periodo sí está cargado, pero todavía no tiene ingresos finalizados para dibujar una tendencia útil.
               </div>
             </div>
           </article>
@@ -1020,10 +1113,10 @@ function donutOptions(labels: string[]): ApexOptions {
               </div>
             </div>
             <div class="chart-stage">
-              <div class="chart-wrapper" :class="{ muted: !hasChartData(appointmentStatusSeries) }">
+              <div class="chart-wrapper" :class="{ muted: hasChartRows(appointmentStatusSeries) && !hasChartData(appointmentStatusSeries) }">
                 <VueApexCharts type="bar" height="320" :options="statusBarOptions" :series="statusBarSeries" />
               </div>
-              <div v-if="!hasChartData(appointmentStatusSeries)" class="chart-overlay">
+              <div v-if="hasChartRows(appointmentStatusSeries) && !hasChartData(appointmentStatusSeries)" class="chart-overlay">
                 No encontramos citas en el periodo y filtros actuales.
               </div>
             </div>
@@ -1037,10 +1130,10 @@ function donutOptions(labels: string[]): ApexOptions {
               </div>
             </div>
             <div class="chart-stage">
-              <div class="chart-wrapper" :class="{ muted: !hasChartData(comparisonSeries) }">
+              <div class="chart-wrapper" :class="{ muted: hasChartRows(comparisonSeries) && !hasChartData(comparisonSeries) }">
                 <VueApexCharts type="bar" height="320" :options="comparisonOptions" :series="comparisonChartSeries" />
               </div>
-              <div v-if="!hasChartData(comparisonSeries)" class="chart-overlay">
+              <div v-if="hasChartRows(comparisonSeries) && !hasChartData(comparisonSeries)" class="chart-overlay">
                 No hay datos comparables para el filtro actual.
               </div>
             </div>
@@ -1054,11 +1147,11 @@ function donutOptions(labels: string[]): ApexOptions {
               </div>
             </div>
             <div class="chart-stage">
-              <div class="chart-wrapper" :class="{ muted: !hasChartData(rankingSeries) }">
+              <div class="chart-wrapper" :class="{ muted: hasChartRows(rankingSeries) && !hasChartData(rankingSeries) }">
                 <VueApexCharts type="bar" height="320" :options="rankingOptions" :series="rankingChartSeries" />
               </div>
-              <div v-if="!hasChartData(rankingSeries)" class="chart-overlay">
-                A�n no hay servicios para construir el ranking del periodo.
+              <div v-if="hasChartRows(rankingSeries) && !hasChartData(rankingSeries)" class="chart-overlay">
+                El ranking está listo, pero este periodo aún no acumula ventas finalizadas.
               </div>
             </div>
           </article>
@@ -1071,11 +1164,11 @@ function donutOptions(labels: string[]): ApexOptions {
               </div>
             </div>
             <div class="chart-stage">
-              <div class="chart-wrapper" :class="{ muted: !hasChartData(monthlyTrendSeries) }">
+              <div class="chart-wrapper" :class="{ muted: hasChartRows(monthlyTrendSeries) && !hasChartData(monthlyTrendSeries) }">
                 <VueApexCharts type="line" height="340" :options="monthlyTrendOptions" :series="monthlyTrendChartSeries" />
               </div>
-              <div v-if="!hasChartData(monthlyTrendSeries)" class="chart-overlay">
-                Todav�a no hay suficiente hist�rico mensual para mostrar tendencia.
+              <div v-if="hasChartRows(monthlyTrendSeries) && !hasChartData(monthlyTrendSeries)" class="chart-overlay">
+                El histórico mensual está reservado, pero todavía no registra ingresos o citas finalizadas en este rango.
               </div>
             </div>
           </article>
@@ -1186,6 +1279,13 @@ function donutOptions(labels: string[]): ApexOptions {
 .section-header h2 {
   margin: 16px 0 12px;
   color: #94186f;
+}
+
+.period-reading {
+  margin: 0;
+  color: #624d5f;
+  line-height: 1.65;
+  max-width: 880px;
 }
 
 .hero-copy h1 {
@@ -1570,4 +1670,5 @@ function donutOptions(labels: string[]): ApexOptions {
   }
 }
 </style>
+
 

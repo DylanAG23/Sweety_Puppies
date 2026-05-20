@@ -698,6 +698,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
                 <button type="button" class="btn-secundario" @click="showFinalizePanel = !showFinalizePanel">{{ showFinalizePanel ? 'Ocultar finalizacion' : 'Finalizar cita' }}</button>
               </div>
               <div v-if="showFinalizePanel" class="finalize-card">
+                <p v-if="error" class="feedback error modal-feedback">{{ error }}</p>
                 <label class="field-block"><span>Observaciones finales</span><textarea v-model="finalizeForm.observacionesFinales" rows="3" placeholder="Resultado final de la cita..." /></label>
                 <label class="field-block"><span>Recomendaciones</span><textarea v-model="finalizeForm.recomendaciones" rows="3" placeholder="Cuidados sugeridos para la familia..." /></label>
                 <div class="row-actions">
@@ -843,6 +844,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .feedback { margin-top:16px; padding:16px 18px; border-radius:20px; font-weight:600; }
 .feedback.success { background:rgba(233,251,247,.94); border:1px solid rgba(115,214,177,.9); color:#0b8a77; }
 .feedback.error { background:rgba(255,240,245,.96); border:1px solid rgba(255,176,214,.96); color:#b33c70; }
+.modal-feedback { margin-top:0; }
 .right { justify-content:flex-end; }
 @media (max-width: 1180px) { .hero-card,.form-grid,.form-grid.short,.summary-grid,.summary-grid.services,.mini-grid,.detail-grid,.catalog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width: 760px) { .management-page { width:min(100vw - 20px,100%); padding-top:12px; } .state-card,.hero-card,.filter-card,.summary-card,.item-card,.modal-card,.detail-panel,.empty-card { padding:22px; border-radius:24px; } .hero-card,.form-grid,.form-grid.short,.summary-grid,.summary-grid.services,.mini-grid,.detail-grid,.catalog-grid { grid-template-columns:1fr; } .tab-grid,.row-actions,.item-top,.pet-mini,.modal-head { flex-direction:column; align-items:stretch; } }

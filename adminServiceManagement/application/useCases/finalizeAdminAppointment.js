@@ -76,6 +76,7 @@ async function finalizeAdminAppointment(dependencies, sessionUser, identifier, p
         mascotaId: cita.mascota.id,
         fechaServicio: `${fechaServicioDate}T${horaServicio}`,
         clienteNombreCompleto: cita.cliente.nombre,
+        clienteCedula: cita.cliente.cedula,
         clienteEmail: cita.cliente.email,
         clienteTelefono: cita.cliente.telefono,
         mascotaNombre: cita.mascota.nombre,

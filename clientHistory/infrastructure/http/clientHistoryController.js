@@ -53,6 +53,17 @@ function createClientHistoryController(useCases) {
       } catch (error) {
         handleHttpError(res, error, 'Error al obtener el detalle del servicio realizado');
       }
+    },
+
+    downloadCompletedServiceReceipt: async (req, res) => {
+      try {
+        const result = await useCases.generateClientCompletedServiceReceipt(req.user, req.params.id);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${result.fileName}"`);
+        res.send(result.buffer);
+      } catch (error) {
+        handleHttpError(res, error, 'Error al generar el comprobante del servicio realizado');
+      }
     }
   };
 }

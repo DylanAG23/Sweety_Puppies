@@ -117,6 +117,34 @@ const { controller } = createClientHistoryModule();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *
+ * /cliente/historial/servicios/{id}/comprobante:
+ *   get:
+ *     summary: Descarga el comprobante PDF de una cita realizada
+ *     tags: [Cliente Historial]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Archivo PDF generado correctamente
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Servicio no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 
 router.use(authenticateToken, authorizeRoles('cliente'));
@@ -124,5 +152,6 @@ router.use(authenticateToken, authorizeRoles('cliente'));
 router.get('/', controller.getHistory);
 router.get('/citas/:id', controller.getCurrentAppointmentDetail);
 router.get('/servicios/:id', controller.getCompletedServiceDetail);
+router.get('/servicios/:id/comprobante', controller.downloadCompletedServiceReceipt);
 
 module.exports = router;

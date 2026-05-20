@@ -80,6 +80,33 @@ function buildAppointmentsWhereClause(filters, params, appointmentAlias = 'c') {
   return where;
 }
 
+function normalizeDateKey(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString().slice(0, 10);
+  }
+
+  const normalized = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(normalized)) {
+    return normalized.slice(0, 10);
+  }
+
+  const parsed = new Date(normalized);
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toISOString().slice(0, 10);
+  }
+
+  return normalized.slice(0, 10);
+}
+
+function normalizeMonthKey(value) {
+  const dateKey = normalizeDateKey(value);
+  return dateKey ? dateKey.slice(0, 7) : null;
+}
+
 function mapServiceRows(rows) {
   return rows.map((row) => ({
     nombre: row.servicio_principal_nombre || 'Sin servicio principal',
@@ -378,7 +405,7 @@ class PostgresAdminReportsRepository {
         );
 
         return result.rows.map((row) => ({
-          key: String(row.bucket_date).slice(0, 10),
+          key: normalizeDateKey(row.bucket_date),
           value: Number(row.value) || 0
         }));
       }
@@ -399,7 +426,7 @@ class PostgresAdminReportsRepository {
     );
 
     return result.rows.map((row) => ({
-      key: String(row.bucket_date).slice(0, 10),
+      key: normalizeDateKey(row.bucket_date),
       value: Number(row.value) || 0
     }));
   }
@@ -465,12 +492,12 @@ class PostgresAdminReportsRepository {
 
     return {
       ingresosPorDia: incomeResult.rows.map((row) => ({
-        fecha: String(row.fecha).slice(0, 10),
+        fecha: normalizeDateKey(row.fecha),
         totalIngresado: Number(row.total_ingresado) || 0,
         totalCitasRealizadas: Number(row.total_citas_realizadas) || 0
       })),
       citasPorDia: appointmentsResult.rows.map((row) => ({
-        fecha: String(row.fecha).slice(0, 10),
+        fecha: normalizeDateKey(row.fecha),
         totalCitas: Number(row.total_citas) || 0
       }))
     };
@@ -536,7 +563,7 @@ class PostgresAdminReportsRepository {
     );
 
     return result.rows.map((row) => ({
-      periodo: String(row.periodo).slice(0, 10),
+      periodo: normalizeDateKey(row.periodo),
       totalCitas: Number(row.total_citas) || 0,
       totalIngresado: Number(row.total_ingresado) || 0
     }));

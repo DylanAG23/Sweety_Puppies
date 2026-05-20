@@ -1,14 +1,17 @@
 const { getClientHistory } = require('./application/useCases/getClientHistory');
 const { getClientCurrentAppointmentDetail } = require('./application/useCases/getClientCurrentAppointmentDetail');
 const { getClientCompletedServiceDetail } = require('./application/useCases/getClientCompletedServiceDetail');
+const { generateClientCompletedServiceReceipt } = require('./application/useCases/generateClientCompletedServiceReceipt');
 const { createClientHistoryController } = require('./infrastructure/http/clientHistoryController');
 const { PostgresClientHistoryRepository } = require('./infrastructure/repositories/PostgresClientHistoryRepository');
+const { SimpleClientReceiptPdfService } = require('./infrastructure/services/SimpleClientReceiptPdfService');
 const presentation = require('./domain/services/historyPresentation');
 
 function createClientHistoryModule() {
   const dependencies = {
     historyRepository: new PostgresClientHistoryRepository(),
-    presentation
+    presentation,
+    receiptPdfService: new SimpleClientReceiptPdfService()
   };
 
   const useCases = {
@@ -16,7 +19,9 @@ function createClientHistoryModule() {
     getClientCurrentAppointmentDetail: (sessionUser, appointmentId) =>
       getClientCurrentAppointmentDetail(dependencies, sessionUser, appointmentId),
     getClientCompletedServiceDetail: (sessionUser, historyId) =>
-      getClientCompletedServiceDetail(dependencies, sessionUser, historyId)
+      getClientCompletedServiceDetail(dependencies, sessionUser, historyId),
+    generateClientCompletedServiceReceipt: (sessionUser, historyId) =>
+      generateClientCompletedServiceReceipt(dependencies, sessionUser, historyId)
   };
 
   return {
