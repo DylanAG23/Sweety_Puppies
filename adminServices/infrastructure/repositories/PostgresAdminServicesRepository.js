@@ -432,19 +432,17 @@ class PostgresAdminServicesRepository {
   }
 
   async replacePrimaryTariffs(serviceId, tariffs, db = client) {
+    const uniqueTariffs = dedupePrimaryTariffs(tariffs);
+
     await db.query(
       `
-        UPDATE tarifas_servicio
-        SET
-          activo = false,
-          updated_at = NOW()
+        DELETE FROM tarifas_servicio
         WHERE servicio_id = $1::uuid
-          AND activo = true
       `,
       [serviceId]
     );
 
-    for (const tariff of tariffs) {
+    for (const tariff of uniqueTariffs) {
       await db.query(
         `
           INSERT INTO tarifas_servicio (
@@ -455,6 +453,10 @@ class PostgresAdminServicesRepository {
             activo
           )
           VALUES ($1::uuid, $2, $3, $4::integer, true)
+          ON CONFLICT (servicio_id, tamano, tipo_pelaje)
+          DO UPDATE SET
+            precio_base = EXCLUDED.precio_base,
+            activo = true
         `,
         [serviceId, tariff.tamano, tariff.tipo_pelaje, tariff.precio_base]
       );
@@ -462,19 +464,17 @@ class PostgresAdminServicesRepository {
   }
 
   async replaceAdditionalTariffs(serviceId, tariffs, db = client) {
+    const uniqueTariffs = dedupeAdditionalTariffs(tariffs);
+
     await db.query(
       `
-        UPDATE tarifas_servicio_adicional
-        SET
-          activo = false,
-          updated_at = NOW()
+        DELETE FROM tarifas_servicio_adicional
         WHERE servicio_adicional_id = $1::uuid
-          AND activo = true
       `,
       [serviceId]
     );
 
-    for (const tariff of tariffs) {
+    for (const tariff of uniqueTariffs) {
       await db.query(
         `
           INSERT INTO tarifas_servicio_adicional (
@@ -484,11 +484,54 @@ class PostgresAdminServicesRepository {
             activo
           )
           VALUES ($1::uuid, $2, $3::integer, true)
+          ON CONFLICT (servicio_adicional_id, tamano)
+          DO UPDATE SET
+            precio = EXCLUDED.precio,
+            activo = true
         `,
         [serviceId, tariff.tamano, tariff.precio]
       );
     }
   }
+}
+
+function dedupePrimaryTariffs(tariffs = []) {
+  const unique = new Map();
+
+  tariffs.forEach((tariff) => {
+    const tamano = normalizeTariffValue(tariff.tamano);
+    const tipoPelaje = normalizeTariffValue(tariff.tipo_pelaje);
+    const key = `${tamano}::${tipoPelaje}`;
+    unique.set(key, {
+      ...tariff,
+      tamano,
+      tipo_pelaje: tipoPelaje
+    });
+  });
+
+  return [...unique.values()];
+}
+
+function dedupeAdditionalTariffs(tariffs = []) {
+  const unique = new Map();
+
+  tariffs.forEach((tariff) => {
+    const tamano = normalizeTariffValue(tariff.tamano);
+    unique.set(tamano, {
+      ...tariff,
+      tamano
+    });
+  });
+
+  return [...unique.values()];
+}
+
+function normalizeTariffValue(value) {
+  return String(value || '')
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 }
 
 module.exports = { PostgresAdminServicesRepository };

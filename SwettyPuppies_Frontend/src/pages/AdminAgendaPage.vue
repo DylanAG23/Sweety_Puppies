@@ -784,18 +784,18 @@ function formatDateInput(value: Date) {
             </p>
 
             <div class="form-grid">
-              <label class="field-group">
+              <label class="field-group date-field-group">
                 <span>Fecha</span>
                 <input v-model="blockForm.fecha" type="date" :min="minBlockDate">
                 <small class="field-help">{{ blockDateHint }}</small>
               </label>
 
-              <label class="field-group">
+              <label class="field-group time-field-group">
                 <span>Hora inicio</span>
                 <input v-model="blockForm.horaInicio" type="time">
               </label>
 
-              <label class="field-group">
+              <label class="field-group time-field-group">
                 <span>Hora fin</span>
                 <input v-model="blockForm.horaFin" type="time">
               </label>
@@ -1430,12 +1430,14 @@ function formatDateInput(value: Date) {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 18px;
+  align-items: start;
 }
 
 .field-group {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .field-group.compact {
@@ -1454,12 +1456,41 @@ function formatDateInput(value: Date) {
 
 .field-group input,
 .field-group textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   border-radius: 18px;
   border: 1px solid rgba(243, 203, 228, 0.9);
   padding: 14px 16px;
   font: inherit;
   background: rgba(255, 255, 255, 0.95);
   color: #5b4256;
+}
+
+.time-field-group input {
+  min-height: 48px;
+  padding: 10px 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-field-group {
+  min-width: 0;
+}
+
+.date-field-group {
+  min-width: 0;
+}
+
+.time-field-group input::-webkit-calendar-picker-indicator {
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.time-field-group input::-webkit-datetime-edit {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .listed-block {
@@ -1654,6 +1685,11 @@ function formatDateInput(value: Date) {
   .detail-grid.secondary,
   .daily-card {
     grid-template-columns: 1fr;
+  }
+
+  .time-field-group,
+  .date-field-group {
+    width: 100%;
   }
 
   .view-mode-controls,

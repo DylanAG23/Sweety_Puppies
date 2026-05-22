@@ -56,6 +56,15 @@ function normalizeDuration(value) {
   return Math.round(numericValue);
 }
 
+function normalizePrice(value, fieldName = 'el precio') {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue) || numericValue <= 0) {
+    throw new AdminServiceError(`Debes indicar un valor mayor a 0 para ${fieldName}`, 400, 'INVALID_PRICE');
+  }
+
+  return Math.round(numericValue);
+}
+
 function normalizeSearchTerm(query) {
   return normalizeOptionalText(query?.search || query?.q || query?.texto || '') || '';
 }
@@ -128,7 +137,7 @@ function normalizePrimaryTariffs(values) {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase(),
-    precio_base: normalizeDuration(item?.precio_base ?? item?.precioBase ?? item?.precio)
+    precio_base: normalizePrice(item?.precio_base ?? item?.precioBase ?? item?.precio, 'el precio base de la tarifa')
   }));
 
   if (!tariffs.length) {
@@ -161,7 +170,7 @@ function normalizeAdditionalTariffs(values) {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase(),
-    precio: normalizeDuration(item?.precio ?? item?.precio_base ?? item?.precioBase)
+    precio: normalizePrice(item?.precio ?? item?.precio_base ?? item?.precioBase, 'el precio de la tarifa')
   }));
 
   if (!tariffs.length) {

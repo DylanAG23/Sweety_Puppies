@@ -645,7 +645,6 @@ function formatBoolean(value: boolean | null) {
               >
                 Cancelar edicion
               </button>
-              <button type="button" class="btn light" @click="showToast('La ficha de la mascota quedo lista para integrarse con citas, atencion e historial ampliado.')">Modulo listo para crecer</button>
             </div>
           </template>
         </section>

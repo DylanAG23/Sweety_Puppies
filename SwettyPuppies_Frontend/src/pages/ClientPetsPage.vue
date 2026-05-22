@@ -1659,6 +1659,7 @@ function goTo(path: string) {
   display: grid;
   grid-template-columns: 360px minmax(0, 1fr);
   gap: 20px;
+  align-items: start;
 }
 
 .detail-subtitle {
@@ -1670,6 +1671,7 @@ function goTo(path: string) {
 .detail-main-photo-card {
   display: grid;
   gap: 14px;
+  align-self: start;
 }
 
 .detail-main-photo img,
@@ -1687,6 +1689,7 @@ function goTo(path: string) {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .detail-info-grid {

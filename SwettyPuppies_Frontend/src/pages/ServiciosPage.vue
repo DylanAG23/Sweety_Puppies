@@ -382,20 +382,34 @@ function cancelEditing() {
 }
 
 function buildPrimaryPayload() {
+  const selectedDuration =
+    selectedService.value && selectedServiceCategory.value === 'principales'
+      ? Number(primaryDetail(selectedService.value).duracion_minutos)
+      : NaN
+  const typedDuration = Number(primaryForm.value.duracion_minutos)
+  const safeDuration =
+    Number.isFinite(typedDuration) && typedDuration > 0
+      ? typedDuration
+      : Number.isFinite(selectedDuration) && selectedDuration > 0
+        ? selectedDuration
+        : 60
+
   return {
     nombre: primaryForm.value.nombre,
     descripcion: primaryForm.value.descripcion,
-    duracion_minutos: primaryForm.value.duracion_minutos,
+    duracion_minutos: safeDuration,
     requiere_tamano: primaryForm.value.requiere_tamano,
     requiere_tipo_pelaje: primaryForm.value.requiere_tipo_pelaje,
     aplica_recargo_nudos: primaryForm.value.aplica_recargo_nudos,
     aplica_recargo_comportamiento: primaryForm.value.aplica_recargo_comportamiento,
     activo: primaryForm.value.activo,
-    tarifas: primaryForm.value.tarifas.map((item) => ({
-      tamano: item.tamano,
-      tipo_pelaje: item.tipo_pelaje,
-      precio_base: Number(item.precio_base),
-    })),
+    tarifas: primaryForm.value.tarifas
+      .map((item) => ({
+        tamano: item.tamano,
+        tipo_pelaje: item.tipo_pelaje,
+        precio_base: Number(item.precio_base),
+      }))
+      .filter((item) => Number.isFinite(item.precio_base) && item.precio_base > 0),
   }
 }
 
@@ -404,10 +418,12 @@ function buildAdditionalPayload() {
     nombre: additionalForm.value.nombre,
     descripcion: additionalForm.value.descripcion,
     activo: additionalForm.value.activo,
-    tarifas: additionalForm.value.tarifas.map((item) => ({
-      tamano: item.tamano,
-      precio: Number(item.precio),
-    })),
+    tarifas: additionalForm.value.tarifas
+      .map((item) => ({
+        tamano: item.tamano,
+        precio: Number(item.precio),
+      }))
+      .filter((item) => Number.isFinite(item.precio) && item.precio > 0),
   }
 }
 

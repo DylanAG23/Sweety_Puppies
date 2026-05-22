@@ -595,13 +595,6 @@ function formatLabel(value: string | null) {
               >
                 Cancelar edicion
               </button>
-              <button
-                type="button"
-                class="btn-secundario"
-                @click="showToast('El detalle del cliente ya quedo listo para conectarse con mascotas, citas e historial.')"
-              >
-                Modulo listo para crecer
-              </button>
             </div>
           </template>
         </section>

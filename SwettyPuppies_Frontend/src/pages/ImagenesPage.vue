@@ -710,6 +710,7 @@ function formatDate(value: string | null) {
 .order-editor input,
 .file-field input {
   width: 100%;
+  box-sizing: border-box;
   border-radius: 18px;
   border: 1px solid rgba(241, 181, 213, 0.95);
   background: rgba(255, 255, 255, 0.96);
@@ -930,6 +931,7 @@ function formatDate(value: string | null) {
 .order-editor {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .order-editor label {
@@ -937,10 +939,13 @@ function formatDate(value: string | null) {
   gap: 8px;
   color: #8f176e;
   font-weight: 700;
+  min-width: 0;
 }
 
 .order-editor small {
   color: #786174;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .empty-state {
