@@ -28,7 +28,7 @@ test('el servidor arranca y responde el healthcheck', async () => {
 });
 
 test('las rutas privadas exigen token', async () => {
-  for (const path of ['/api/clientes', '/api/reportes/dashboard', '/api/cliente/mascotas', '/api/auth/me/profile']) {
+  for (const path of ['/api/clientes', '/api/reportes/dashboard', '/api/cliente/mascotas', '/api/auth/me/profile', '/api/admin/inventario']) {
     const response = await fetch(`${baseUrl}${path}`);
     assert.equal(response.status, 401, path);
   }
@@ -45,6 +45,30 @@ test('un cliente no puede entrar a rutas de administracion', async () => {
     headers: { Authorization: `Bearer ${tokenFor('cliente')}` }
   });
   assert.equal(response.status, 403);
+});
+
+test('un cliente no puede ver ni mover el inventario', async () => {
+  const headers = { Authorization: `Bearer ${tokenFor('cliente')}`, 'Content-Type': 'application/json' };
+
+  for (const [method, path] of [
+    ['GET', '/api/admin/inventario'],
+    ['GET', '/api/admin/inventario/movimientos'],
+    ['POST', '/api/admin/inventario/movimientos']
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`, { method, headers, body: method === 'POST' ? '{}' : undefined });
+    assert.equal(response.status, 403, `${method} ${path}`);
+  }
+});
+
+test('el inventario valida el movimiento antes de tocar la base de datos', async () => {
+  const response = await fetch(`${baseUrl}/api/admin/inventario/movimientos`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${tokenFor('administrador')}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ productoId: 'no-es-uuid', tipo: 'entrada', cantidad: 1, motivo: 'Compra' })
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).success, false);
 });
 
 test('una administradora no puede entrar a rutas del portal del cliente', async () => {
