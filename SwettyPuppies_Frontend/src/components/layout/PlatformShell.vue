@@ -130,6 +130,17 @@ function skipToContent() {
 
 watch([collapsed, isMobile, mobileOpen], applyBodyState)
 
+// Cuando cambia el ancho util (montaje, menu contraido, celular/escritorio),
+// los componentes que miden su ancho al montarse (graficas de ApexCharts)
+// solo se recalculan con un evento resize de la ventana.
+function notifyLayoutChange() {
+  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
+  // Segundo aviso al terminar la transicion del menu (300 ms).
+  window.setTimeout(() => window.dispatchEvent(new Event('resize')), 340)
+}
+
+watch([collapsed, isMobile], notifyLayoutChange)
+
 watch(isMobile, (mobile) => {
   if (!mobile) {
     mobileOpen.value = false
@@ -148,6 +159,7 @@ onMounted(() => {
   syncViewport()
   window.addEventListener('resize', syncViewport)
   window.addEventListener('keydown', handleKeydown)
+  notifyLayoutChange()
 })
 
 onUnmounted(() => {

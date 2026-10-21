@@ -1067,9 +1067,13 @@ function formatDateLabel(value: string) {
   color: var(--sp-link-text);
 }
 
+.booking-layout > * {
+  min-width: 0;
+}
+
 @media (max-width: 1180px) {
   .booking-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .booking-summary-card {

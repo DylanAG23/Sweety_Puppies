@@ -186,7 +186,9 @@ header.main-header {
    SECCIÓN HERO
    ============ 
 */
-.hero {
+/* Solo aplica a la portada antigua (con .hero-gradient), que ya no se usa;
+   sin este limite recortaba cualquier cabecera actual con la clase .hero. */
+.hero:has(.hero-gradient) {
   height: 400px;
   position: relative;
   text-align: center;
@@ -703,7 +705,7 @@ footer {
     justify-content: center;
   }
   
-  .hero {
+  .hero:has(.hero-gradient) {
     height: 300px;
   }
   

@@ -1592,6 +1592,7 @@ function donutOptions(labels: string[]): ApexOptions {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-height: 36px;
   border: none;
   background: transparent;
   padding: 0;

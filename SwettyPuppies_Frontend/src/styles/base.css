@@ -93,6 +93,20 @@ textarea:focus-visible {
     opacity var(--sp-duration) var(--sp-ease);
 }
 
+/* Texto siempre centrado en los botones de la marca (algunos estilos
+   heredados lo dejaban alineado a la izquierda). */
+.btn-enviar,
+.btn-primary,
+.btn.main,
+.auth-primary-button,
+.btn-secundario,
+.btn-secondary,
+.btn.light,
+.gallery-button {
+  justify-content: center;
+  text-align: center;
+}
+
 .btn-enviar,
 .btn-primary,
 .btn.main,
@@ -697,5 +711,208 @@ textarea.sp-input {
     top: auto;
     right: var(--sp-space-4);
     bottom: var(--sp-space-4);
+  }
+}
+
+/* =====================================================================
+ * Responsive comun (celular <= 720 px). Unifica como se acomodan los
+ * botones, indicadores y fichas de datos en todas las pantallas sin cambiar
+ * su estructura. Usa !important porque los estilos de cada pagina son
+ * scoped y tienen mayor especificidad.
+ * ===================================================================== */
+
+@media (max-width: 720px) {
+  /* Titulos: escala de la guia (H1 32 px) sin que ocupen media pantalla. */
+  main h1 {
+    font-size: clamp(1.55rem, 7vw, 2rem) !important;
+    line-height: 1.15 !important;
+    overflow-wrap: break-word;
+  }
+
+  main h2 {
+    font-size: clamp(1.2rem, 5.4vw, 1.5rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Grupos de botones: se reparten el ancho, dos por fila si caben;
+     un boton solo ocupa la fila completa. */
+  :is(
+      .auth-actions,
+      .card-actions,
+      .row-actions,
+      .search-actions,
+      .profile-actions,
+      .content-actions,
+      .hero-buttons,
+      .state-actions,
+      .modal-actions,
+      .pets-actions-row,
+      .service-footer,
+      .pet-card-actions,
+      .confirm-actions,
+      .placeholder-actions,
+      .form-actions,
+      .success-actions,
+      .card-actions-row,
+      .detail-actions
+    ) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100%;
+  }
+
+  :is(
+      .auth-actions,
+      .card-actions,
+      .row-actions,
+      .search-actions,
+      .profile-actions,
+      .content-actions,
+      .hero-buttons,
+      .state-actions,
+      .modal-actions,
+      .pets-actions-row,
+      .service-footer,
+      .pet-card-actions,
+      .confirm-actions,
+      .placeholder-actions,
+      .form-actions,
+      .success-actions,
+      .card-actions-row,
+      .detail-actions
+    )
+    > :is(button, a) {
+    display: inline-flex !important;
+    flex: 1 1 140px !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 0 !important;
+    width: auto !important;
+    min-height: var(--sp-control-height);
+    margin: 0 !important;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  /* Selectores de vista o pestanas cortas: columnas iguales. */
+  .view-mode-controls {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  :is(.category-toggle, .tab-grid, .quick-actions-grid) {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  :is(.view-mode-controls, .category-toggle, .tab-grid, .quick-actions-grid) > * {
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  /* Chips de periodo y pestanas de tablas: una fila deslizable
+     (la guia permite desplazamiento horizontal solo en chips y tablas). */
+  :is(.quick-range-row, .table-tabs) {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  :is(.quick-range-row, .table-tabs) > * {
+    flex: 0 0 auto !important;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  /* Indicadores: dos por fila en lugar de uno. */
+  .summary-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .summary-grid > * {
+    min-width: 0;
+    padding: 16px !important;
+    border-radius: var(--sp-radius-card) !important;
+    overflow-wrap: break-word;
+  }
+
+  /* Indicadores: strong = etiqueta, span = valor, small = ayuda (mismo
+     patron en todas las paginas). Legibles sin partirse a mitad de cifra. */
+  .summary-grid > * > strong {
+    font-size: 0.875rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .summary-grid > * > span {
+    font-size: clamp(1.2rem, 5.6vw, 1.6rem) !important;
+    line-height: 1.2 !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .summary-grid > * > small {
+    font-size: 0.75rem !important;
+  }
+
+  /* Fichas de datos cortos (tamano, pelaje, cedula...): dos columnas. */
+  :is(
+      .info-grid.compact,
+      .client-data-grid,
+      .service-data-grid,
+      .mini-grid,
+      .readonly-grid,
+      .admin-home-page .profile-grid,
+      .cliente-portal .profile-grid,
+      .pet-mini-grid
+    ) {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  :is(
+      .info-grid.compact,
+      .client-data-grid,
+      .service-data-grid,
+      .mini-grid,
+      .readonly-grid,
+      .admin-home-page .profile-grid,
+      .cliente-portal .profile-grid,
+      .pet-mini-grid
+    )
+    > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Los modales ocupan el ancho util y desplazan su contenido. */
+  :is(.modal-overlay, .modal-backdrop) {
+    padding: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  :is(.modal-overlay, .modal-backdrop) > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  /* Campos nativos que imponian su ancho minimo (fecha, archivo). */
+  main :is(input, select, textarea) {
+    max-width: 100%;
+    min-width: 0;
   }
 }

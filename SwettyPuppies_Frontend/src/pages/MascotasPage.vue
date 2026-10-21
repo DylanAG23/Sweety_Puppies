@@ -367,7 +367,7 @@ function formatBoolean(value: boolean | null) {
 
       <section class="shell hero">
         <div>
-          <span class="pill">Mascotas del sistema</span>
+          <span class="pill">Fichas de mascotas</span>
           <h1>Perfil completo de cada peludito</h1>
           <p>Consulta datos sanitarios, propietario, citas activas e historial de citas realizadas desde un solo lugar.</p>
           <div class="hero-note">
@@ -731,7 +731,9 @@ function formatBoolean(value: boolean | null) {
 </template>
 
 <style scoped>
-.pet-card-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.pet-card-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:stretch; }
+.pet-head strong,.pet-head > div > span { display:block; }
+.pet-head > div > span { margin-top:2px; }
 .delete-error { margin-top: 16px; }
 .admin-pets-page { width: min(1440px, calc(100vw - 42px)); margin: 0 auto; padding: 28px 0 56px; }
 .shell { background: rgba(255,255,255,.92); border-radius: 32px; border: 1px solid rgba(255,214,235,.95); box-shadow: 0 28px 70px rgba(204,115,174,.12); }

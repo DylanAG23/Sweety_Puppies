@@ -73,6 +73,12 @@ body.platform-shell-client .placeholder-page {
   body.platform-shell-client .pets-page,
   body.platform-shell-client .profile-page,
   body.platform-shell-client .placeholder-page {
+    /* El armazon ya aporta el margen lateral: la pagina usa todo el ancho
+       (antes restaba otros 42 px y en celular quedaban ~290 px utiles). */
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 16px;
     padding-right: 16px;
     padding-top: calc(var(--platform-topbar-height) + 16px);
