@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { logoutToLogin, requireRole } from '@/lib/session'
+import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
 
 const props = defineProps<{
   title: string
   description: string
 }>()
+
+const currentPath = window.location.pathname.toLowerCase()
 
 const subtitle = computed(() => `${props.description} Este espacio ya queda preparado para integrar la logica completa despues.`)
 
@@ -17,6 +20,8 @@ onMounted(() => {
 
 <template>
   <main class="placeholder-page">
+    <ClientSiteHeader :current-path="currentPath" />
+
     <section class="placeholder-card">
       <span class="placeholder-pill">Modulo en preparacion</span>
       <h1>{{ title }}</h1>

@@ -317,11 +317,11 @@ onUnmounted(() => {
   z-index: var(--sp-z-sidebar);
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 16px;
   width: var(--platform-sidebar-width);
   min-width: var(--platform-sidebar-width);
   max-width: var(--platform-sidebar-width);
-  padding: 22px 16px 18px;
+  padding: 18px 16px 16px;
   overflow: hidden;
   box-sizing: border-box;
   background:
@@ -347,7 +347,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 8px 18px;
+  padding: 4px 8px 12px;
   border-radius: var(--sp-radius-md);
   color: #ffffff;
   text-decoration: none;
@@ -358,15 +358,15 @@ onUnmounted(() => {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--sp-radius-md);
   background: #ffffff;
   box-shadow: 0 10px 24px rgba(52, 7, 41, 0.22);
 }
 
 .sidebar-logo {
-  width: 48px;
+  width: 44px;
   height: auto;
 }
 
@@ -389,7 +389,7 @@ onUnmounted(() => {
   display: grid;
   flex: 1;
   align-content: start;
-  gap: var(--sp-space-6);
+  gap: var(--sp-space-4);
   min-height: 0;
   padding-right: 6px;
   overflow-x: hidden;
@@ -409,7 +409,7 @@ onUnmounted(() => {
 
 .sidebar-group-label {
   display: block;
-  margin: 0 10px 12px;
+  margin: 0 10px 8px;
   color: rgba(255, 255, 255, 0.66);
   font-size: 0.72rem;
   font-weight: var(--sp-weight-bold);
@@ -419,7 +419,7 @@ onUnmounted(() => {
 
 .sidebar-nav {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .sidebar-link,
@@ -427,7 +427,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 48px;
+  min-height: 42px;
   padding: 0 12px;
   border-radius: var(--sp-radius-sm);
   color: rgba(255, 255, 255, 0.86);
@@ -497,8 +497,8 @@ onUnmounted(() => {
 .sidebar-footer {
   display: grid;
   flex-shrink: 0;
-  gap: 10px;
-  padding-top: 14px;
+  gap: 8px;
+  padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -506,7 +506,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px;
+  padding: 8px 10px;
   border-radius: var(--sp-radius-md);
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;

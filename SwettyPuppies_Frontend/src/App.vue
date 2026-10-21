@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch, type Component } from 'vue'
 import { getSession, hydrateSessionFromLiveTab } from './lib/session'
+import { isStoreEnabled } from './lib/navigation'
 import AuthPage from './pages/AuthPage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PageLoadingState from './components/ui/PageLoadingState.vue'
@@ -21,6 +22,7 @@ const AdminHomePage = lazyPage(() => import('./pages/AdminHomePage.vue'))
 const AdminAgendaPage = lazyPage(() => import('./pages/AdminAgendaPage.vue'))
 const AdminManagementPage = lazyPage(() => import('./pages/AdminManagementPage.vue'))
 const AdminPlaceholderPage = lazyPage(() => import('./pages/AdminPlaceholderPage.vue'))
+const ClientPlaceholderPage = lazyPage(() => import('./pages/ClientPlaceholderPage.vue'))
 const ClientesPage = lazyPage(() => import('./pages/ClientesPage.vue'))
 const MascotasPage = lazyPage(() => import('./pages/MascotasPage.vue'))
 const ServiciosPage = lazyPage(() => import('./pages/ServiciosPage.vue'))
@@ -149,6 +151,27 @@ const routes = new Map<
     },
   ],
 ])
+
+// Fase 2 (tienda e inventario): rutas reservadas que muestran "Modulo en
+// preparacion". Solo existen con VITE_ENABLE_STORE=true.
+const storePlaceholders: Array<[string, 'cliente' | 'admin', string, string]> = [
+  ['/cliente/tienda', 'cliente', 'Tienda', 'Aqui podras explorar y comprar productos para tu peludito.'],
+  ['/cliente/carrito', 'cliente', 'Tu carrito', 'Aqui veras los productos que agregues antes de pagar.'],
+  ['/cliente/pedidos', 'cliente', 'Mis pedidos', 'Aqui podras seguir el estado de tus compras.'],
+  ['/admin/productos', 'admin', 'Productos', 'Aqui se administrara el catalogo de la tienda.'],
+  ['/admin/categorias', 'admin', 'Categorias', 'Aqui se organizaran las categorias de la tienda.'],
+  ['/admin/inventario', 'admin', 'Inventario', 'Aqui se controlaran existencias, entradas, salidas y ajustes.'],
+  ['/admin/pedidos', 'admin', 'Pedidos', 'Aqui se atenderan los pedidos de la tienda.'],
+]
+
+if (isStoreEnabled) {
+  for (const [path, area, title, description] of storePlaceholders) {
+    routes.set(path, {
+      component: area === 'admin' ? AdminPlaceholderPage : ClientPlaceholderPage,
+      props: { title, description },
+    })
+  }
+}
 
 // Resuelve a que ruta debe ir el usuario segun su sesion y rol (sin efectos).
 function resolveTargetPath(path: string) {
