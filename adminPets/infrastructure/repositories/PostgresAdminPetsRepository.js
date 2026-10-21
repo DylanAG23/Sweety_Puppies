@@ -228,6 +228,39 @@ class PostgresAdminPetsRepository {
       ]
     );
   }
+
+  // Cuenta todo lo que referencia a la mascota (en cualquier estado), para
+  // decidir si se puede borrar sin perder historial.
+  async countPetReferences(petId) {
+    const result = await client.query(
+      `
+        SELECT
+          (SELECT COUNT(*) FROM citas WHERE mascota_id = $1::uuid)::int AS citas,
+          (SELECT COUNT(*) FROM historial_citas WHERE mascota_id = $1::uuid)::int AS historial
+      `,
+      [petId]
+    );
+
+    return result.rows[0];
+  }
+
+  async deletePet(petId) {
+    try {
+      const result = await client.query('DELETE FROM mascotas WHERE id = $1::uuid', [petId]);
+      return result.rowCount > 0;
+    } catch (error) {
+      // foreign_key_violation: otra tabla aun referencia a la mascota.
+      if (error.code === '23503') {
+        throw new AdminPetError(
+          'Esta mascota tiene registros asociados y no se puede eliminar. Puedes desactivarla para ocultarla.',
+          409,
+          'PET_HAS_REFERENCES'
+        );
+      }
+
+      throw error;
+    }
+  }
 }
 
 module.exports = { PostgresAdminPetsRepository };

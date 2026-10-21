@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { apiDelete, apiForm, apiGet, apiPatch } from '@/lib/api'
+import { apiForm, apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
@@ -92,7 +92,6 @@ const yesNoOptions = [
 const loading = ref(true)
 const saving = ref(false)
 const removingId = ref('')
-const deletingId = ref('')
 const error = ref('')
 const toast = ref('')
 const modalMode = ref<'create' | 'edit'>('create')
@@ -105,7 +104,6 @@ const selectedPet = ref<Pet | null>(null)
 const previewMascotaUrl = ref('')
 const previewCarnetUrl = ref('')
 const confirmDialog = reactive({
-  mode: 'status' as 'status' | 'delete',
   petId: '',
   petName: '',
   title: '',
@@ -445,32 +443,8 @@ async function togglePetStatus(pet: Pet) {
   }
 }
 
-async function deletePet(pet: Pet) {
-  deletingId.value = pet.id
-  error.value = ''
-
-  try {
-    const data = await apiDelete<{ success: boolean; message: string }>(`/api/cliente/mascotas/${pet.id}`)
-    toast.value = data.message || 'Mascota eliminada correctamente'
-    mascotas.value = mascotas.value.filter((item) => item.id !== pet.id)
-
-    if (selectedPet.value?.id === pet.id) {
-      closeDetailModal()
-    }
-
-    if (isEditFormOpen.value && form.id === pet.id) {
-      closeEditModal()
-    }
-  } catch (caughtError) {
-    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo eliminar la mascota'
-  } finally {
-    deletingId.value = ''
-  }
-}
-
 function requestTogglePetStatus(pet: Pet) {
   const nextActiveState = !pet.activo
-  confirmDialog.mode = 'status'
   confirmDialog.petId = pet.id
   confirmDialog.petName = pet.nombre
   confirmDialog.title = nextActiveState ? 'Activar mascota' : 'Desactivar mascota'
@@ -480,18 +454,6 @@ function requestTogglePetStatus(pet: Pet) {
   confirmDialog.confirmLabel = nextActiveState ? 'Sí, activar' : 'Sí, desactivar'
   confirmDialog.tone = 'soft'
   confirmDialog.nextActiveState = nextActiveState
-  isConfirmDialogOpen.value = true
-}
-
-function requestDeletePet(pet: Pet) {
-  confirmDialog.mode = 'delete'
-  confirmDialog.petId = pet.id
-  confirmDialog.petName = pet.nombre
-  confirmDialog.title = 'Eliminar mascota'
-  confirmDialog.message = `¿Estas segura de eliminar a ${pet.nombre}? Esta accion no se puede deshacer.`
-  confirmDialog.confirmLabel = 'Sí, eliminar'
-  confirmDialog.tone = 'danger'
-  confirmDialog.nextActiveState = false
   isConfirmDialogOpen.value = true
 }
 
@@ -507,15 +469,12 @@ async function confirmDialogAction() {
   }
 
   // La confirmacion ya ocurrio en el dialogo; aqui solo se ejecuta la accion.
-  if (confirmDialog.mode === 'delete') {
-    await deletePet(pet)
-  } else {
-    await togglePetStatus(pet)
-    if (selectedPet.value?.id === pet.id) {
-      const updatedPet = mascotas.value.find((item) => item.id === pet.id)
-      if (updatedPet) {
-        selectedPet.value = updatedPet
-      }
+  // Eliminar mascotas es exclusivo de la administracion.
+  await togglePetStatus(pet)
+  if (selectedPet.value?.id === pet.id) {
+    const updatedPet = mascotas.value.find((item) => item.id === pet.id)
+    if (updatedPet) {
+      selectedPet.value = updatedPet
     }
   }
 
@@ -860,14 +819,6 @@ function goTo(path: string) {
                 </span>
                 <span class="status-switch-text">{{ removingId === pet.id ? 'Guardando...' : pet.activo ? 'Activa' : 'Desactivada' }}</span>
               </button>
-              <button
-                type="button"
-                class="btn-delete"
-                :disabled="deletingId === pet.id"
-                @click.stop="requestDeletePet(pet)"
-              >
-                {{ deletingId === pet.id ? 'Eliminando...' : 'Eliminar' }}
-              </button>
             </div>
           </div>
         </article>
@@ -1113,11 +1064,11 @@ function goTo(path: string) {
         <div class="pets-actions-row modal-actions">
           <button
             type="button"
-            class="btn-delete"
-            :disabled="deletingId === selectedPet.id"
-            @click="requestDeletePet(selectedPet)"
+            class="btn-secundario"
+            :disabled="removingId === selectedPet.id"
+            @click="requestTogglePetStatus(selectedPet)"
           >
-            {{ deletingId === selectedPet.id ? 'Eliminando...' : 'Eliminar mascota' }}
+            {{ selectedPet.activo ? 'Desactivar mascota' : 'Activar mascota' }}
           </button>
           <button type="button" class="btn-secundario" @click="closeDetailModal">Cerrar</button>
           <button
@@ -1134,9 +1085,9 @@ function goTo(path: string) {
     <div v-if="isConfirmDialogOpen" class="modal-overlay confirm-overlay" v-dialog="closeConfirmDialog" @click.self="closeConfirmDialog">
       <section class="pets-shell confirm-card">
         <div class="confirm-icon" :class="confirmDialog.tone">
-          {{ confirmDialog.mode === 'delete' ? '!' : '?' }}
+          ?
         </div>
-        <span class="pets-pill">{{ confirmDialog.mode === 'delete' ? 'Confirmacion delicada' : 'Confirmacion' }}</span>
+        <span class="pets-pill">Confirmacion</span>
         <h2>{{ confirmDialog.title }}</h2>
         <p>{{ confirmDialog.message }}</p>
         <div class="pets-actions-row confirm-actions">
@@ -1144,11 +1095,11 @@ function goTo(path: string) {
           <button
             type="button"
             :class="confirmDialog.tone === 'danger' ? 'btn-delete' : 'btn-enviar'"
-            :disabled="removingId === confirmDialog.petId || deletingId === confirmDialog.petId"
+            :disabled="removingId === confirmDialog.petId"
             @click="confirmDialogAction"
           >
             {{
-              removingId === confirmDialog.petId || deletingId === confirmDialog.petId
+              removingId === confirmDialog.petId
                 ? 'Guardando...'
                 : confirmDialog.confirmLabel
             }}

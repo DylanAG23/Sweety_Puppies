@@ -322,38 +322,6 @@ const runPetUpload = createImageUpload([
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
- *   delete:
- *     summary: Retira una mascota del portal mediante baja lógica
- *     tags: [Cliente Mascotas]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Mascota retirada correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Mascota retirada del portal correctamente
- *       404:
- *         description: Mascota no encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
  *
  * /cliente/mascotas/{id}/status:
  *   patch:
@@ -415,7 +383,6 @@ router.get('/', controller.listPets);
 router.get('/:id', controller.getPet);
 router.post('/', runPetUpload, controller.createPet);
 router.patch('/:id', runPetUpload, controller.updatePet);
-router.delete('/:id', controller.deletePet);
 router.patch('/:id/status', controller.updatePetStatus);
 
 module.exports = router;

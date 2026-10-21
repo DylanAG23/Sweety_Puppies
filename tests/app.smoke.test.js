@@ -54,6 +54,25 @@ test('una administradora no puede entrar a rutas del portal del cliente', async 
   assert.equal(response.status, 403);
 });
 
+test('solo la administracion puede eliminar mascotas', async () => {
+  const petPath = '/api/cliente/mascotas/a0000000-0000-0000-0000-000000000001';
+  const asClient = await fetch(`${baseUrl}${petPath}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${tokenFor('cliente')}` }
+  });
+  assert.equal(asClient.status, 404, 'el portal del cliente ya no expone el borrado');
+
+  const adminPath = '/api/mascotas/a0000000-0000-0000-0000-000000000001';
+  const withoutToken = await fetch(`${baseUrl}${adminPath}`, { method: 'DELETE' });
+  assert.equal(withoutToken.status, 401);
+
+  const clientOnAdminRoute = await fetch(`${baseUrl}${adminPath}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${tokenFor('cliente')}` }
+  });
+  assert.equal(clientOnAdminRoute.status, 403);
+});
+
 test('el legado /api/citas ya no esta expuesto', async () => {
   for (const method of ['GET', 'POST', 'DELETE']) {
     const response = await fetch(`${baseUrl}/api/citas${method === 'DELETE' ? '/1' : ''}`, { method });

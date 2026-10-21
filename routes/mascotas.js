@@ -137,6 +137,26 @@ const { controller } = createAdminPetsModule();
  *                 mascota:
  *                   type: object
  *                   additionalProperties: true
+ *   delete:
+ *     summary: Elimina definitivamente una mascota sin citas ni historial
+ *     description: Solo administracion. Si la mascota tiene citas o historial responde 409 y sugiere desactivarla.
+ *     tags: [Admin Mascotas]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Mascota eliminada
+ *       404:
+ *         description: Mascota no encontrada
+ *       409:
+ *         description: La mascota tiene citas o historial
  *
  * /mascotas/{id}/historial:
  *   get:
@@ -179,5 +199,6 @@ router.get('/', controller.listPets);
 router.get('/:id/historial', controller.getPetHistory);
 router.get('/:id', controller.getPetDetail);
 router.patch('/:id', controller.updatePet);
+router.delete('/:id', controller.deletePet);
 
 module.exports = router;

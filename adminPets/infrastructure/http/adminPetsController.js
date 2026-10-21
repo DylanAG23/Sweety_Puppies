@@ -75,6 +75,19 @@ function createAdminPetsController(useCases) {
       } catch (error) {
         handleHttpError(res, error, 'Error al actualizar la mascota');
       }
+    },
+
+    deletePet: async (req, res) => {
+      try {
+        const result = await useCases.deleteAdminPet(req.user, req.params.id);
+        res.json({
+          success: true,
+          message: result.message,
+          mascotaId: result.mascotaId
+        });
+      } catch (error) {
+        handleHttpError(res, error, 'Error al eliminar la mascota');
+      }
     }
   };
 }

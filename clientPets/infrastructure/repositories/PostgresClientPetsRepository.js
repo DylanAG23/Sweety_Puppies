@@ -301,19 +301,6 @@ class PostgresClientPetsRepository {
 
     return result.rows[0];
   }
-
-  async delete(petId) {
-    await client.query(
-      `
-        UPDATE mascotas
-        SET
-          activo = false,
-          updated_at = NOW()
-        WHERE id = $1
-      `,
-      [petId]
-    );
-  }
 }
 
 module.exports = { PostgresClientPetsRepository };

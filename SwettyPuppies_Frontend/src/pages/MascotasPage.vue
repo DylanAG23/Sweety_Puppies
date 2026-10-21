@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { apiGet, apiPatch } from '@/lib/api'
+import { apiDelete, apiGet, apiPatch } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
 import PetBreedSelect from '@/components/PetBreedSelect.vue'
@@ -78,6 +78,10 @@ const selectedPet = ref<PetDetail | null>(null)
 const selectedHistory = ref<PetHistoryItem | null>(null)
 const petHistory = ref<PetHistoryItem[]>([])
 const isDetailOpen = ref(false)
+// Eliminar es exclusivo de la administracion y solo procede sin citas ni historial.
+const petPendingDeletion = ref<{ id: string; nombre: string } | null>(null)
+const deletingPet = ref(false)
+const deleteError = ref('')
 const fallbackPetImage = '/img/mascota1.png'
 const breedOptions = ref<BreedOption[]>([])
 const petForm = ref({
@@ -283,6 +287,39 @@ async function savePet() {
   }
 }
 
+function requestDeletePet(pet: { id: string; nombre: string }) {
+  deleteError.value = ''
+  petPendingDeletion.value = { id: pet.id, nombre: pet.nombre }
+}
+
+function closeDeleteConfirm() {
+  if (deletingPet.value) return
+  petPendingDeletion.value = null
+  deleteError.value = ''
+}
+
+async function confirmDeletePet() {
+  if (!petPendingDeletion.value) return
+
+  const { id } = petPendingDeletion.value
+  deletingPet.value = true
+  deleteError.value = ''
+
+  try {
+    const data = await apiDelete<{ success: boolean; message: string }>(`/api/mascotas/${id}`)
+    pets.value = pets.value.filter((item) => item.id !== id)
+    if (selectedPet.value?.id === id) {
+      closeDetail()
+    }
+    deletingPet.value = false
+    petPendingDeletion.value = null
+    showToast(data.message || 'Mascota eliminada correctamente')
+  } catch (caughtError) {
+    deleteError.value = caughtError instanceof Error ? caughtError.message : 'No se pudo eliminar la mascota'
+    deletingPet.value = false
+  }
+}
+
 function showToast(message: string) {
   toast.value = message
   window.setTimeout(() => {
@@ -332,7 +369,7 @@ function formatBoolean(value: boolean | null) {
         <div>
           <span class="pill">Mascotas del sistema</span>
           <h1>Perfil completo de cada peludito</h1>
-          <p>Consulta datos sanitarios, propietario, citas activas e historial real de citas realizadas desde un solo lugar.</p>
+          <p>Consulta datos sanitarios, propietario, citas activas e historial de citas realizadas desde un solo lugar.</p>
           <div class="hero-note">
             <strong>Busqueda operativa</strong>
             <span>Encuentra por nombre, raza, tamano, tipo de pelaje o por los datos del cliente propietario.</span>
@@ -392,7 +429,17 @@ function formatBoolean(value: boolean | null) {
                   <span class="chip">Citas activas: {{ item.citas_activas }}</span>
                   <span class="chip">Ultima cita realizada: {{ formatDate(item.ultimo_servicio) }}</span>
                 </div>
-                <button type="button" class="btn main compact" @click="openPetDetail(item.id)">Ver detalle</button>
+                <div class="pet-card-actions">
+                  <button type="button" class="btn main compact" @click="openPetDetail(item.id)">Ver detalle</button>
+                  <button
+                    type="button"
+                    class="sp-btn sp-btn--danger"
+                    :aria-label="`Eliminar a ${item.nombre}`"
+                    @click="requestDeletePet(item)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -643,8 +690,40 @@ function formatBoolean(value: boolean | null) {
               >
                 Cancelar edicion
               </button>
+              <button
+                v-if="!isEditingPet"
+                type="button"
+                class="sp-btn sp-btn--danger"
+                @click="requestDeletePet(selectedPet)"
+              >
+                Eliminar mascota
+              </button>
             </div>
           </template>
+        </section>
+      </div>
+
+      <div
+        v-if="petPendingDeletion"
+        class="sp-dialog-backdrop"
+        v-dialog="closeDeleteConfirm"
+        @click.self="closeDeleteConfirm"
+      >
+        <section class="sp-dialog">
+          <h2>¿Eliminar a {{ petPendingDeletion.nombre }}?</h2>
+          <p>
+            Se borrará definitivamente su ficha y sus fotos. Solo es posible si la mascota no tiene citas ni
+            historial; si los tiene, puedes desactivarla desde Editar mascota.
+          </p>
+          <p v-if="deleteError" class="sp-alert sp-alert--danger delete-error" role="alert">{{ deleteError }}</p>
+          <div class="sp-dialog-actions">
+            <button type="button" class="sp-btn sp-btn--outline" :disabled="deletingPet" @click="closeDeleteConfirm">
+              Cancelar
+            </button>
+            <button type="button" class="sp-btn sp-btn--danger-solid" :disabled="deletingPet" @click="confirmDeletePet">
+              {{ deletingPet ? 'Eliminando...' : 'Sí, eliminar' }}
+            </button>
+          </div>
         </section>
       </div>
     </template>
@@ -652,6 +731,8 @@ function formatBoolean(value: boolean | null) {
 </template>
 
 <style scoped>
+.pet-card-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.delete-error { margin-top: 16px; }
 .admin-pets-page { width: min(1440px, calc(100vw - 42px)); margin: 0 auto; padding: 28px 0 56px; }
 .shell { background: rgba(255,255,255,.92); border-radius: 32px; border: 1px solid rgba(255,214,235,.95); box-shadow: 0 28px 70px rgba(204,115,174,.12); }
 .state-card,.hero,.summary-card,.list-card,.modal-card { padding: 28px; }

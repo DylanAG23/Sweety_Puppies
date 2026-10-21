@@ -102,18 +102,6 @@ function createClientPetsController(useCases) {
       }
     },
 
-    deletePet: async (req, res) => {
-      try {
-        const result = await useCases.deleteClientPet(req.user, req.params.id);
-        res.json({
-          success: true,
-          message: result.message
-        });
-      } catch (error) {
-        handleHttpError(error, res);
-      }
-    },
-
     updatePetStatus: async (req, res) => {
       try {
         const result = await useCases.updateClientPetStatus(req.user, req.params.id, req.body?.activo);
