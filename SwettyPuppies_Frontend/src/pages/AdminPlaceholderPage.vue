@@ -3,6 +3,7 @@ import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import { onMounted, ref } from 'vue'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 defineProps<{
   title: string
@@ -30,10 +31,7 @@ function goTo(path: string) {
 
 <template>
   <main class="admin-placeholder-page">
-    <section v-if="loading" class="placeholder-shell state-card">
-      <h1>Preparando este modulo...</h1>
-      <p>Estamos organizando una vista linda y funcional para el equipo administrativo.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Preparando este modulo..." description="Estamos organizando una vista linda y funcional para el equipo administrativo." />
 
     <template v-else>
       <AdminSiteHeader :current-path="currentPath" />
@@ -74,20 +72,20 @@ function goTo(path: string) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
 }
 
 .hero-card h1 {
   margin: 14px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .hero-card p,
 .state-card p {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.8;
 }
 

@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { apiForm, apiGet, apiPatch, apiPost } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type ContentItem = {
   id: string
@@ -370,10 +371,7 @@ function formatDate(value: string | null) {
 
 <template>
   <main class="admin-content-page">
-    <section v-if="loading" class="admin-shell state-card">
-      <h1>Cargando el contenido del portal...</h1>
-      <p>Estamos preparando las publicaciones visuales del lobby cliente.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando el contenido del portal..." description="Estamos preparando las publicaciones visuales del lobby cliente." />
 
     <section v-else-if="error && !publicaciones.length && !isFormOpen" class="admin-shell state-card">
       <h1>No pudimos abrir el modulo de contenido</h1>
@@ -448,7 +446,7 @@ function formatDate(value: string | null) {
           </div>
         </div>
 
-        <p v-if="toast" class="toast-message">{{ toast }}</p>
+        <p v-if="toast" class="toast-message" role="status">{{ toast }}</p>
         <p v-if="error && publicaciones.length" class="inline-error">{{ error }}</p>
 
         <div v-if="publicaciones.length" class="content-grid">
@@ -496,9 +494,9 @@ function formatDate(value: string | null) {
         </div>
       </section>
 
-      <section v-if="isDetailOpen" class="modal-backdrop" @click.self="closeDetail">
+      <section v-if="isDetailOpen" class="modal-backdrop" v-dialog="closeDetail" @click.self="closeDetail">
         <article class="modal-card detail-modal">
-          <button type="button" class="modal-close" @click="closeDetail">×</button>
+          <button type="button" class="modal-close" aria-label="Cerrar" @click="closeDetail">×</button>
 
           <template v-if="detailLoading">
             <h2>Cargando detalle...</h2>
@@ -544,13 +542,13 @@ function formatDate(value: string | null) {
         </article>
       </section>
 
-      <section v-if="isFormOpen" class="modal-backdrop" @click.self="closeForm">
+      <section v-if="isFormOpen" class="modal-backdrop" v-dialog="closeForm" @click.self="closeForm">
         <article class="modal-card form-modal">
-          <button type="button" class="modal-close" @click="closeForm">×</button>
+          <button type="button" class="modal-close" aria-label="Cerrar" @click="closeForm">×</button>
           <span class="section-kicker">{{ isEditing ? 'Editar publicacion' : 'Nueva publicacion' }}</span>
           <h2>{{ isEditing ? 'Actualiza este contenido visual' : 'Crea una publicacion para el lobby cliente' }}</h2>
 
-          <p v-if="error" class="inline-error">{{ error }}</p>
+          <p v-if="error" class="inline-error" role="alert">{{ error }}</p>
 
           <div class="form-grid">
             <div class="image-uploader">
@@ -659,7 +657,7 @@ function formatDate(value: string | null) {
   padding: 8px 14px;
   border-radius: 999px;
   background: linear-gradient(135deg, #fff3fa 0%, #eef9ff 100%);
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 0.86rem;
   font-weight: 700;
 }
@@ -699,7 +697,7 @@ function formatDate(value: string | null) {
 .search-panel {
   display: grid;
   gap: 8px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
 }
 
@@ -753,7 +751,7 @@ function formatDate(value: string | null) {
 .btn-secondary,
 .btn-secundario {
   background: #fff;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   border: 1px solid rgba(241, 181, 213, 0.95);
 }
 
@@ -787,7 +785,7 @@ function formatDate(value: string | null) {
 
 .summary-card strong {
   display: block;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-size: 0.95rem;
 }
 
@@ -905,7 +903,7 @@ function formatDate(value: string | null) {
 
 .category-pill {
   background: linear-gradient(135deg, #fff3fa 0%, #eef9ff 100%);
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .content-copy h3 {
@@ -937,7 +935,7 @@ function formatDate(value: string | null) {
 .order-editor label {
   display: grid;
   gap: 8px;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
   min-width: 0;
 }
@@ -986,7 +984,7 @@ function formatDate(value: string | null) {
   border: none;
   border-radius: 14px;
   background: rgba(255, 242, 249, 0.95);
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -1027,7 +1025,7 @@ function formatDate(value: string | null) {
 .mini-card strong {
   display: block;
   margin-bottom: 8px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .form-grid {
@@ -1068,7 +1066,7 @@ function formatDate(value: string | null) {
 .field-group {
   display: grid;
   gap: 8px;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 

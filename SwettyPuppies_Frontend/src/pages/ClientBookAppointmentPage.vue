@@ -4,6 +4,7 @@ import { apiForm, apiGet, apiPost } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type PetOption = {
   id: string
@@ -465,10 +466,7 @@ function formatDateLabel(value: string) {
 
 <template>
   <main class="booking-page">
-    <section v-if="loading" class="booking-shell booking-state-card">
-      <h1>Preparando el agendamiento...</h1>
-      <p>Estamos conectando tus peluditos, servicios y horarios disponibles.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Preparando el agendamiento..." description="Estamos conectando tus peluditos, servicios y horarios disponibles." />
 
     <section v-else-if="error && !hasPets && !serviceOptions.length" class="booking-shell booking-state-card">
       <h1>No pudimos abrir Agendar cita</h1>
@@ -647,7 +645,7 @@ function formatDateLabel(value: string) {
                   <span v-if="availabilityLoading" class="loading-text">Buscando disponibilidad...</span>
                 </div>
 
-                <p v-if="availabilityMessage" class="availability-message">{{ availabilityMessage }}</p>
+                <p v-if="availabilityMessage" class="availability-message" role="status">{{ availabilityMessage }}</p>
 
                 <div v-if="slots.length" class="slots-grid">
                   <button
@@ -668,8 +666,8 @@ function formatDateLabel(value: string) {
               </div>
             </section>
 
-            <p v-if="error" class="booking-feedback error">{{ error }}</p>
-            <p v-if="toast" class="booking-feedback success">{{ toast }}</p>
+            <p v-if="error" class="booking-feedback error" role="alert">{{ error }}</p>
+            <p v-if="toast" class="booking-feedback success" role="status">{{ toast }}</p>
 
             <div class="form-actions">
               <button type="submit" class="btn-enviar" :disabled="saving || quoteLoading || availabilityLoading">
@@ -766,8 +764,8 @@ function formatDateLabel(value: string) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
   box-shadow: inset 0 0 0 1px rgba(156, 0, 118, 0.09);
@@ -784,7 +782,7 @@ function formatDateLabel(value: string) {
 .pet-context-card h2,
 .success-card h1 {
   margin: 14px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .booking-head p,
@@ -799,7 +797,7 @@ function formatDateLabel(value: string) {
 .additional-summary-list span,
 .success-card p,
 .success-grid span {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.75;
 }
 
@@ -845,7 +843,7 @@ function formatDateLabel(value: string) {
 .additional-summary strong {
   display: block;
   margin-bottom: 8px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
 }
 
@@ -911,7 +909,7 @@ function formatDateLabel(value: string) {
   padding: 9px 12px;
   border-radius: 999px;
   background: #fff3fb;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 600;
 }
 
@@ -935,12 +933,12 @@ function formatDateLabel(value: string) {
 .additional-item strong,
 .service-card strong {
   display: block;
-  color: #8f176e;
+  color: var(--sp-primary);
   margin-bottom: 8px;
 }
 
 .additional-item span {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.6;
 }
 
@@ -981,7 +979,7 @@ function formatDateLabel(value: string) {
 }
 
 .loading-text {
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 
@@ -1004,12 +1002,12 @@ function formatDateLabel(value: string) {
 
 .slot-button strong {
   display: block;
-  color: #8f176e;
+  color: var(--sp-primary);
   margin-bottom: 6px;
 }
 
 .slot-button span {
-  color: #6e5064;
+  color: var(--sp-muted);
 }
 
 .slot-button.active {
@@ -1037,7 +1035,7 @@ function formatDateLabel(value: string) {
   display: block;
   margin-top: 8px;
   font-size: 1.7rem;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 800;
 }
 
@@ -1066,7 +1064,7 @@ function formatDateLabel(value: string) {
 }
 
 .booking-feedback.success {
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 @media (max-width: 1180px) {

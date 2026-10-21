@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { apiGet, apiPatch, apiPost } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type ServiceCategory = 'principales' | 'adicionales'
 
@@ -580,10 +581,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
 
 <template>
   <main class="admin-services-page">
-    <section v-if="loading" class="services-shell state-card">
-      <h1>Cargando el modulo de servicios...</h1>
-      <p>Estamos preparando el catalogo fijo, los adicionales y la configuracion de tarifas.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando el modulo de servicios..." description="Estamos preparando el catalogo fijo, los adicionales y la configuracion de tarifas." />
 
     <section v-else-if="error && !services.length" class="services-shell state-card">
       <h1>No pudimos abrir Servicios</h1>
@@ -658,8 +656,8 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
         </aside>
       </section>
 
-      <p v-if="toast" class="toast-banner">{{ toast }}</p>
-      <p v-if="error" class="error-banner">{{ error }}</p>
+      <p v-if="toast" class="toast-banner" role="status">{{ toast }}</p>
+      <p v-if="error" class="error-banner" role="alert">{{ error }}</p>
 
       <section class="summary-grid">
         <article v-for="card in summaryCards" :key="card.label" class="services-shell summary-card" :class="card.tone">
@@ -772,7 +770,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
         </div>
       </section>
 
-      <div v-if="isCreateOpen" class="modal-overlay" @click.self="closeCreateModal">
+      <div v-if="isCreateOpen" class="modal-overlay" v-dialog="closeCreateModal" @click.self="closeCreateModal">
         <section class="services-shell modal-card">
           <div class="modal-head">
             <div>
@@ -786,7 +784,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
                 }}
               </p>
             </div>
-            <button type="button" class="modal-close" @click="closeCreateModal">x</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeCreateModal">×</button>
           </div>
 
           <article class="detail-card wide edit-card">
@@ -850,7 +848,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
         </section>
       </div>
 
-      <div v-if="isDetailOpen" class="modal-overlay" @click.self="closeDetail">
+      <div v-if="isDetailOpen" class="modal-overlay" v-dialog="closeDetail" @click.self="closeDetail">
         <section class="services-shell modal-card">
           <div class="modal-head">
             <div>
@@ -864,7 +862,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
                 }}
               </p>
             </div>
-            <button type="button" class="modal-close" @click="closeDetail">x</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeDetail">×</button>
           </div>
 
           <div v-if="detailLoading" class="empty-state compact"><p>Estamos cargando el detalle del servicio...</p></div>
@@ -968,49 +966,49 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
 .admin-services-page { width: min(1440px, calc(100vw - 42px)); margin: 0 auto; padding: 28px 0 56px; }
 .services-shell { background: rgba(255,255,255,.92); border-radius: 32px; border: 1px solid rgba(255,214,235,.95); box-shadow: 0 28px 70px rgba(204,115,174,.12); }
 .state-card,.hero-card,.summary-card,.list-card,.modal-card { padding: 28px; }
-.services-pill { display:inline-flex; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,#fff1f9 0%,#eefafe 100%); color:#9c0076; font-weight:700; font-size:.86rem; }
+.services-pill { display:inline-flex; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,var(--sp-primary-soft) 0%,#eefafe 100%); color:var(--sp-primary-strong); font-weight:700; font-size:.86rem; }
 .services-pill.subtle { margin-bottom: 12px; }
 .hero-card { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(380px,.9fr); gap:22px; }
-.hero-card h1,.section-head h2,.modal-head h2 { margin:12px 0; color:#8f176e; }
-.hero-copy p,.hero-note span,.state-card p,.empty-state p,.modal-copy,.service-data-grid small,.service-data-grid span,.detail-card span,.detail-card small,.mini-summary span,.tariff-preview span,.detail-section-head small { color:#6e5064; line-height:1.7; }
+.hero-card h1,.section-head h2,.modal-head h2 { margin:12px 0; color:var(--sp-primary); }
+.hero-copy p,.hero-note span,.state-card p,.empty-state p,.modal-copy,.service-data-grid small,.service-data-grid span,.detail-card span,.detail-card small,.mini-summary span,.tariff-preview span,.detail-section-head small { color:var(--sp-muted); line-height:1.7; }
 .hero-note,.summary-card,.service-card,.detail-card,.mini-summary,.toggle-card,.tariff-preview { background:linear-gradient(145deg,rgba(255,244,250,.96) 0%,rgba(255,255,255,.92) 52%,rgba(238,250,255,.95) 100%); border:1px solid rgba(243,209,230,.92); }
 .hero-note,.detail-card,.toggle-card,.tariff-preview { border-radius:24px; }
 .hero-note { margin-top:18px; padding:18px 20px; }
-.hero-note strong,.summary-card strong,.service-card strong,.detail-card strong,.mini-summary strong,.tariff-preview strong { display:block; color:#9c0076; margin-bottom:6px; }
+.hero-note strong,.summary-card strong,.service-card strong,.detail-card strong,.mini-summary strong,.tariff-preview strong { display:block; color:var(--sp-primary-strong); margin-bottom:6px; }
 .hero-search { display:grid; gap:14px; align-content:start; }
 .category-toggle { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .category-button,.btn-enviar,.btn-secundario { border:none; border-radius:999px; padding:14px 18px; font-family:'Montserrat',sans-serif; font-weight:700; cursor:pointer; }
-.category-button,.btn-secundario { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:#8f176e; border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); }
+.category-button,.btn-secundario { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:var(--sp-primary); border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); }
 .category-button.active,.btn-enviar { background:linear-gradient(135deg,var(--sp-primary-purple) 0%,var(--sp-primary-purple-deep) 100%); color:#fff; box-shadow:0 16px 30px var(--sp-primary-shadow); }
 .btn-secundario.accent { background:linear-gradient(135deg,#eefafe 0%,#ffffff 100%); }
 .btn-enviar.compact,.btn-secundario.compact { padding-inline:16px; }
 .field-group { display:grid; gap:8px; }
-.field-group span { color:#8f176e; font-weight:700; }
+.field-group span { color:var(--sp-primary); font-weight:700; }
 .field-group input,.field-group textarea,.field-group select { border-radius:18px; border:1px solid rgba(243,203,228,.9); padding:14px 16px; font:inherit; background:rgba(255,255,255,.95); color:#5b4256; }
 .search-actions,.state-actions,.modal-actions,.service-head,.service-footer,.modal-head,.section-head { display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; }
 .summary-grid { margin-top:24px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
 .summary-card { border-radius:26px; }
 .summary-value { display:block; margin-top:10px; font-size:1.85rem; font-weight:800; color:#4d2d47; }
-.summary-card.mint .summary-value { color:#0b9f93; }
+.summary-card.mint .summary-value { color:var(--sp-link-text); }
 .summary-card.lavender .summary-value { color:#6d56b8; }
 .summary-card.sky .summary-value { color:#2f67c8; }
 .list-card { margin-top:24px; display:grid; gap:18px; }
-.section-copy { color:#6e5064; font-weight:600; }
+.section-copy { color:var(--sp-muted); font-weight:600; }
 .services-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 .service-card { border-radius:28px; padding:22px; display:grid; gap:16px; }
 .status-badge,.soft-chip { display:inline-flex; align-items:center; justify-content:center; padding:9px 14px; border-radius:999px; font-weight:700; font-size:.84rem; }
-.status-badge.activo { background:#e9fbf7; color:#0b9f93; }
+.status-badge.activo { background:var(--sp-success-bg); color:var(--sp-link-text); }
 .status-badge.inactivo { background:#fff1f4; color:#c33b74; }
 .soft-chip-group { display:flex; flex-wrap:wrap; gap:8px; }
-.soft-chip { background:#fff4fb; color:#8f176e; }
+.soft-chip { background:#fff4fb; color:var(--sp-primary); }
 .service-data-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; }
 .service-data-grid small,.service-data-grid span { display:block; }
-.service-data-grid small { color:#9c0076; font-weight:700; margin-bottom:2px; }
+.service-data-grid small { color:var(--sp-primary-strong); font-weight:700; margin-bottom:2px; }
 .empty-state { padding:28px; border-radius:24px; background:linear-gradient(145deg,rgba(255,247,251,.94) 0%,rgba(238,250,255,.92) 100%); border:1px solid rgba(243,209,230,.9); text-align:center; }
 .empty-state.compact { padding:18px; }
 .modal-overlay { position:fixed; inset:0; z-index:72; background:rgba(77,45,71,.26); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:24px; }
 .modal-card { width:min(1220px,100%); max-height:min(90vh,960px); overflow-y:auto; }
-.modal-close { width:48px; height:48px; border-radius:50%; border:none; cursor:pointer; font-size:1.8rem; line-height:1; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:#8f176e; }
+.modal-close { width:48px; height:48px; border-radius:50%; border:none; cursor:pointer; font-size:1.8rem; line-height:1; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:var(--sp-primary); }
 .detail-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:18px; }
 .detail-card { padding:18px; }
 .detail-card.wide { grid-column:1 / -1; }
@@ -1020,7 +1018,7 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
 .edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
 .edit-grid .full { grid-column:1 / -1; }
 .toggle-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-.toggle-card { padding:16px 18px; display:flex; gap:12px; align-items:center; color:#6e5064; font-weight:600; }
+.toggle-card { padding:16px 18px; display:flex; gap:12px; align-items:center; color:var(--sp-muted); font-weight:600; }
 .toggle-card input { width:18px; height:18px; accent-color:#c1008f; }
 .tariff-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
 .tariff-grid.compact-tariffs { grid-template-columns:repeat(2,minmax(0,1fr)); }

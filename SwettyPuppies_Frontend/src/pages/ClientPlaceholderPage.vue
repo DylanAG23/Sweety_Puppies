@@ -53,7 +53,7 @@ onMounted(() => {
   padding: 8px 14px;
   border-radius: 999px;
   background: #fff0f8;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
   margin-bottom: 14px;
@@ -61,11 +61,11 @@ onMounted(() => {
 
 .placeholder-card h1 {
   margin: 0 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .placeholder-card p {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.7;
 }
 

@@ -38,7 +38,7 @@
 }
 
 .not-found-card a {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
 }
 </style>

@@ -21,7 +21,7 @@ h1, h2, h3, h4 {
 }
 
 .section-title h2 {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   position: relative;
   display: inline-block;
   margin-bottom: 10px;
@@ -92,12 +92,12 @@ header.main-header {
 }
 
 .nav-links a:hover {
-   color: #9c0076;
+   color: var(--sp-primary-strong);
 }
 
 /* Botón de logout */
 .btn-logout {
-   background: linear-gradient(to right, #9c0076, #e95adb);
+   background: linear-gradient(to right, var(--sp-primary-strong), #e95adb);
    color: white;
    border: none;
    padding: 10px 20px;
@@ -157,7 +157,7 @@ header.main-header {
   height: 2px;
   bottom: -5px;
   left: 0;
-  background-color: #9c0076;
+  background-color: var(--sp-primary-strong);
   transition: width 0.3s ease;
 }
 
@@ -168,7 +168,7 @@ header.main-header {
 /* Título con animación */
 .animated-title {
   display: inline-block;
-  background: linear-gradient(to right, #9c0076, #e95adb);
+  background: linear-gradient(to right, var(--sp-primary-strong), #e95adb);
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -407,7 +407,7 @@ header.main-header {
   position: absolute;
   top: 12px;
   left: 12px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 16px;
   transition: all 0.3s ease;
   pointer-events: none;
@@ -419,7 +419,7 @@ header.main-header {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #9c0076;
+  border-color: var(--sp-primary-strong);
   box-shadow: 0 0 8px rgba(156, 0, 118, 0.4);
 }
 
@@ -469,7 +469,7 @@ header.main-header {
 
 /* Botón de envío del formulario */
 .btn-enviar {
-  background: linear-gradient(to right, #9c0076, #e95adb);
+  background: linear-gradient(to right, var(--sp-primary-strong), #e95adb);
   color: white;
   border: none;
   padding: 15px 30px;
@@ -549,7 +549,7 @@ header.main-header {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background: #9c0076;
+  background: var(--sp-primary-strong);
   color: white;
   width: 50px;
   height: 50px;

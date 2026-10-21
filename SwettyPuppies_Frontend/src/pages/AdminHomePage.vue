@@ -4,6 +4,7 @@ import { apiGet } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type AdminHomeResponse = {
   success: boolean
@@ -215,10 +216,7 @@ function formatLabel(value: string | null) {
 
 <template>
   <main class="admin-home-page">
-    <section v-if="loading" class="admin-shell state-card">
-      <h1>Cargando el centro de control...</h1>
-      <p>Estamos preparando tu panel administrativo con la información del negocio.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando el centro de control..." description="Estamos preparando tu panel administrativo con la información del negocio." />
 
     <section v-else-if="error" class="admin-shell state-card">
       <h1>No pudimos abrir el panel administrativo</h1>
@@ -402,8 +400,8 @@ function formatLabel(value: string | null) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
 }
@@ -423,7 +421,7 @@ function formatLabel(value: string | null) {
 .section-head h2,
 .modules-section h2 {
   margin: 14px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .hero-card p,
@@ -435,7 +433,7 @@ function formatLabel(value: string | null) {
 .module-card p,
 .empty-block p,
 .state-card p {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.75;
 }
 
@@ -462,7 +460,7 @@ function formatLabel(value: string | null) {
 .block-item strong {
   display: block;
   margin-bottom: 6px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .profile-card {
@@ -526,7 +524,7 @@ function formatLabel(value: string | null) {
 }
 
 .section-link {
-  color: #0b9f93;
+  color: var(--sp-link-text);
   font-weight: 700;
   text-decoration: none;
 }
@@ -569,8 +567,8 @@ function formatLabel(value: string | null) {
 }
 
 .status-badge.confirmada {
-  background: #e9fbf7;
-  color: #0b9f93;
+  background: var(--sp-success-bg);
+  color: var(--sp-link-text);
 }
 
 .status-badge.en-atencion {
@@ -589,8 +587,8 @@ function formatLabel(value: string | null) {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   cursor: pointer;
-  color: #8f176e;
-  background: linear-gradient(135deg, #fff1f9 0%, #ffffff 100%);
+  color: var(--sp-primary);
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #ffffff 100%);
   box-shadow: 0 10px 22px rgba(219, 126, 183, 0.1);
 }
 
@@ -614,7 +612,7 @@ function formatLabel(value: string | null) {
 
 .module-card h3 {
   margin: 2px 0 0;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .module-button {

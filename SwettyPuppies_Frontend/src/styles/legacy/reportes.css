@@ -2,7 +2,7 @@
 
 /* Variables CSS para colores consistentes */
 :root {
-  --primary-color: #9c0076;
+  --primary-color: var(--sp-primary-strong);
   --primary-light: #e95adb;
   --primary-bg: #fff0f9;
   --accent-color: #e6b3e6;

@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { apiGet, apiPatch } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type ClientListItem = {
   id: string
@@ -293,10 +294,7 @@ function formatLabel(value: string | null) {
 
 <template>
   <main class="admin-clients-page">
-    <section v-if="loading" class="clients-shell state-card">
-      <h1>Cargando el modulo de clientes...</h1>
-      <p>Estamos preparando las fichas, mascotas asociadas y el resumen operativo del portal.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando el modulo de clientes..." description="Estamos preparando las fichas, mascotas asociadas y el resumen operativo del portal." />
 
     <section v-else-if="error && !clients.length" class="clients-shell state-card">
       <h1>No pudimos abrir Clientes</h1>
@@ -341,8 +339,8 @@ function formatLabel(value: string | null) {
         </aside>
       </section>
 
-      <p v-if="toast" class="toast-banner">{{ toast }}</p>
-      <p v-if="error" class="error-banner">{{ error }}</p>
+      <p v-if="toast" class="toast-banner" role="status">{{ toast }}</p>
+      <p v-if="error" class="error-banner" role="alert">{{ error }}</p>
 
       <section class="summary-grid">
         <article v-for="card in summaryCards" :key="card.label" class="clients-shell summary-card" :class="card.tone">
@@ -409,7 +407,7 @@ function formatLabel(value: string | null) {
         </div>
       </section>
 
-      <div v-if="isDetailOpen" class="modal-overlay" @click.self="closeDetail">
+      <div v-if="isDetailOpen" class="modal-overlay" v-dialog="closeDetail" @click.self="closeDetail">
         <section class="clients-shell modal-card">
           <div class="modal-head">
             <div>
@@ -419,7 +417,7 @@ function formatLabel(value: string | null) {
                 Revisa informacion de contacto, mascotas vinculadas y un resumen rapido de su actividad en el negocio.
               </p>
             </div>
-            <button type="button" class="modal-close" @click="closeDetail">x</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeDetail">×</button>
           </div>
 
           <div v-if="detailLoading" class="empty-state compact">
@@ -629,8 +627,8 @@ function formatLabel(value: string | null) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
 }
@@ -649,7 +647,7 @@ function formatLabel(value: string | null) {
 .section-head h2,
 .modal-head h2 {
   margin: 12px 0;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .hero-copy p,
@@ -662,7 +660,7 @@ function formatLabel(value: string | null) {
 .detail-card span,
 .detail-card small,
 .mini-summary span {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.7;
 }
 
@@ -697,7 +695,7 @@ function formatLabel(value: string | null) {
 .pet-card strong,
 .recent-item strong {
   display: block;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-bottom: 6px;
 }
 
@@ -713,7 +711,7 @@ function formatLabel(value: string | null) {
 }
 
 .field-group span {
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 
@@ -756,7 +754,7 @@ function formatLabel(value: string | null) {
 
 .btn-secundario {
   background: linear-gradient(135deg, #fff4fb 0%, #ffffff 100%);
-  color: #8f176e;
+  color: var(--sp-primary);
   border: 1px solid rgba(243, 203, 228, 0.9);
   box-shadow: 0 10px 22px rgba(219, 126, 183, 0.1);
 }
@@ -791,7 +789,7 @@ function formatLabel(value: string | null) {
 }
 
 .summary-card.mint .summary-value {
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 .summary-card.lavender .summary-value {
@@ -816,7 +814,7 @@ function formatLabel(value: string | null) {
 }
 
 .section-copy {
-  color: #6e5064;
+  color: var(--sp-muted);
   font-weight: 600;
 }
 
@@ -842,7 +840,7 @@ function formatLabel(value: string | null) {
 }
 
 .client-head span {
-  color: #6e5064;
+  color: var(--sp-muted);
 }
 
 .status-badge,
@@ -857,8 +855,8 @@ function formatLabel(value: string | null) {
 }
 
 .status-badge.activo {
-  background: #e9fbf7;
-  color: #0b9f93;
+  background: var(--sp-success-bg);
+  color: var(--sp-link-text);
 }
 
 .status-badge.inactivo {
@@ -878,7 +876,7 @@ function formatLabel(value: string | null) {
 
 .soft-chip {
   background: #fff4fb;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .client-data-grid {
@@ -893,7 +891,7 @@ function formatLabel(value: string | null) {
 }
 
 .client-data-grid small {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
   margin-bottom: 2px;
 }
@@ -944,7 +942,7 @@ function formatLabel(value: string | null) {
   font-size: 1.8rem;
   line-height: 1;
   background: linear-gradient(135deg, #fff4fb 0%, #eefafe 100%);
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .detail-grid {

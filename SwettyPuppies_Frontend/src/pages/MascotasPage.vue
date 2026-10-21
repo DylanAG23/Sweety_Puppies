@@ -4,6 +4,7 @@ import { apiGet, apiPatch } from '@/lib/api'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
 import PetBreedSelect from '@/components/PetBreedSelect.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type PetListItem = {
   id: string
@@ -313,10 +314,7 @@ function formatBoolean(value: boolean | null) {
 
 <template>
   <main class="admin-pets-page">
-    <section v-if="loading" class="shell state-card">
-      <h1>Cargando el modulo de mascotas...</h1>
-      <p>Estamos preparando fichas completas, propietarios e historial operativo de cada peludito.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando el modulo de mascotas..." description="Estamos preparando fichas completas, propietarios e historial operativo de cada peludito." />
 
     <section v-else-if="error && !pets.length" class="shell state-card">
       <h1>No pudimos abrir Mascotas</h1>
@@ -352,8 +350,8 @@ function formatBoolean(value: boolean | null) {
         </aside>
       </section>
 
-      <p v-if="toast" class="toast-banner">{{ toast }}</p>
-      <p v-if="error" class="error-banner">{{ error }}</p>
+      <p v-if="toast" class="toast-banner" role="status">{{ toast }}</p>
+      <p v-if="error" class="error-banner" role="alert">{{ error }}</p>
 
       <section class="summary-grid">
         <article v-for="card in summaryCards" :key="card.label" class="shell summary-card">
@@ -406,7 +404,7 @@ function formatBoolean(value: boolean | null) {
         </div>
       </section>
 
-      <div v-if="isDetailOpen" class="modal-overlay" @click.self="closeDetail">
+      <div v-if="isDetailOpen" class="modal-overlay" v-dialog="closeDetail" @click.self="closeDetail">
         <section class="shell modal-card">
           <div class="section-head">
             <div>
@@ -657,7 +655,7 @@ function formatBoolean(value: boolean | null) {
 .admin-pets-page { width: min(1440px, calc(100vw - 42px)); margin: 0 auto; padding: 28px 0 56px; }
 .shell { background: rgba(255,255,255,.92); border-radius: 32px; border: 1px solid rgba(255,214,235,.95); box-shadow: 0 28px 70px rgba(204,115,174,.12); }
 .state-card,.hero,.summary-card,.list-card,.modal-card { padding: 28px; }
-.pill { display:inline-flex; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,#fff1f9 0%,#eefafe 100%); color:#9c0076; font-weight:700; font-size:.86rem; }
+.pill { display:inline-flex; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,var(--sp-primary-soft) 0%,#eefafe 100%); color:var(--sp-primary-strong); font-weight:700; font-size:.86rem; }
 .pill.subtle { margin-bottom: 12px; }
 .hero,.detail-columns,.history-layout,.detail-top,.summary-grid,.info-grid,.price-row,.media-grid { display:grid; gap:16px; }
 .hero { grid-template-columns: minmax(0,1.1fr) minmax(340px,.9fr); align-items:start; }
@@ -667,13 +665,13 @@ function formatBoolean(value: boolean | null) {
 .row-actions,.chip-row { display:flex; gap:12px; flex-wrap:wrap; }
 .search-panel { display:grid; gap:14px; align-content:start; }
 .hero-note { margin-top:18px; padding:18px 20px; }
-.hero-note strong { display:block; color:#9c0076; margin-bottom:6px; }
+.hero-note strong { display:block; color:var(--sp-primary-strong); margin-bottom:6px; }
 .field { display:grid; gap:8px; }
-.field span,.info-grid small { color:#8f176e; font-weight:700; }
+.field span,.info-grid small { color:var(--sp-primary); font-weight:700; }
 .field input { border-radius:18px; border:1px solid rgba(243,203,228,.9); padding:14px 16px; font:inherit; background:rgba(255,255,255,.95); color:#5b4256; }
 .field select,.field textarea { border-radius:18px; border:1px solid rgba(243,203,228,.9); padding:14px 16px; font:inherit; background:rgba(255,255,255,.95); color:#5b4256; }
 .btn { border:none; border-radius:999px; padding:14px 18px; font-family:'Montserrat',sans-serif; font-weight:700; cursor:pointer; }
-.btn.light { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:#8f176e; border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); }
+.btn.light { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:var(--sp-primary); border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); }
 .btn.main { background:linear-gradient(135deg,var(--sp-primary-purple) 0%,var(--sp-primary-purple-deep) 100%); color:#fff; box-shadow:0 16px 30px var(--sp-primary-shadow); }
 .btn.compact { padding-inline:16px; }
 .search-panel .row-actions {
@@ -692,7 +690,7 @@ function formatBoolean(value: boolean | null) {
 }
 .list-card { margin-top:24px; display:grid; gap:18px; }
 .section-head,.pet-head,.pet-footer { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
-.section-copy,.hero p,.hero-note span,.pet-copy span,.detail-card span,.detail-card small,.history-item span,.history-item small,.empty-state p { color:#6e5064; line-height:1.7; }
+.section-copy,.hero p,.hero-note span,.pet-copy span,.detail-card span,.detail-card small,.history-item span,.history-item small,.empty-state p { color:var(--sp-muted); line-height:1.7; }
 .pet-list,.history-list { display:grid; gap:16px; }
 .pet-card { padding:22px; display:grid; grid-template-columns:auto 1fr; gap:18px; }
 .pet-copy { display:grid; gap:14px; }
@@ -704,14 +702,14 @@ function formatBoolean(value: boolean | null) {
 .info-grid span,.info-grid small { display:block; }
 .info-grid.compact { gap:10px 16px; }
 .badge,.chip { display:inline-flex; align-items:center; justify-content:center; padding:9px 14px; border-radius:999px; font-weight:700; font-size:.84rem; }
-.badge.ok { background:#e9fbf7; color:#0b9f93; }
+.badge.ok { background:var(--sp-success-bg); color:var(--sp-link-text); }
 .badge.off { background:#fff1f4; color:#c33b74; }
-.chip { background:#fff4fb; color:#8f176e; }
+.chip { background:#fff4fb; color:var(--sp-primary); }
 .empty-state { padding:28px; border-radius:24px; background:linear-gradient(145deg,rgba(255,247,251,.94) 0%,rgba(238,250,255,.92) 100%); border:1px solid rgba(243,209,230,.9); text-align:center; }
 .compact-state { padding:18px; }
 .modal-overlay { position:fixed; inset:0; z-index:72; background:rgba(77,45,71,.26); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:24px; }
 .modal-card { width:min(1280px,100%); max-height:min(90vh,960px); overflow-y:auto; }
-.close-btn { width:48px; height:48px; border-radius:50%; border:none; cursor:pointer; font-size:1.8rem; line-height:1; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:#8f176e; }
+.close-btn { width:48px; height:48px; border-radius:50%; border:none; cursor:pointer; font-size:1.8rem; line-height:1; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:var(--sp-primary); }
 .detail-top { margin-top:18px; grid-template-columns: repeat(4,minmax(0,1fr)); }
 .profile { display:flex; gap:16px; align-items:center; }
 .detail-card { padding:18px; display:grid; gap:12px; }

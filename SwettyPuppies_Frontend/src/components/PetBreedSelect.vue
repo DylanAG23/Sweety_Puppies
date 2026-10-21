@@ -125,7 +125,7 @@ const helperText = computed(() => props.helper || 'Si no tiene raza definida, se
 }
 
 .breed-field span {
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 

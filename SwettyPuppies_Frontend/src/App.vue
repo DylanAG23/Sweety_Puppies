@@ -1,22 +1,36 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch, type Component } from 'vue'
 import { getSession, hydrateSessionFromLiveTab } from './lib/session'
 import AuthPage from './pages/AuthPage.vue'
-import AdminHomePage from './pages/AdminHomePage.vue'
-import AdminAgendaPage from './pages/AdminAgendaPage.vue'
-import AdminManagementPage from './pages/AdminManagementPage.vue'
-import AdminPlaceholderPage from './pages/AdminPlaceholderPage.vue'
-import ClientesPage from './pages/ClientesPage.vue'
-import MascotasPage from './pages/MascotasPage.vue'
-import ServiciosPage from './pages/ServiciosPage.vue'
-import ImagenesPage from './pages/ImagenesPage.vue'
-import ReportesPage from './pages/ReportesPage.vue'
-import ClienteDashboardPage from './pages/ClienteDashboardPage.vue'
-import ClientProfilePage from './pages/ClientProfilePage.vue'
-import ClientPetsPage from './pages/ClientPetsPage.vue'
-import ClientBookAppointmentPage from './pages/ClientBookAppointmentPage.vue'
-import ClientHistoryPage from './pages/ClientHistoryPage.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
+import PageLoadingState from './components/ui/PageLoadingState.vue'
+import PageLoadError from './components/ui/PageLoadError.vue'
+
+// Cada pagina se descarga cuando se visita (code splitting): el login no
+// carga ApexCharts ni las pantallas administrativas.
+function lazyPage(loader: () => Promise<{ default: Component }>) {
+  return defineAsyncComponent({
+    loader,
+    loadingComponent: PageLoadingState,
+    errorComponent: PageLoadError,
+    delay: 150,
+  })
+}
+
+const AdminHomePage = lazyPage(() => import('./pages/AdminHomePage.vue'))
+const AdminAgendaPage = lazyPage(() => import('./pages/AdminAgendaPage.vue'))
+const AdminManagementPage = lazyPage(() => import('./pages/AdminManagementPage.vue'))
+const AdminPlaceholderPage = lazyPage(() => import('./pages/AdminPlaceholderPage.vue'))
+const ClientesPage = lazyPage(() => import('./pages/ClientesPage.vue'))
+const MascotasPage = lazyPage(() => import('./pages/MascotasPage.vue'))
+const ServiciosPage = lazyPage(() => import('./pages/ServiciosPage.vue'))
+const ImagenesPage = lazyPage(() => import('./pages/ImagenesPage.vue'))
+const ReportesPage = lazyPage(() => import('./pages/ReportesPage.vue'))
+const ClienteDashboardPage = lazyPage(() => import('./pages/ClienteDashboardPage.vue'))
+const ClientProfilePage = lazyPage(() => import('./pages/ClientProfilePage.vue'))
+const ClientPetsPage = lazyPage(() => import('./pages/ClientPetsPage.vue'))
+const ClientBookAppointmentPage = lazyPage(() => import('./pages/ClientBookAppointmentPage.vue'))
+const ClientHistoryPage = lazyPage(() => import('./pages/ClientHistoryPage.vue'))
 
 const currentPath = ref(window.location.pathname.toLowerCase())
 const sessionReady = ref(false)
@@ -136,62 +150,51 @@ const routes = new Map<
   ],
 ])
 
+// Resuelve a que ruta debe ir el usuario segun su sesion y rol (sin efectos).
+function resolveTargetPath(path: string) {
+  if (path === '/admin/tarifas') {
+    return '/admin/servicios'
+  }
+
+  const session = getSession()
+
+  if (!session) {
+    return publicRoutes.has(path) ? path : '/login'
+  }
+
+  const homePath = session.userData.rol === 'administrador' ? '/admin' : '/cliente'
+
+  if (publicRoutes.has(path)) {
+    return homePath
+  }
+
+  if ((adminRoutes.has(path) || path.startsWith('/admin/')) && session.userData.rol !== 'administrador') {
+    return '/cliente'
+  }
+
+  if (path.startsWith('/cliente') && session.userData.rol !== 'cliente') {
+    return '/admin'
+  }
+
+  return path
+}
+
+const targetPath = computed(() => (sessionReady.value ? resolveTargetPath(currentPath.value) : currentPath.value))
+
 const currentRoute = computed(() => {
   if (!sessionReady.value) {
     return { component: NotFoundPage }
   }
 
-  const session = getSession()
-  const path = currentPath.value
+  return routes.get(targetPath.value) ?? { component: NotFoundPage }
+})
 
-  if (path === '/admin/tarifas') {
-    window.history.replaceState({}, '', '/admin/servicios')
-    currentPath.value = '/admin/servicios'
-    return routes.get('/admin/servicios') ?? { component: NotFoundPage }
+// Las redirecciones se aplican aqui, fuera del computed.
+watch(targetPath, (target) => {
+  if (target !== currentPath.value) {
+    window.history.replaceState({}, '', target)
+    currentPath.value = target
   }
-
-  if (!session) {
-    if (!publicRoutes.has(path)) {
-      if (window.location.pathname.toLowerCase() !== '/login') {
-        window.history.replaceState({}, '', '/login')
-        currentPath.value = '/login'
-      }
-
-      return { component: AuthPage }
-    }
-
-    return routes.get(path) ?? { component: NotFoundPage }
-  }
-
-  if (publicRoutes.has(path)) {
-    const homePath = session.userData.rol === 'administrador' ? '/admin' : '/cliente'
-    if (window.location.pathname.toLowerCase() !== homePath) {
-      window.history.replaceState({}, '', homePath)
-      currentPath.value = homePath
-    }
-
-    return routes.get(homePath) ?? { component: NotFoundPage }
-  }
-
-  if ((adminRoutes.has(path) || path.startsWith('/admin/')) && session.userData.rol !== 'administrador') {
-    if (window.location.pathname.toLowerCase() !== '/cliente') {
-      window.history.replaceState({}, '', '/cliente')
-      currentPath.value = '/cliente'
-    }
-
-    return routes.get('/cliente') ?? { component: NotFoundPage }
-  }
-
-  if (path.startsWith('/cliente') && session.userData.rol !== 'cliente') {
-    if (window.location.pathname.toLowerCase() !== '/admin') {
-      window.history.replaceState({}, '', '/admin')
-      currentPath.value = '/admin'
-    }
-
-    return routes.get('/admin') ?? { component: NotFoundPage }
-  }
-
-  return routes.get(path) ?? { component: NotFoundPage }
 })
 
 function updatePath() {
@@ -218,7 +221,7 @@ onUnmounted(() => {
       <p>Estamos verificando tu acceso para abrir el portal correcto.</p>
     </section>
   </main>
-  <component v-else :is="currentRoute.component" :key="currentPath" v-bind="currentRoute.props" />
+  <component v-else :is="currentRoute.component" :key="targetPath" v-bind="currentRoute.props" />
 </template>
 
 <style scoped>
@@ -242,12 +245,12 @@ onUnmounted(() => {
 
 .app-loading-card h1 {
   margin: 0 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .app-loading-card p {
   margin: 0;
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.7;
 }
 </style>

@@ -2,9 +2,10 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 import type { ApexOptions } from 'apexcharts'
-import { apiGet } from '@/lib/api'
+import { apiDownload, apiGet } from '@/lib/api'
 import { getSession, logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type PeriodType = 'day' | 'week' | 'month' | 'range'
 type AppointmentState =
@@ -522,26 +523,11 @@ async function exportPdf() {
   error.value = ''
 
   try {
-    const response = await fetch(`/api/reportes/pdf?${buildQueryParams(true)}`, {
-      headers: {
-        Authorization: `Bearer ${session.token}`
-      }
-    })
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}))
-      throw new Error(data.message || 'No se pudo generar el PDF')
-    }
-
-    const blob = await response.blob()
-    const fileUrl = window.URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = fileUrl
-    anchor.download = `dashboard-reportes-${dashboard.value?.filtro.fechaInicio || today}-${dashboard.value?.filtro.fechaFin || today}.pdf`
-    document.body.appendChild(anchor)
-    anchor.click()
-    anchor.remove()
-    window.URL.revokeObjectURL(fileUrl)
+    await apiDownload(
+      `/api/reportes/pdf?${buildQueryParams(true)}`,
+      `dashboard-reportes-${dashboard.value?.filtro.fechaInicio || today}-${dashboard.value?.filtro.fechaFin || today}.pdf`,
+      'No se pudo generar el PDF'
+    )
     showToast('PDF generado correctamente')
   } catch (caughtError) {
     error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo descargar el PDF'
@@ -870,10 +856,7 @@ function donutOptions(labels: string[]): ApexOptions {
 
 <template>
   <main class="admin-reports-page">
-    <section v-if="loading" class="admin-shell state-card">
-      <h1>Cargando dashboard de reportes...</h1>
-      <p>Estamos conectando ingresos, citas realizadas y comportamiento operativo del negocio.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando dashboard de reportes..." description="Estamos conectando ingresos, citas realizadas y comportamiento operativo del negocio." />
 
     <section v-else-if="error && !dashboard" class="admin-shell state-card">
       <h1>No pudimos abrir reportes</h1>
@@ -1038,8 +1021,8 @@ function donutOptions(labels: string[]): ApexOptions {
           <small class="period-label">Actualizado con filtros en vivo</small>
         </div>
 
-        <p v-if="toast" class="toast-message">{{ toast }}</p>
-        <p v-if="error" class="inline-error">{{ error }}</p>
+        <p v-if="toast" class="toast-message" role="status">{{ toast }}</p>
+        <p v-if="error" class="inline-error" role="alert">{{ error }}</p>
         <p v-if="dashboard?.estadoVacio.mensaje" class="empty-inline">
           {{ dashboard.estadoVacio.mensaje }}
         </p>
@@ -1270,7 +1253,7 @@ function donutOptions(labels: string[]): ApexOptions {
   padding: 8px 14px;
   border-radius: 999px;
   background: linear-gradient(135deg, #fff3fa 0%, #eef9ff 100%);
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 0.86rem;
   font-weight: 700;
 }
@@ -1329,7 +1312,7 @@ function donutOptions(labels: string[]): ApexOptions {
 .quick-chip {
   border: 1px solid rgba(241, 181, 213, 0.95);
   background: rgba(255, 255, 255, 0.9);
-  color: #8f176e;
+  color: var(--sp-primary);
   padding: 10px 16px;
   border-radius: 999px;
   font: inherit;
@@ -1352,7 +1335,7 @@ function donutOptions(labels: string[]): ApexOptions {
 .field-group {
   display: grid;
   gap: 8px;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 
@@ -1398,14 +1381,14 @@ function donutOptions(labels: string[]): ApexOptions {
 
 .btn-secondary {
   background: #fff;
-  color: #8f176e;
+  color: var(--sp-primary);
   border: 1px solid rgba(241, 181, 213, 0.95);
 }
 
 .btn-secondary.dark {
-  background: #1a202c;
+  background: var(--sp-dark);
   color: #fff;
-  border-color: #1a202c;
+  border-color: var(--sp-dark);
 }
 
 .summary-grid {
@@ -1424,7 +1407,7 @@ function donutOptions(labels: string[]): ApexOptions {
 
 .summary-card strong {
   display: block;
-  color: #8f176e;
+  color: var(--sp-primary);
   min-height: 42px;
 }
 
@@ -1515,7 +1498,7 @@ function donutOptions(labels: string[]): ApexOptions {
 
 .chart-header strong {
   display: block;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-size: 1.05rem;
 }
 
@@ -1562,7 +1545,7 @@ function donutOptions(labels: string[]): ApexOptions {
 .table-tab {
   border: 1px solid rgba(241, 181, 213, 0.95);
   background: rgba(255, 255, 255, 0.9);
-  color: #8f176e;
+  color: var(--sp-primary);
   border-radius: 999px;
   padding: 10px 16px;
   font: inherit;
@@ -1614,7 +1597,7 @@ function donutOptions(labels: string[]): ApexOptions {
   background: transparent;
   padding: 0;
   font: inherit;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 800;
   cursor: pointer;
 }

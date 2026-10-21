@@ -14,7 +14,7 @@
   text-align: center;
   font-size: 2rem;
   margin-bottom: 20px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 /* Sistema de pestañas */
@@ -42,7 +42,7 @@
 }
 
 .tab-btn.active {
-  background-color: #9c0076;
+  background-color: var(--sp-primary-strong);
   color: white;
 }
 
@@ -101,7 +101,7 @@
 }
 
 .imagen-categoria {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 14px;
   font-weight: 600;
   display: block;
@@ -118,7 +118,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   transition: all 0.3s ease;
   font-size: 20px;
   padding: 5px;
@@ -151,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 600;
   overflow: hidden;
 }
@@ -194,7 +194,7 @@
 }
 
 .file-button {
-  background-color: #9c0076;
+  background-color: var(--sp-primary-strong);
   color: white;
   padding: 8px 15px;
   border-radius: 5px;
@@ -265,7 +265,7 @@
   right: 20px;
   font-size: 28px;
   font-weight: bold;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   cursor: pointer;
 }
 
@@ -274,7 +274,7 @@
 }
 
 .modal h2 {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-top: 0;
   margin-bottom: 20px;
   text-align: center;
@@ -326,7 +326,7 @@
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
-  background-color: #9c0076;
+  background-color: var(--sp-primary-strong);
   color: white;
   padding: 12px 24px;
   border-radius: 25px;
@@ -372,7 +372,7 @@
 }
 
 .resultados-container h3 {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-top: 0;
   padding-bottom: 10px;
   border-bottom: 2px solid #f2f2f2;
@@ -387,7 +387,7 @@
 }
 
 .btn-enviar {
-  background: linear-gradient(to right, #9c0076, #e95adb);
+  background: linear-gradient(to right, var(--sp-primary-strong), #e95adb);
   color: white;
   border: none;
   padding: 15px 30px;
@@ -405,8 +405,8 @@
 
 .btn-secundario {
   background: transparent;
-  color: #9c0076;
-  border: 2px solid #9c0076;
+  color: var(--sp-primary-strong);
+  border: 2px solid var(--sp-primary-strong);
   padding: 15px 30px;
   border-radius: 25px;
   font-size: 16px;

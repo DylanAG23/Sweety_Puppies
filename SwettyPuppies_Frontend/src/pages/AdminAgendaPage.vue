@@ -4,6 +4,7 @@ import { apiGet, apiPatch, apiPost } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type AgendaAppointment = {
   id: string
@@ -575,10 +576,7 @@ function formatDateInput(value: Date) {
 
 <template>
   <main class="admin-agenda-page">
-    <section v-if="loading" class="agenda-shell state-card">
-      <h1>Cargando la agenda del negocio...</h1>
-      <p>Estamos preparando citas, bloqueos y horarios del dia seleccionado.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando la agenda del negocio..." description="Estamos preparando citas, bloqueos y horarios del dia seleccionado." />
 
     <section v-else-if="error && !agenda" class="agenda-shell state-card">
       <h1>No pudimos abrir la agenda</h1>
@@ -622,8 +620,8 @@ function formatDateInput(value: Date) {
         </aside>
       </section>
 
-      <p v-if="toast" class="toast-banner">{{ toast }}</p>
-      <p v-if="error" class="error-banner">{{ error }}</p>
+      <p v-if="toast" class="toast-banner" role="status">{{ toast }}</p>
+      <p v-if="error" class="error-banner" role="alert">{{ error }}</p>
 
       <section class="summary-grid">
         <article v-for="card in summaryCards" :key="card.label" class="agenda-shell summary-card" :class="card.tone">
@@ -853,7 +851,7 @@ function formatDateInput(value: Date) {
         </aside>
       </section>
 
-      <div v-if="isDetailOpen" class="modal-overlay" @click.self="closeAppointmentDetail">
+      <div v-if="isDetailOpen" class="modal-overlay" v-dialog="closeAppointmentDetail" @click.self="closeAppointmentDetail">
         <section class="agenda-shell modal-card">
           <div class="modal-head">
             <div>
@@ -863,7 +861,7 @@ function formatDateInput(value: Date) {
                 Revisa el contexto completo de la solicitud, el estado del peludito y las acciones disponibles.
               </p>
             </div>
-            <button type="button" class="modal-close" @click="closeAppointmentDetail">x</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeAppointmentDetail">×</button>
           </div>
 
           <div v-if="detailLoading" class="empty-state compact">
@@ -1014,8 +1012,8 @@ function formatDateInput(value: Date) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
 }
@@ -1037,7 +1035,7 @@ function formatDateInput(value: Date) {
 .create-block-card h2,
 .blocks-list-card h2 {
   margin: 12px 0;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .hero-copy p,
@@ -1052,7 +1050,7 @@ function formatDateInput(value: Date) {
 .detail-card small,
 .timeline-time small,
 .appointment-meta span {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.7;
 }
 
@@ -1088,7 +1086,7 @@ function formatDateInput(value: Date) {
 .detail-card strong,
 .timeline-time strong {
   display: block;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-bottom: 6px;
 }
 
@@ -1123,7 +1121,7 @@ function formatDateInput(value: Date) {
 .date-nav,
 .btn-secundario {
   background: linear-gradient(135deg, #fff4fb 0%, #ffffff 100%);
-  color: #8f176e;
+  color: var(--sp-primary);
   border: 1px solid rgba(243, 203, 228, 0.9);
   box-shadow: 0 10px 22px rgba(219, 126, 183, 0.1);
 }
@@ -1153,7 +1151,7 @@ function formatDateInput(value: Date) {
 }
 
 .range-helper {
-  color: #6e5064;
+  color: var(--sp-muted);
   font-weight: 600;
 }
 
@@ -1203,14 +1201,14 @@ function formatDateInput(value: Date) {
 }
 
 .range-day-top strong {
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .range-mini-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px 12px;
-  color: #6e5064;
+  color: var(--sp-muted);
   font-size: 0.92rem;
 }
 
@@ -1231,7 +1229,7 @@ function formatDateInput(value: Date) {
 }
 
 .summary-card.mint .summary-value {
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 .summary-card.sky .summary-value {
@@ -1289,8 +1287,8 @@ function formatDateInput(value: Date) {
 
 .day-chip.open,
 .status-badge.confirmada {
-  background: #e9fbf7;
-  color: #0b9f93;
+  background: var(--sp-success-bg);
+  color: var(--sp-link-text);
 }
 
 .day-chip.closed,
@@ -1413,7 +1411,7 @@ function formatDateInput(value: Date) {
 .ongoing-chip,
 .soft-chip {
   background: #fff4fb;
-  color: #8f176e;
+  color: var(--sp-primary);
   justify-self: start;
 }
 
@@ -1445,7 +1443,7 @@ function formatDateInput(value: Date) {
 }
 
 .field-group span {
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 
@@ -1597,7 +1595,7 @@ function formatDateInput(value: Date) {
   font-size: 1.8rem;
   line-height: 1;
   background: linear-gradient(135deg, #fff4fb 0%, #eefafe 100%);
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .modal-actions,

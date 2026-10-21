@@ -541,7 +541,7 @@ async function submitRecoveryReset() {
     </Transition>
   </div>
 
-  <div class="auth-toast" :class="[toastTone, { show: toastMessage }]">
+  <div class="auth-toast" :class="[toastTone, { show: toastMessage }]" role="status" aria-live="polite">
     <div class="auth-toast-content">
       <span>{{ toastMessage }}</span>
     </div>
@@ -693,7 +693,7 @@ async function submitRecoveryReset() {
 .auth-actions .auth-secondary-button {
   min-width: 210px;
   background: rgba(255, 246, 251, 0.96);
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   box-shadow: 0 16px 28px rgba(120, 38, 105, 0.12);
 }
 
@@ -794,7 +794,7 @@ async function submitRecoveryReset() {
 }
 
 .auth-title h2 {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   position: relative;
   display: inline-block;
   margin: 0;
@@ -847,7 +847,7 @@ async function submitRecoveryReset() {
 
 .auth-input:focus {
   outline: none;
-  border-color: #9c0076;
+  border-color: var(--sp-primary-strong);
   box-shadow: 0 0 0 4px rgba(233, 90, 219, 0.12);
 }
 
@@ -855,7 +855,7 @@ async function submitRecoveryReset() {
   position: absolute;
   top: 16px;
   left: 18px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 16px;
   transition: all 0.3s ease;
   pointer-events: none;
@@ -917,7 +917,7 @@ async function submitRecoveryReset() {
 
 .auth-secondary-button {
   background: #fff0f8;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   box-shadow: inset 0 0 0 1px rgba(156, 0, 118, 0.16);
 }
 
@@ -929,7 +929,7 @@ async function submitRecoveryReset() {
 .auth-link {
   border: none;
   background: none;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   padding: 0;
   font-weight: 600;
   text-decoration: none;
@@ -997,7 +997,7 @@ async function submitRecoveryReset() {
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%) translateY(120px);
-  background: linear-gradient(to right, #9c0076, #e95adb);
+  background: linear-gradient(to right, var(--sp-primary-strong), #e95adb);
   color: #fff;
   padding: 14px 22px;
   border-radius: 999px;

@@ -52,7 +52,7 @@
   padding: 8px 14px;
   border-radius: 999px;
   background: #fff0f9;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
   margin-bottom: 18px;
 }
@@ -92,7 +92,7 @@
 
 .btn-secundario {
   background: #fff0f8;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   border-radius: 24px;
   padding: 14px 22px;
   font-weight: 700;
@@ -100,7 +100,7 @@
 }
 
 .text-link {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   padding: 0;
   font-weight: 600;
 }
@@ -166,7 +166,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-bottom: 12px;
 }
 
@@ -223,7 +223,7 @@
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%) translateY(120px);
-  background: linear-gradient(to right, #9c0076, #e95adb);
+  background: linear-gradient(to right, var(--sp-primary-strong), #e95adb);
   color: #fff;
   padding: 14px 22px;
   border-radius: 999px;

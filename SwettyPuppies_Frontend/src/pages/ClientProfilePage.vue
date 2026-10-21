@@ -4,6 +4,7 @@ import { apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type ProfileResponse = {
   success: boolean
@@ -92,10 +93,7 @@ function goTo(path: string) {
 
 <template>
   <main class="profile-page">
-    <section v-if="loading" class="profile-shell profile-state">
-      <h1>Cargando tu perfil bonito...</h1>
-      <p>Estamos preparando tus datos para que los edites con tranquilidad.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando tu perfil bonito..." description="Estamos preparando tus datos para que los edites con tranquilidad." />
 
     <section v-else-if="error && !profile" class="profile-shell profile-state">
       <h1>No pudimos abrir tu perfil</h1>
@@ -172,8 +170,8 @@ function goTo(path: string) {
               />
             </label>
 
-            <p v-if="error" class="feedback error">{{ error }}</p>
-            <p v-if="successMessage" class="feedback success">{{ successMessage }}</p>
+            <p v-if="error" class="feedback error" role="alert">{{ error }}</p>
+            <p v-if="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
 
             <div class="profile-actions">
               <a href="/cliente" class="btn-secundario" @click.prevent="goTo('/cliente')">Inicio</a>
@@ -215,8 +213,8 @@ function goTo(path: string) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
   box-shadow: inset 0 0 0 1px rgba(156, 0, 118, 0.09);
@@ -229,13 +227,13 @@ function goTo(path: string) {
 .profile-hero h1,
 .profile-form-card h2 {
   margin: 14px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .profile-hero p,
 .profile-note,
 .feedback {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.8;
 }
 
@@ -266,7 +264,7 @@ function goTo(path: string) {
 .readonly-grid strong {
   display: block;
   margin-bottom: 6px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .readonly-grid span {
@@ -289,7 +287,7 @@ function goTo(path: string) {
 .field-block span {
   display: block;
   margin-bottom: 8px;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 700;
 }
 
@@ -324,7 +322,7 @@ function goTo(path: string) {
 }
 
 .feedback.success {
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 .profile-actions {

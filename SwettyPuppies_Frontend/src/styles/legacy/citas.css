@@ -21,7 +21,7 @@
 
 .fecha-filter label {
   font-weight: 600;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-right: 5px;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .tabla-citas th {
-  background-color: #9c0076;
+  background-color: var(--sp-primary-strong);
   color: white;
   font-weight: 600;
   text-transform: uppercase;
@@ -81,7 +81,7 @@
 }
 
 .tabla-citas .btn-editar {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .tabla-citas .btn-eliminar-icon {
@@ -111,7 +111,7 @@
 }
 
 .resultados-container h3 {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   margin-top: 0;
   padding-bottom: 10px;
   border-bottom: 2px solid #f2f2f2;

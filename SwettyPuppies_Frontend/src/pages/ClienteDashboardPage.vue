@@ -4,6 +4,7 @@ import { apiGet } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type ClientHomeResponse = {
   success: boolean
@@ -205,10 +206,7 @@ function goTo(path: string) {
 
 <template>
   <main class="cliente-portal">
-    <section v-if="loading" class="cliente-state-card">
-      <h1>Cargando tu espacio lindo...</h1>
-      <p>Estamos preparando la bienvenida y la información de tu portal.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando tu espacio lindo..." description="Estamos preparando la bienvenida y la información de tu portal." />
 
     <section v-else-if="error" class="cliente-state-card">
       <h1>No pudimos abrir tu portal</h1>
@@ -431,8 +429,8 @@ function goTo(path: string) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.85rem;
   box-shadow: inset 0 0 0 1px rgba(156, 0, 118, 0.09);
@@ -443,7 +441,7 @@ function goTo(path: string) {
 .profile-card h2,
 .gallery-dashboard-copy h2 {
   margin: 0 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .hero-main h1 {
@@ -457,7 +455,7 @@ function goTo(path: string) {
 .gallery-dashboard-copy p,
 .gallery-overlay-card p,
 .gallery-empty p {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.8;
 }
 
@@ -479,7 +477,7 @@ function goTo(path: string) {
 .hero-section-title {
   display: block;
   margin-bottom: 8px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
 }
 
@@ -502,7 +500,7 @@ function goTo(path: string) {
 .summary-pill-card strong {
   display: block;
   margin-bottom: 6px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .hero-business-meta span,
@@ -519,7 +517,7 @@ function goTo(path: string) {
   display: inline-flex;
   align-items: center;
   margin-top: 8px;
-  color: #0b9f93;
+  color: var(--sp-link-text);
   font-weight: 700;
   text-decoration: none;
 }
@@ -662,7 +660,7 @@ function goTo(path: string) {
 
 .gallery-overlay-card h3 {
   margin: 12px 0 10px;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-size: 1.5rem;
 }
 
@@ -675,7 +673,7 @@ function goTo(path: string) {
 .gallery-button {
   border: none;
   background: linear-gradient(135deg, #fff2fa 0%, #edfaff 100%);
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   border-radius: 999px;
   padding: 12px 18px;
   font-family: 'Montserrat', sans-serif;
@@ -719,7 +717,7 @@ function goTo(path: string) {
   display: block;
   margin-top: 8px;
   font-size: 0.88rem;
-  color: #6e5064;
+  color: var(--sp-muted);
 }
 
 .thumb-card.active img {

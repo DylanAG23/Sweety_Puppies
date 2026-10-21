@@ -5,6 +5,7 @@ import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
 import PetBreedSelect from '@/components/PetBreedSelect.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type Pet = {
   id: string
@@ -421,36 +422,12 @@ async function submitPet() {
   }
 }
 
-async function deactivatePet(pet: Pet) {
-  if (!window.confirm(`¿Quieres desactivar a ${pet.nombre}?`)) {
-    return
-  }
-
-  removingId.value = pet.id
-  error.value = ''
-
-  try {
-    const data = await apiDelete<{ success: boolean; message: string }>(`/api/cliente/mascotas/${pet.id}`)
-    toast.value = data.message
-    await loadPets()
-  } catch (caughtError) {
-    error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo desactivar la mascota'
-  } finally {
-    removingId.value = ''
-  }
-}
-
 function petImage(url: string | null) {
   return url || fallbackPetImage
 }
 
 async function togglePetStatus(pet: Pet) {
   const nextActiveState = !pet.activo
-  const actionText = nextActiveState ? 'activar' : 'desactivar'
-
-  if (!window.confirm(`Deseas ${actionText} a ${pet.nombre}?`)) {
-    return
-  }
 
   removingId.value = pet.id
   error.value = ''
@@ -469,10 +446,6 @@ async function togglePetStatus(pet: Pet) {
 }
 
 async function deletePet(pet: Pet) {
-  if (!window.confirm(`Estas segura de eliminar a ${pet.nombre}? Esta accion no se puede deshacer.`)) {
-    return
-  }
-
   deletingId.value = pet.id
   error.value = ''
 
@@ -533,27 +506,16 @@ async function confirmDialogAction() {
     return
   }
 
+  // La confirmacion ya ocurrio en el dialogo; aqui solo se ejecuta la accion.
   if (confirmDialog.mode === 'delete') {
-    const originalConfirm = window.confirm
-    window.confirm = () => true
-    try {
-      await deletePet(pet)
-    } finally {
-      window.confirm = originalConfirm
-    }
+    await deletePet(pet)
   } else {
-    const originalConfirm = window.confirm
-    window.confirm = () => true
-    try {
-      await togglePetStatus(pet)
-      if (selectedPet.value?.id === pet.id) {
-        const updatedPet = mascotas.value.find((item) => item.id === pet.id)
-        if (updatedPet) {
-          selectedPet.value = updatedPet
-        }
+    await togglePetStatus(pet)
+    if (selectedPet.value?.id === pet.id) {
+      const updatedPet = mascotas.value.find((item) => item.id === pet.id)
+      if (updatedPet) {
+        selectedPet.value = updatedPet
       }
-    } finally {
-      window.confirm = originalConfirm
     }
   }
 
@@ -623,10 +585,7 @@ function goTo(path: string) {
 
 <template>
   <main class="pets-page">
-    <section v-if="loading" class="pets-shell pets-state-card">
-      <h1>Cargando tus peluditos...</h1>
-      <p>Estamos preparando sus fichas con mucho carino.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando tus peluditos..." description="Estamos preparando sus fichas con mucho carino." />
 
     <section v-else-if="error && !mascotas.length" class="pets-shell pets-state-card">
       <h1>No pudimos abrir Mis Mascotas</h1>
@@ -658,7 +617,7 @@ function goTo(path: string) {
         </div>
       </section>
 
-      <p v-if="toast" class="pets-feedback success">{{ toast }}</p>
+      <p v-if="toast" class="pets-feedback success" role="status">{{ toast }}</p>
       <p v-if="error && mascotas.length" class="pets-feedback error">{{ error }}</p>
 
       <section v-if="isCreateFormExpanded" class="pets-shell create-form-panel">
@@ -838,7 +797,7 @@ function goTo(path: string) {
             </label>
           </div>
 
-          <p v-if="error" class="pets-feedback error">{{ error }}</p>
+          <p v-if="error" class="pets-feedback error" role="alert">{{ error }}</p>
 
           <div class="pets-actions-row modal-actions">
             <button type="button" class="btn-secundario" @click="closeCreateSection">Cancelar</button>
@@ -915,14 +874,14 @@ function goTo(path: string) {
       </section>
     </template>
 
-    <div v-if="isEditFormOpen" class="modal-overlay" @click.self="closeEditModal">
+    <div v-if="isEditFormOpen" class="modal-overlay" v-dialog="closeEditModal" @click.self="closeEditModal">
       <section class="pets-shell modal-card form-modal">
         <div class="modal-head">
           <div>
             <span class="pets-pill">{{ modalMode === 'create' ? 'Nueva mascota' : 'Edicion' }}</span>
             <h2>{{ modalTitle }}</h2>
           </div>
-          <button type="button" class="modal-close" @click="closeEditModal">×</button>
+          <button type="button" class="modal-close" aria-label="Cerrar" @click="closeEditModal">×</button>
         </div>
 
         <form class="pets-form" @submit.prevent="submitPet">
@@ -1093,7 +1052,7 @@ function goTo(path: string) {
             </label>
           </div>
 
-          <p v-if="error" class="pets-feedback error">{{ error }}</p>
+          <p v-if="error" class="pets-feedback error" role="alert">{{ error }}</p>
 
           <div class="pets-actions-row modal-actions">
             <button type="button" class="btn-secundario" @click="closeEditModal">Cancelar</button>
@@ -1103,7 +1062,7 @@ function goTo(path: string) {
       </section>
     </div>
 
-    <div v-if="isDetailOpen && selectedPet" class="modal-overlay" @click.self="closeDetailModal">
+    <div v-if="isDetailOpen && selectedPet" class="modal-overlay" v-dialog="closeDetailModal" @click.self="closeDetailModal">
       <section class="pets-shell modal-card detail-modal">
         <div class="modal-head">
           <div>
@@ -1111,7 +1070,7 @@ function goTo(path: string) {
             <h2>{{ selectedPet.nombre }}</h2>
             <p class="detail-subtitle">Toda la informacion registrada para su cuidado, bienestar y futuras visitas.</p>
           </div>
-          <button type="button" class="modal-close" @click="closeDetailModal">×</button>
+          <button type="button" class="modal-close" aria-label="Cerrar" @click="closeDetailModal">×</button>
         </div>
 
         <div class="detail-layout">
@@ -1172,7 +1131,7 @@ function goTo(path: string) {
       </section>
     </div>
 
-    <div v-if="isConfirmDialogOpen" class="modal-overlay confirm-overlay" @click.self="closeConfirmDialog">
+    <div v-if="isConfirmDialogOpen" class="modal-overlay confirm-overlay" v-dialog="closeConfirmDialog" @click.self="closeConfirmDialog">
       <section class="pets-shell confirm-card">
         <div class="confirm-icon" :class="confirmDialog.tone">
           {{ confirmDialog.mode === 'delete' ? '!' : '?' }}
@@ -1234,8 +1193,8 @@ function goTo(path: string) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
   box-shadow: inset 0 0 0 1px rgba(156, 0, 118, 0.09);
@@ -1246,7 +1205,7 @@ function goTo(path: string) {
 .pet-card-copy h2,
 .modal-head h2 {
   margin: 14px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .pets-hero p,
@@ -1256,7 +1215,7 @@ function goTo(path: string) {
 .field-block span,
 .detail-info-grid span,
 .carnet-empty {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.75;
 }
 
@@ -1278,7 +1237,7 @@ function goTo(path: string) {
 }
 
 .pets-feedback.success {
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 .create-form-panel {
@@ -1348,7 +1307,7 @@ function goTo(path: string) {
   padding: 8px 12px;
   border-radius: 999px;
   background: #fff2fa;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-size: 0.82rem;
   font-weight: 700;
   white-space: nowrap;
@@ -1356,7 +1315,7 @@ function goTo(path: string) {
 
 .pet-status-chip {
   background: #ecfbf7;
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 .pet-status-chip.inactive {
@@ -1383,7 +1342,7 @@ function goTo(path: string) {
 .field-block span {
   display: block;
   margin-bottom: 6px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .card-actions {
@@ -1398,7 +1357,7 @@ function goTo(path: string) {
   border: none;
   border-radius: 999px;
   background: #eefcf8;
-  color: #0b9f93;
+  color: var(--sp-link-text);
   font-weight: 700;
   cursor: pointer;
 }
@@ -1520,11 +1479,11 @@ function goTo(path: string) {
 
 .confirm-card h2 {
   margin: 16px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .confirm-card p {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.75;
 }
 
@@ -1537,8 +1496,8 @@ function goTo(path: string) {
   place-items: center;
   font-size: 2rem;
   font-weight: 800;
-  color: #8f176e;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
+  color: var(--sp-primary);
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
   box-shadow: 0 18px 30px rgba(233, 90, 219, 0.14);
 }
 
@@ -1567,7 +1526,7 @@ function goTo(path: string) {
 .modal-close {
   border: none;
   background: #fff2fa;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   width: 42px;
   height: 42px;
   border-radius: 16px;
@@ -1630,7 +1589,7 @@ function goTo(path: string) {
 }
 
 .upload-card span {
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
 }
 
@@ -1664,7 +1623,7 @@ function goTo(path: string) {
 
 .detail-subtitle {
   margin: 8px 0 0;
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.7;
 }
 

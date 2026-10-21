@@ -4,6 +4,7 @@ import { apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { logoutToLogin, requireRole } from '@/lib/session'
 import AdminSiteHeader from '@/components/AdminSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type AppointmentStatus = 'pendiente' | 'confirmada' | 'en_atencion' | 'completada' | 'cancelada' | 'reprogramada'
 type TabKey = 'citas' | 'servicios'
@@ -278,8 +279,8 @@ async function confirmCancelAppointment() {
   try {
     await cancelAppointment()
     closeCancelConfirm()
-  } catch (error) {
-    // runAppointmentAction already manages the visible error state
+  } catch {
+    // runAppointmentAction ya muestra el error en pantalla
   }
 }
 
@@ -318,7 +319,11 @@ function finalizeAppointment() {
 
 function toggleAdditionalService(additionalId: string) {
   const current = new Set(attentionForm.value.servicioAdicionalIds)
-  current.has(additionalId) ? current.delete(additionalId) : current.add(additionalId)
+  if (current.has(additionalId)) {
+    current.delete(additionalId)
+  } else {
+    current.add(additionalId)
+  }
   attentionForm.value.servicioAdicionalIds = [...current]
 }
 
@@ -446,10 +451,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 
 <template>
   <main class="management-page">
-    <section v-if="loading" class="management-shell state-card">
-      <h1>Cargando gestion de citas y citas realizadas...</h1>
-      <p>Estamos preparando la operacion del negocio.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando gestion de citas y citas realizadas..." description="Estamos preparando la operacion del negocio." />
 
     <section v-else-if="error && !appointments.length && !completedServices.length" class="management-shell state-card">
       <h1>No pudimos abrir este modulo</h1>
@@ -486,7 +488,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         </div>
       </section>
 
-      <p v-if="toast" class="feedback success">{{ toast }}</p>
+      <p v-if="toast" class="feedback success" role="status">{{ toast }}</p>
       <p v-if="error && (appointments.length || completedServices.length)" class="feedback error">{{ error }}</p>
 
       <template v-if="currentTab === 'citas'">
@@ -600,7 +602,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
           </article>
         </section>
       </template>
-      <div v-if="isAppointmentModalOpen" class="modal-overlay" @click.self="closeAppointmentModal">
+      <div v-if="isAppointmentModalOpen" class="modal-overlay" v-dialog="closeAppointmentModal" @click.self="closeAppointmentModal">
         <section class="management-shell modal-card">
           <div class="modal-head">
             <div>
@@ -608,7 +610,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
               <h2>{{ selectedAppointment?.mascota.nombre || 'Cargando cita...' }}</h2>
               <p class="modal-copy">Desde aquí se opera la cita de principio a fin.</p>
             </div>
-            <button type="button" class="modal-close" @click="closeAppointmentModal">×</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeAppointmentModal">×</button>
           </div>
           <div v-if="detailLoading" class="empty-card compact"><p>Cargando detalle...</p></div>
           <template v-else-if="selectedAppointment">
@@ -698,7 +700,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
                 <button type="button" class="btn-secundario" @click="showFinalizePanel = !showFinalizePanel">{{ showFinalizePanel ? 'Ocultar finalizacion' : 'Finalizar cita' }}</button>
               </div>
               <div v-if="showFinalizePanel" class="finalize-card">
-                <p v-if="error" class="feedback error modal-feedback">{{ error }}</p>
+                <p v-if="error" class="feedback error modal-feedback" role="alert">{{ error }}</p>
                 <label class="field-block"><span>Observaciones finales</span><textarea v-model="finalizeForm.observacionesFinales" rows="3" placeholder="Resultado final de la cita..." /></label>
                 <label class="field-block"><span>Recomendaciones</span><textarea v-model="finalizeForm.recomendaciones" rows="3" placeholder="Cuidados sugeridos para la familia..." /></label>
                 <div class="row-actions">
@@ -712,14 +714,14 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         </section>
       </div>
 
-      <div v-if="isCancelConfirmOpen" class="modal-overlay" @click.self="closeCancelConfirm">
+      <div v-if="isCancelConfirmOpen" class="modal-overlay" v-dialog="closeCancelConfirm" @click.self="closeCancelConfirm">
         <section class="management-shell modal-card cancel-confirm-card">
           <div class="modal-head">
             <div>
               <span class="soft-pill subtle">Confirmación</span>
               <h2>Cancelar cita</h2>
             </div>
-            <button type="button" class="modal-close" @click="closeCancelConfirm">×</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeCancelConfirm">×</button>
           </div>
           <p class="cancel-confirm-copy">{{ cancelMessage }}</p>
           <label class="field-block">
@@ -739,14 +741,14 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         </section>
       </div>
 
-      <div v-if="isCompletedServiceModalOpen" class="modal-overlay" @click.self="closeCompletedServiceModal">
+      <div v-if="isCompletedServiceModalOpen" class="modal-overlay" v-dialog="closeCompletedServiceModal" @click.self="closeCompletedServiceModal">
         <section class="management-shell modal-card">
           <div class="modal-head">
             <div>
               <span class="soft-pill subtle">Cita realizada</span>
               <h2>{{ selectedCompletedService?.mascotaNombre || 'Cargando cita realizada...' }}</h2>
             </div>
-            <button type="button" class="modal-close" @click="closeCompletedServiceModal">×</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeCompletedServiceModal">×</button>
           </div>
           <div v-if="detailLoading" class="empty-card compact"><p>Cargando detalle...</p></div>
           <template v-else-if="selectedCompletedService">
@@ -784,23 +786,23 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .management-shell { background: rgba(255,255,255,.92); border-radius: 32px; border: 1px solid rgba(255,214,235,.95); box-shadow: 0 28px 70px rgba(204,115,174,.12); }
 .state-card,.hero-card,.filter-card,.summary-card,.item-card,.modal-card,.detail-panel,.empty-card { padding: 24px; }
 .hero-card { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr); gap:22px; }
-.soft-pill,.detail-chip { display:inline-flex; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,#fff1f9 0%,#eefafe 100%); color:#9c0076; font-weight:700; font-size:.86rem; }
+.soft-pill,.detail-chip { display:inline-flex; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,var(--sp-primary-soft) 0%,#eefafe 100%); color:var(--sp-primary-strong); font-weight:700; font-size:.86rem; }
 .soft-pill.subtle { margin-bottom:12px; }
-.hero-card h1,.item-card h2,.empty-card h2,.modal-head h2 { margin:12px 0; color:#8f176e; }
-.hero-card p,.hero-note span,.item-card p,.mini-grid span,.detail-card p,.detail-card small,.detail-card span,.modal-copy,.feedback { color:#6e5064; line-height:1.7; }
+.hero-card h1,.item-card h2,.empty-card h2,.modal-head h2 { margin:12px 0; color:var(--sp-primary); }
+.hero-card p,.hero-note span,.item-card p,.mini-grid span,.detail-card p,.detail-card small,.detail-card span,.modal-copy,.feedback { color:var(--sp-muted); line-height:1.7; }
 .hero-note,.summary-card,.item-card,.detail-card,.catalog-card,.finalize-card { background:linear-gradient(145deg,rgba(255,244,250,.96) 0%,rgba(255,255,255,.92) 52%,rgba(238,250,255,.95) 100%); border:1px solid rgba(243,209,230,.92); }
 .hero-note,.detail-card,.catalog-card,.finalize-card { border-radius:24px; }
 .hero-note { margin-top:18px; padding:18px 20px; }
-.hero-note strong,.mini-grid strong,.detail-card strong { display:block; color:#9c0076; margin-bottom:6px; }
+.hero-note strong,.mini-grid strong,.detail-card strong { display:block; color:var(--sp-primary-strong); margin-bottom:6px; }
 .detail-meta { display:grid; gap:6px; margin-top:10px; }
 .detail-meta small { margin:0; display:block; word-break:break-word; }
-.detail-meta b { color:#8f176e; font-weight:700; }
+.detail-meta b { color:var(--sp-primary); font-weight:700; }
 .tab-grid,.row-actions,.item-top,.pet-mini,.modal-head { display:flex; gap:12px; }
 .item-top,.modal-head { justify-content:space-between; align-items:flex-start; }
 .pet-mini { align-items:center; }
 .tab-grid { flex-direction:column; }
 .tab-button,.btn-enviar,.btn-secundario,.btn-soft-cancel { border:none; border-radius:999px; padding:14px 18px; font-family:'Montserrat',sans-serif; font-weight:700; cursor:pointer; }
-.tab-button,.btn-secundario { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:#8f176e; border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); display:flex; justify-content:space-between; align-items:center; }
+.tab-button,.btn-secundario { background:linear-gradient(135deg,#fff4fb 0%,#ffffff 100%); color:var(--sp-primary); border:1px solid rgba(243,203,228,.9); box-shadow:0 10px 22px rgba(219,126,183,.1); display:flex; justify-content:space-between; align-items:center; }
 .tab-button span { min-width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.92); display:inline-flex; align-items:center; justify-content:center; }
 .tab-button.active,.btn-enviar { background:linear-gradient(135deg,var(--sp-primary-purple) 0%,var(--sp-primary-purple-deep) 100%); color:#fff; box-shadow:0 16px 30px var(--sp-primary-shadow); }
 .btn-soft-cancel { background:linear-gradient(135deg,#fff0f6 0%,#ffdcea 100%); color:#c23c7b; }
@@ -814,7 +816,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .summary-value { display:block; margin-top:10px; font-size:1.9rem; font-weight:800; color:#4d2d47; }
 .summary-card.gold .summary-value { color:#ad7100; }
 .summary-card.sky .summary-value { color:#2f67c8; }
-.summary-card.mint .summary-value { color:#0b9f93; }
+.summary-card.mint .summary-value { color:var(--sp-link-text); }
 .cards-grid { margin-top:24px; display:grid; gap:18px; }
 .item-card { display:grid; gap:18px; }
 .pet-thumb { width:92px; height:92px; object-fit:cover; border-radius:24px; }
@@ -824,23 +826,23 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
 .detail-card.wide { grid-column:span 2; }
 .status-badge { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:9px 14px; font-size:.84rem; font-weight:700; }
 .status-badge.pendiente { background:#fff3d8; color:#a16000; }
-.status-badge.confirmada { background:#e9fbf7; color:#0b9f93; }
+.status-badge.confirmada { background:var(--sp-success-bg); color:var(--sp-link-text); }
 .status-badge.en-atencion { background:#eef5ff; color:#3967ca; }
 .status-badge.completada { background:#eefaf0; color:#2c8d51; }
 .status-badge.cancelada { background:#fff1f4; color:#c33b74; }
 .status-badge.reprogramada { background:#f1ecff; color:#6d56b8; }
 .status-badge.inline { justify-self:start; }
-.field-block span { display:block; margin-bottom:8px; color:#9c0076; font-weight:700; }
+.field-block span { display:block; margin-bottom:8px; color:var(--sp-primary-strong); font-weight:700; }
 .field-block input,.field-block select,.field-block textarea { width:100%; box-sizing:border-box; padding:14px 16px; border-radius:18px; border:1px solid rgba(243,181,221,.95); background:rgba(255,255,255,.96); color:#5d4354; font-family:'Montserrat',sans-serif; font-size:.96rem; outline:none; }
 .catalog-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .catalog-card { padding:16px; text-align:left; cursor:pointer; display:grid; gap:8px; transition:transform .2s ease, box-shadow .2s ease; }
 .catalog-card.active { transform:translateY(-2px); box-shadow:0 18px 28px rgba(233,90,219,.18); border-color:rgba(225,118,198,.9); }
-.catalog-card small { color:#8f176e; font-weight:700; }
+.catalog-card small { color:var(--sp-primary); font-weight:700; }
 .modal-overlay { position:fixed; inset:0; z-index:80; background:rgba(77,45,71,.26); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:24px; }
 .modal-card { width:min(1180px,100%); max-height:min(92vh,980px); overflow-y:auto; }
-.modal-close { width:46px; height:46px; border-radius:50%; border:none; cursor:pointer; font-size:1.6rem; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:#8f176e; }
+.modal-close { width:46px; height:46px; border-radius:50%; border:none; cursor:pointer; font-size:1.6rem; background:linear-gradient(135deg,#fff4fb 0%,#eefafe 100%); color:var(--sp-primary); }
 .cancel-confirm-card { width:min(560px,100%); }
-.cancel-confirm-copy { margin:12px 0 0; color:#6e5064; line-height:1.7; }
+.cancel-confirm-copy { margin:12px 0 0; color:var(--sp-muted); line-height:1.7; }
 .feedback { margin-top:16px; padding:16px 18px; border-radius:20px; font-weight:600; }
 .feedback.success { background:rgba(233,251,247,.94); border:1px solid rgba(115,214,177,.9); color:#0b8a77; }
 .feedback.error { background:rgba(255,240,245,.96); border:1px solid rgba(255,176,214,.96); color:#b33c70; }

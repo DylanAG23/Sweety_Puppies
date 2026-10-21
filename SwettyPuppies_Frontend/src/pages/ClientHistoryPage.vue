@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { apiGet, apiPatch } from '@/lib/api'
+import { apiDownload, apiGet, apiPatch } from '@/lib/api'
 import { navigateTo } from '@/lib/navigation'
 import { getSession, logoutToLogin, requireRole } from '@/lib/session'
 import ClientSiteHeader from '@/components/ClientSiteHeader.vue'
+import PageSkeleton from '@/components/ui/PageSkeleton.vue'
 
 type PetOption = {
   id: string
@@ -322,32 +323,12 @@ async function downloadCompletedServiceReceipt() {
   error.value = ''
 
   try {
-    const response = await fetch(`/api/cliente/historial/servicios/${selectedCompletedService.value.id}/comprobante`, {
-      headers: {
-        Authorization: `Bearer ${session.token}`,
-      },
-    })
-
-    if (response.status === 401 || response.status === 403) {
-      logoutToLogin()
-      return
-    }
-
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}))
-      throw new Error(payload.message || 'No se pudo generar el comprobante')
-    }
-
-    const blob = await response.blob()
-    const objectUrl = URL.createObjectURL(blob)
     const fileName = sanitizeFileSegment(selectedCompletedService.value.mascotaNombre)
-    const anchor = document.createElement('a')
-    anchor.href = objectUrl
-    anchor.download = `comprobante-${fileName}.pdf`
-    document.body.appendChild(anchor)
-    anchor.click()
-    document.body.removeChild(anchor)
-    URL.revokeObjectURL(objectUrl)
+    await apiDownload(
+      `/api/cliente/historial/servicios/${selectedCompletedService.value.id}/comprobante`,
+      `comprobante-${fileName}.pdf`,
+      'No se pudo generar el comprobante'
+    )
     toast.value = 'Tu comprobante se descargó correctamente'
   } catch (caughtError) {
     error.value = caughtError instanceof Error ? caughtError.message : 'No se pudo descargar el comprobante'
@@ -605,10 +586,7 @@ function statusClass(status: string) {
 
 <template>
   <main class="history-page">
-    <section v-if="loading" class="history-shell history-state-card">
-      <h1>Cargando tu historial bonito...</h1>
-      <p>Estamos reuniendo tus citas actuales y las citas realizadas para ti.</p>
-    </section>
+    <PageSkeleton v-if="loading" title="Cargando tu historial bonito..." description="Estamos reuniendo tus citas actuales y las citas realizadas para ti." />
 
     <section v-else-if="error && !citasActuales.length && !serviciosRealizados.length" class="history-shell history-state-card">
       <h1>No pudimos abrir tu historial</h1>
@@ -661,7 +639,7 @@ function statusClass(status: string) {
         </div>
       </section>
 
-      <p v-if="toast" class="history-feedback success">{{ toast }}</p>
+      <p v-if="toast" class="history-feedback success" role="status">{{ toast }}</p>
       <p v-if="error && (citasActuales.length || serviciosRealizados.length)" class="history-feedback error">{{ error }}</p>
 
       <section v-if="currentTab === 'citas'" class="history-section">
@@ -771,7 +749,7 @@ function statusClass(status: string) {
         </div>
       </section>
 
-      <div v-if="isAppointmentDetailOpen" class="modal-overlay" @click.self="closeAppointmentDetail">
+      <div v-if="isAppointmentDetailOpen" class="modal-overlay" v-dialog="closeAppointmentDetail" @click.self="closeAppointmentDetail">
         <section class="history-shell modal-card">
           <div class="modal-head">
             <div>
@@ -779,7 +757,7 @@ function statusClass(status: string) {
               <h2 v-if="selectedAppointment">{{ selectedAppointment.mascota.nombre }}</h2>
               <p v-if="selectedAppointment" class="modal-copy">{{ selectedAppointment.mensajeEstado }}</p>
             </div>
-            <button type="button" class="modal-close" @click="closeAppointmentDetail">×</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeAppointmentDetail">×</button>
           </div>
 
           <div v-if="detailLoading" class="detail-loading">Cargando detalle de la cita...</div>
@@ -864,7 +842,7 @@ function statusClass(status: string) {
                   </label>
                 </div>
 
-                <p v-if="reprogramMessage" class="modal-copy">{{ reprogramMessage }}</p>
+                <p v-if="reprogramMessage" class="modal-copy" role="status">{{ reprogramMessage }}</p>
                 <p v-if="reprogramAvailabilityLoading" class="detail-loading">Buscando horarios disponibles...</p>
 
                 <div v-if="reprogramSlots.length" class="reprogram-slots">
@@ -897,7 +875,7 @@ function statusClass(status: string) {
         </section>
       </div>
 
-      <div v-if="isCompletedDetailOpen" class="modal-overlay" @click.self="closeCompletedDetail">
+      <div v-if="isCompletedDetailOpen" class="modal-overlay" v-dialog="closeCompletedDetail" @click.self="closeCompletedDetail">
         <section class="history-shell modal-card">
           <div class="modal-head">
             <div>
@@ -907,7 +885,7 @@ function statusClass(status: string) {
                 Aqui puedes revisar el resumen final, observaciones y recomendaciones de la cita realizada.
               </p>
             </div>
-            <button type="button" class="modal-close" @click="closeCompletedDetail">×</button>
+            <button type="button" class="modal-close" aria-label="Cerrar" @click="closeCompletedDetail">×</button>
           </div>
 
           <div v-if="detailLoading" class="detail-loading">Cargando la ficha de la cita realizada...</div>
@@ -953,7 +931,7 @@ function statusClass(status: string) {
         </section>
       </div>
 
-      <div v-if="isCancelConfirmOpen" class="modal-overlay confirm-overlay" @click.self="closeCancelConfirm">
+      <div v-if="isCancelConfirmOpen" class="modal-overlay confirm-overlay" v-dialog="closeCancelConfirm" @click.self="closeCancelConfirm">
         <section class="history-shell confirm-card">
           <div class="confirm-icon danger">!</div>
           <span class="history-pill subtle">Confirmación</span>
@@ -1012,8 +990,8 @@ function statusClass(status: string) {
   display: inline-flex;
   padding: 8px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff1f9 0%, #eefafe 100%);
-  color: #9c0076;
+  background: linear-gradient(135deg, var(--sp-primary-soft) 0%, #eefafe 100%);
+  color: var(--sp-primary-strong);
   font-weight: 700;
   font-size: 0.86rem;
   box-shadow: inset 0 0 0 1px rgba(156, 0, 118, 0.09);
@@ -1028,7 +1006,7 @@ function statusClass(status: string) {
 .history-card h2,
 .modal-head h2 {
   margin: 14px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .history-hero p,
@@ -1039,7 +1017,7 @@ function statusClass(status: string) {
 .modal-copy,
 .detail-info-grid span,
 .detail-loading {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.75;
 }
 
@@ -1061,7 +1039,7 @@ function statusClass(status: string) {
   border-radius: 22px;
   padding: 16px 18px;
   background: linear-gradient(135deg, #fff5fb 0%, #ffffff 100%);
-  color: #8f176e;
+  color: var(--sp-primary);
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   cursor: pointer;
@@ -1102,7 +1080,7 @@ function statusClass(status: string) {
 .field-block span {
   display: block;
   margin-bottom: 8px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   font-weight: 700;
 }
 
@@ -1130,7 +1108,7 @@ function statusClass(status: string) {
 }
 
 .history-feedback.success {
-  color: #0b9f93;
+  color: var(--sp-link-text);
 }
 
 .history-section {
@@ -1195,7 +1173,7 @@ function statusClass(status: string) {
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg, rgba(255, 234, 244, 0.96) 0%, rgba(231, 248, 255, 0.96) 100%);
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 800;
   letter-spacing: 0.08em;
 }
@@ -1217,8 +1195,8 @@ function statusClass(status: string) {
 }
 
 .status-badge.confirmada {
-  background: #e9fbf7;
-  color: #0b9f93;
+  background: var(--sp-success-bg);
+  color: var(--sp-link-text);
 }
 
 .status-badge.en-atencion {
@@ -1233,7 +1211,7 @@ function statusClass(status: string) {
 
 .detail-chip {
   background: #fff3fb;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .mini-grid,
@@ -1262,7 +1240,7 @@ function statusClass(status: string) {
 .detail-info-grid strong {
   display: block;
   margin-bottom: 6px;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
 }
 
 .modal-overlay {
@@ -1286,7 +1264,7 @@ function statusClass(status: string) {
 .modal-close {
   border: none;
   background: #fff2fa;
-  color: #9c0076;
+  color: var(--sp-primary-strong);
   width: 42px;
   height: 42px;
   border-radius: 16px;
@@ -1324,7 +1302,7 @@ function statusClass(status: string) {
   padding: 10px 14px;
   border-radius: 999px;
   background: #fff3fb;
-  color: #8f176e;
+  color: var(--sp-primary);
   font-weight: 600;
 }
 
@@ -1372,12 +1350,12 @@ function statusClass(status: string) {
 
 .slot-button strong {
   display: block;
-  color: #8f176e;
+  color: var(--sp-primary);
   margin-bottom: 6px;
 }
 
 .slot-button span {
-  color: #6e5064;
+  color: var(--sp-muted);
 }
 
 .slot-button.active {
@@ -1430,11 +1408,11 @@ function statusClass(status: string) {
 
 .confirm-card h2 {
   margin: 16px 0 12px;
-  color: #8f176e;
+  color: var(--sp-primary);
 }
 
 .confirm-card p {
-  color: #6e5064;
+  color: var(--sp-muted);
   line-height: 1.75;
 }
 
