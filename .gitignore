@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (nunca versionar secretos; usar .env.example)
+.env
+.env.*
+!.env.example
+
+# Archivos generados en tiempo de ejecucion
+temp/
+logs/
+*.log
+
+# Build del frontend
+SwettyPuppies_Frontend/dist/
+
+# Editor y sistema
+.claude/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
