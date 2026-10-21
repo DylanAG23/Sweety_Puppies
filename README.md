@@ -26,7 +26,9 @@ npm install
 
 ## 2. Variables de entorno
 
-Copia `.env.example` como `.env` en la raíz y completa los valores. `.env` está en `.gitignore`: **nunca lo subas**.
+Durante la Fase 2, por decisión del equipo, el `.env` de desarrollo **está versionado** en el repositorio: al clonar o hacer `git pull` ya queda listo. Para crear uno propio desde cero, copia `.env.example` como `.env` y completa los valores.
+
+> ⚠️ El repositorio es público y ese `.env` contiene credenciales reales de la base de datos y del correo. **Antes de salir a producción** hay que volver a ignorarlo en `.gitignore`, sacarlo de git (`git rm --cached .env`) y rotar todas sus credenciales (base de datos, Supabase, JWT, Gmail).
 
 | Variable | Obligatoria | Uso |
 |---|---|---|

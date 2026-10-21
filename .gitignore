@@ -1,8 +1,10 @@
 # Dependencias
 node_modules/
 
-# Variables de entorno (nunca versionar secretos; usar .env.example)
-.env
+# Variables de entorno.
+# DECISION DEL EQUIPO (Fase 2): .env se versiona temporalmente para compartir
+# la conexion de desarrollo. Antes de salir a produccion: volver a ignorarlo,
+# sacarlo de git (git rm --cached .env) y rotar todas sus credenciales.
 .env.*
 !.env.example
 
