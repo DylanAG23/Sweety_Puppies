@@ -95,7 +95,7 @@ function getMailMode() {
 }
 
 function shouldExposeDevelopmentCodes() {
-  return !isProduction() && readEnv('MAIL_EXPOSE_DEV_CODES') === 'true';
+  return !isProduction() && (readEnv('MAIL_EXPOSE_DEV_CODES') || '').toLowerCase() === 'true';
 }
 
 function getAdminNotificationEmail() {
