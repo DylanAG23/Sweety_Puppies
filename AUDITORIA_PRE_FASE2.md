@@ -157,8 +157,8 @@ Con peticiones concurrentes, consultas de otras peticiones quedan dentro de la t
 **M6. Sin cabeceras de seguridad** (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`).
 *Corrección:* middleware propio, sin dependencia nueva.
 
-**M7. Doble reserva posible.** `clientAppointments/application/useCases/createClientAppointment.js:20-47` (y `reprogramClientAppointment`): la disponibilidad se valida **fuera** de la transacción. Dos clientes pueden reservar la misma franja al mismo tiempo, algo más probable con un `Pool`.
-*Corrección:* bloqueo consultivo por fecha (`pg_advisory_xact_lock`) y revalidación de la franja dentro de la transacción. No requiere cambiar el esquema.
+**M7. Choque de citas confirmadas.** *(Corregido tras revisar el código en la Fase B.)* Las citas `pendiente` no ocupan franja: solo `confirmada` y `en_atencion` la bloquean (`PostgresClientAppointmentsRepository.listBlockingAppointments`). Por diseño, varias personas pueden pedir la misma hora. El riesgo real está en otro punto: **confirmar una cita no verifica si ya existe otra confirmada en esa franja** (`adminAgenda` y `adminServiceManagement`, `confirmAdminAppointment`), así que la administradora puede confirmar dos citas que se cruzan.
+→ **Pregunta de negocio** (§5, pregunta 7): validarlo cambia lo que ve la administradora.
 
 **M8. El frontend cierra la sesión ante cualquier 401/403.** `src/lib/api.ts:6`: el login de un usuario inactivo responde 403, la página redirige a `/login` y el mensaje "Tu usuario está inactivo" nunca se ve.
 *Corrección:* cerrar sesión solo si la petición llevaba token.
@@ -225,9 +225,85 @@ Con peticiones concurrentes, consultas de otras peticiones quedan dentro de la t
 4. **Duplicación agenda / gestión.** ¿Confirmar una cita desde la Agenda debe comportarse exactamente igual que desde Gestión de citas (mismos correos y mismos campos actualizados)? Si es así, se unifican en un núcleo compartido.
 5. **Historial de git.** ¿Purgamos `.env` del historial (`git filter-repo`, reescribe commits y obliga al equipo a volver a clonar) o basta con rotar los secretos?
 6. **Pruebas con datos reales.** Para probar de punta a punta el registro, las citas y el panel de administración se necesitan una cuenta de prueba de cliente y otra de administradora, o autorización para crear datos de prueba en la base de Supabase.
+7. **Citas que se cruzan.** ¿Debe el sistema impedir confirmar una cita si ya hay otra confirmada en esa franja (o al menos advertirlo)? Ver M7.
+8. **Tienda visible antes de tiempo.** Las opciones de la tienda existen pero están apagadas (`VITE_ENABLE_STORE`). ¿Las mostramos ya como "Próximamente" a clientes y administradora, o esperamos a que haya pantallas funcionales?
+9. **Subidas desde iPhone.** Ahora solo se aceptan JPG, PNG, WebP y GIF reales. Safari convierte las fotos HEIC a JPG al subirlas, pero si alguien sube un `.heic` directamente verá "Solo se permiten imágenes JPG, PNG, WebP o GIF". ¿Es aceptable?
+10. **Textos del menú.** El grupo "Principal" del panel se llama ahora "Operación", como en la guía ACT-15 (pág. 14). ¿Lo mantenemos?
 
 ---
 
 ## 6. Registro de correcciones (Fases B–D)
 
-_Se completa a medida que avanzan las fases._
+### 6.1 Corregido
+
+| Hallazgo | Qué se hizo | Commit |
+|---|---|---|
+| C1 | `.gitignore` raíz, `.env.example` sin valores; `.env` y `node_modules/` (3.988 archivos) salen del índice. Los archivos locales se conservan | `07814fb` |
+| C2 | `config/env.js`: la conexión sale de `DATABASE_URL` o `DB_*`, sin valores en el código. Si falta, el servidor no arranca y dice qué variable falta | `284979d` |
+| C3 | Sin secreto JWT por defecto; los tokens se verifican solo con HS256 | `284979d` |
+| C4 | `/api/citas` desmontado y fuera de Swagger (ahora responde 404) | `c5a1a46`, `0a4ee8a` |
+| A1 | `baseDatos.js` pasa a `Pool` con la misma interfaz `query()` más `withTransaction()`. Los 6 repositorios transaccionales usan una conexión reservada; `adminServices` lee después del `COMMIT` | `284979d` |
+| A2 | `escapeHtml` en la página de revisión de citas y en las 4 plantillas de correo | `900a0b6` |
+| A3 | Límite de intentos por IP y por correo en login, registro y recuperación (429) | `7599b42` |
+| A4 | Solo se sirve `dist/`; fallback del SPA para cualquier ruta de navegación | `c5a1a46` |
+| A5 | Backend: **0 vulnerabilidades**; se quitan `mysql2` y `postgres`; `nodemailer` 10.0.14 y `multer` 2.4.0. Frontend: de 34 a 4 (ver 6.2) | `69cc5c6`, `2ee30c8` |
+| A6 | Manejador HTTP compartido (`shared/http/httpErrors.js`): 500 genérico, `22P02` → 400, `23505`/`23503` → 409; manejador global de JSON inválido y multer | `c5a1a46` |
+| M1 | Lista blanca JPG/PNG/WebP/GIF verificada por firma binaria; extensión según el tipo real; 400 en JSON en las 3 rutas | `be730b3` |
+| M2 | El código de verificación solo vuelve en la respuesta con `MAIL_EXPOSE_DEV_CODES=true` y nunca en producción | `900a0b6` |
+| M4 | La recuperación responde lo mismo exista o no la cuenta | `7599b42` |
+| M5, M6 | CORS por `CORS_ORIGINS`; cabeceras `nosniff`, `X-Frame-Options`, `Referrer-Policy`, sin `x-powered-by` | `c5a1a46` |
+| M8 | `api.ts` solo cierra la sesión si la petición iba autenticada; mensajes claros sin conexión y ante 429 | `789b712` |
+| M9 | Carga diferida de páginas: el bundle inicial pasa de **894 kB a 112 kB** y ApexCharts solo se carga en Reportes | `8d76e1b` |
+| M10 | Foco visible global; `v-dialog` en los 16 modales; botones de cierre con nombre accesible; `role=alert/status`; `prefers-reduced-motion`; colores AA; se elimina el `window.confirm` sobrescrito | `8d76e1b` |
+| M12 | `node_modules/` fuera de git | `07814fb` |
+| M14 | La sincronización entre pestañas ya no deja el token en `localStorage` | `789b712` |
+| B1 | Dependencias sin uso eliminadas | `69cc5c6` |
+| B3 | `package.json`: nombre, `start`, `dev`, `test`, `engines` | `69cc5c6` |
+| B4 | Correo de administración desde `ADMIN_NOTIFICATION_EMAIL`/`MAIL_USER`, sin dirección fija en el código | `284979d` |
+| B5 | SRI en Font Awesome (hash verificado contra cdnjs) | `8d76e1b` |
+| B7 | README raíz, del frontend y del legado | `b8749c6` |
+| B9 | `temp/` en `.gitignore` | `07814fb` |
+| Lint | Los 33 errores que aparecieron tras actualizar ESLint: efectos secundarios en un `computed` de `App.vue`, variables sin uso y legado archivado excluido | `8d76e1b` |
+
+**Pruebas añadidas** (`npm test`, 33 en verde, sin base de datos ni correo): arranque de la app, autenticación y roles, legado desmontado, CORS, `loginUser`, `createClientAppointment`, `withTransaction` (COMMIT, ROLLBACK, conexiones separadas), escape de HTML, detección de imágenes, limitador y una **prueba de arquitectura** que impide que dominio o casos de uso importen infraestructura en cualquiera de los 15 módulos.
+
+**Fase C (visual):** tokens centralizados (`tokens.css`), capa base con componentes `.sp-*` (`base.css`), `PlatformShell` único para cliente y administración (antes eran ~1.200 líneas duplicadas), esqueletos de carga en las 14 pantallas y 267 colores fijos reemplazados por tokens. Detalle en el README, §6.
+
+**Fase D (terreno de la Fase 2):** módulos `catalog`, `inventory`, `cart` y `orders` con la estructura hexagonal y un README de alcance cada uno; menús y rutas reservadas para la tienda detrás de `VITE_ENABLE_STORE`.
+
+### 6.2 Pendiente
+
+| Tema | Detalle | Responsable |
+|---|---|---|
+| **Rotar secretos** | Todo lo que estuvo en `.env` y en `baseDatos.js` está en el historial publicado: contraseña de PostgreSQL, clave de Supabase, `JWT_SECRET`, `APPOINTMENT_ACTION_SECRET`, contraseña de aplicación de Gmail y clave de Resend | Equipo (Supabase, Google, Resend) |
+| **Variables de base de datos** | Agregar `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` (o `DATABASE_URL`) al `.env` local. Sin ellas el backend no arranca | Equipo |
+| Purgar historial | Opcional, con `git filter-repo` (§5, pregunta 5) | Decisión del equipo |
+| Esquema real | Versionar `pg_dump --schema-only` del proyecto actual y `Fase2_Script_Supabase_tienda_inventario.sql` (M11) | Equipo |
+| Prueba en vivo | Registro, correo, login, recuperación, agendar, mascotas, panel, carrusel y subida contra Supabase: requiere las variables de base de datos y cuentas de prueba (§5, pregunta 6) | Pendiente |
+| `braces` (alta) | 4 alertas en la cadena de ESLint del frontend. No hay versión corregida y no llega al bundle | Revisar cuando salga el arreglo |
+| M3 | Acciones por `GET` desde el correo (§5, pregunta 2) | Negocio |
+| M7 | Choque de citas confirmadas (§5, pregunta 7) | Negocio |
+| M13 | Duplicación agenda/gestión y acoplamiento entre módulos (§5, pregunta 4) | Negocio + equipo |
+| Rendimiento del limitador | Es en memoria (una instancia). Si se despliega con varias instancias, moverlo a un almacenamiento compartido | Equipo |
+| CSP | No se añadió `Content-Security-Policy`: depende de Google Fonts, cdnjs y Supabase. Conviene definirla al desplegar | Equipo |
+| Colores decorativos | Quedan tonos de degradados (`#e60073`, `#eefafe`…) en los estilos heredados; no tienen equivalente en la guía | Opcional |
+
+### 6.3 Propuesta de borrado (no ejecutada)
+
+Código sin referencias, confirmado con búsqueda en todo el repositorio:
+
+- Backend: `legacy/`, `routes/citas.js`, `routes/login.js`, `routes/imagenes.js` (alias de `contenido`, sin consumidores), `public/img/` en la raíz y `docs/*.html`, `docs/fonts`, `docs/scripts`, `docs/styles` (JSDoc del legado).
+- Frontend: `src/legacy/`, `public/legacy/`, `src/components/LegacyPageView.vue`, `src/lib/legacyPage.ts` y `src/styles/legacy/carrusel-estilos.css` (ya no se carga).
+- `Archivos requeridos/SweetyPuppiesBD.sql` y la imagen del esquema: corresponden a otro proyecto antiguo. Conviene reemplazarlos por el esquema actual.
+
+### 6.4 Cambios visibles para el usuario
+
+Ninguno cambia el flujo de las pantallas. Sí cambian la apariencia y algunos textos:
+
+- Tipografía Montserrat y color de texto `#22354b` en todo el cuerpo (antes algunos textos heredaban `sans-serif` y negro).
+- Los botones deshabilitados se ven grises (guía, pág. 22) y los botones se elevan 2 px al pasar el mouse.
+- El texto de apoyo y los enlaces turquesa son un poco más oscuros (contraste AA).
+- El menú lateral es más compacto, el logo aparece sobre fondo blanco y el grupo del panel se llama "Operación".
+- Mientras carga una pantalla se ve un esqueleto en lugar del texto "Cargando…".
+- El mensaje de recuperación de contraseña es el mismo exista o no la cuenta.
+- Las subidas aceptan solo JPG, PNG, WebP y GIF.
