@@ -1331,7 +1331,10 @@ function goTo(path: string) {
 }
 
 .pet-mini-grid div {
-  padding: 12px 14px;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  padding: 12px;
   border-radius: 18px;
   background: linear-gradient(145deg, rgba(255, 244, 250, 0.96) 0%, rgba(255, 255, 255, 0.92) 52%, rgba(238, 250, 255, 0.95) 100%);
   border: 1px solid rgba(243, 209, 230, 0.92);
@@ -1343,6 +1346,10 @@ function goTo(path: string) {
   display: block;
   margin-bottom: 6px;
   color: var(--sp-primary-strong);
+}
+
+.pet-mini-grid strong {
+  font-size: var(--sp-font-pill);
 }
 
 .card-actions {

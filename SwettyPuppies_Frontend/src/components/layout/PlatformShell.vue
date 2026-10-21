@@ -227,7 +227,9 @@ onUnmounted(() => {
         @click="logoutToLogin"
       >
         <span v-if="showLabels" class="sidebar-logout-label">Cerrar sesión</span>
-        <span v-else class="sidebar-link-icon" aria-hidden="true">SA</span>
+        <span v-else class="sidebar-link-icon" aria-hidden="true">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </span>
       </button>
     </div>
   </aside>
@@ -714,8 +716,9 @@ onUnmounted(() => {
   }
 
   .platform-topbar {
-    min-height: 64px;
-    padding: 10px 16px;
+    box-sizing: border-box;
+    min-height: var(--platform-topbar-height);
+    padding: 0 16px;
   }
 
   .topbar-brand,
