@@ -1,4 +1,8 @@
-require('dotenv').config();
+// En pruebas (NODE_ENV=test) no se carga el .env real: cada prueba define
+// sus propias variables y nunca usa secretos ni la base de datos real.
+if (process.env.NODE_ENV !== 'test') {
+  require('dotenv').config();
+}
 
 // Unico punto de lectura de configuracion sensible. No hay valores de respaldo
 // para secretos: si falta uno, el servidor no arranca.
