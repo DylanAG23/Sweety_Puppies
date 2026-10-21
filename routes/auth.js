@@ -1,6 +1,7 @@
 const express = require('express');
 const { createAuthModule } = require('../auth');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
+const { authRateLimits } = require('../middleware/rateLimit');
 
 const router = express.Router();
 const { controller } = createAuthModule();
@@ -652,12 +653,16 @@ const { controller } = createAuthModule();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 
-router.post('/register/initiate', controller.initiateRegistration);
-router.post('/register/verify', controller.verifyRegistration);
-router.post('/login', controller.login);
-router.post('/password-recovery/request', controller.requestPasswordRecovery);
-router.post('/password-recovery/verify', controller.verifyPasswordRecoveryCode);
-router.post('/password-recovery/reset', controller.resetPasswordWithRecoveryCode);
+const limits = authRateLimits;
+const limitCodeRequests = [limits.codeRequestByIp, limits.codeRequestByEmail];
+const limitCodeChecks = [limits.codeCheckByIp, limits.codeCheckByEmail];
+
+router.post('/register/initiate', limitCodeRequests, controller.initiateRegistration);
+router.post('/register/verify', limitCodeChecks, controller.verifyRegistration);
+router.post('/login', limits.loginByIp, limits.loginByEmail, controller.login);
+router.post('/password-recovery/request', limitCodeRequests, controller.requestPasswordRecovery);
+router.post('/password-recovery/verify', limitCodeChecks, controller.verifyPasswordRecoveryCode);
+router.post('/password-recovery/reset', limitCodeChecks, controller.resetPasswordWithRecoveryCode);
 router.get('/me/admin-home', authenticateToken, authorizeRoles('administrador'), controller.getAdminHome);
 router.get('/me/client-home', authenticateToken, authorizeRoles('cliente'), controller.getClientHome);
 router.get('/me/profile', authenticateToken, authorizeRoles('cliente'), controller.getClientProfile);
