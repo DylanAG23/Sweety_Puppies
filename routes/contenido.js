@@ -1,38 +1,12 @@
 const express = require('express');
-const multer = require('multer');
+const { createImageUpload } = require('../shared/http/imageUpload');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 const { createPortalContentModule } = require('../portalContent');
 
 const router = express.Router();
 const { controller } = createPortalContentModule();
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 6 * 1024 * 1024
-  },
-  fileFilter: (req, file, callback) => {
-    if (!file.mimetype.startsWith('image/')) {
-      callback(new Error('Solo se permiten imagenes'), false);
-      return;
-    }
-
-    callback(null, true);
-  }
-});
-
-function runContentUpload(req, res, next) {
-  upload.fields([{ name: 'imagen', maxCount: 1 }])(req, res, (error) => {
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message || 'No se pudieron procesar los archivos enviados'
-      });
-    }
-
-    next();
-  });
-}
+const runContentUpload = createImageUpload([{ name: 'imagen', maxCount: 1 }]);
 
 /**
  * @openapi

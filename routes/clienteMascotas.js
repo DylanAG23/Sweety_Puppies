@@ -1,41 +1,15 @@
 const express = require('express');
-const multer = require('multer');
+const { createImageUpload } = require('../shared/http/imageUpload');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 const { createClientPetsModule } = require('../clientPets');
 
 const router = express.Router();
 const { controller } = createClientPetsModule();
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 6 * 1024 * 1024
-  },
-  fileFilter: (req, file, callback) => {
-    if (!file.mimetype.startsWith('image/')) {
-      callback(new Error('Solo se permiten imagenes'), false);
-      return;
-    }
-
-    callback(null, true);
-  }
-});
-
-function runPetUpload(req, res, next) {
-  upload.fields([
-    { name: 'fotoMascota', maxCount: 1 },
-    { name: 'fotoCarnet', maxCount: 1 }
-  ])(req, res, (error) => {
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message || 'No se pudieron procesar los archivos enviados'
-      });
-    }
-
-    next();
-  });
-}
+const runPetUpload = createImageUpload([
+  { name: 'fotoMascota', maxCount: 1 },
+  { name: 'fotoCarnet', maxCount: 1 }
+]);
 
 /**
  * @openapi
