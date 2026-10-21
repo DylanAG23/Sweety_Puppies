@@ -28,6 +28,7 @@ const options = {
       { name: 'Admin Servicios', description: 'Catálogo de servicios principales y adicionales.' },
       { name: 'Contenido', description: 'Publicaciones visuales del portal y contenido activo para cliente.' },
       { name: 'Reportes', description: 'Reportes financieros y operativos del negocio.' },
+      { name: 'Admin Inventario', description: 'Existencias, alertas de stock mínimo y movimientos de inventario (Fase 2).' },
       { name: 'Legacy / Deprecated', description: 'Compatibilidad temporal con rutas heredadas del sistema anterior.' },
     ],
     components: {

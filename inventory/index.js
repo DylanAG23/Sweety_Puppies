@@ -1,23 +1,40 @@
-// Modulo Inventario (Fase 2: tienda e inventario).
-// Estructura preparada siguiendo el patron hexagonal del proyecto; todavia no
-// tiene casos de uso ni rutas montadas. Ver inventory/README.md.
-//
-// Al implementarlo:
-// 1. casos de uso en application/useCases (sin importar express ni pg)
-// 2. reglas puras en domain/services y errores en domain/errors
-// 3. repositorio Postgres en infrastructure/repositories (require('../../../baseDatos'))
-// 4. controlador en infrastructure/http y router en routes/
-// 5. montar el router en app.js
+const { getInventoryOverview } = require('./application/useCases/getInventoryOverview');
+const { getProductInventory } = require('./application/useCases/getProductInventory');
+const { updateMinimumStock } = require('./application/useCases/updateMinimumStock');
+const { registerInventoryMovement } = require('./application/useCases/registerInventoryMovement');
+const { listInventoryMovements } = require('./application/useCases/listInventoryMovements');
+const { exportInventoryMovements } = require('./application/useCases/exportInventoryMovements');
+const { discountStockForOrder } = require('./application/useCases/discountStockForOrder');
+const { createInventoryController } = require('./infrastructure/http/inventoryController');
+const { PostgresInventoryRepository } = require('./infrastructure/repositories/PostgresInventoryRepository');
+const rules = require('./domain/services/inventoryRules');
 
 function createInventoryModule() {
-  const dependencies = {};
+  const dependencies = {
+    inventoryRepository: new PostgresInventoryRepository(),
+    rules
+  };
 
-  const useCases = {};
+  const useCases = {
+    getInventoryOverview: (sessionUser, query) => getInventoryOverview(dependencies, sessionUser, query),
+    getProductInventory: (sessionUser, productId) => getProductInventory(dependencies, sessionUser, productId),
+    updateMinimumStock: (sessionUser, productId, payload) =>
+      updateMinimumStock(dependencies, sessionUser, productId, payload),
+    registerInventoryMovement: (sessionUser, payload) => registerInventoryMovement(dependencies, sessionUser, payload),
+    listInventoryMovements: (sessionUser, query) => listInventoryMovements(dependencies, sessionUser, query),
+    exportInventoryMovements: (sessionUser, query) => exportInventoryMovements(dependencies, sessionUser, query)
+  };
+
+  // Puertos para otros modulos (orders, ACT-32). Reciben la transaccion abierta.
+  const ports = {
+    discountStockForOrder: (db, order) => discountStockForOrder(dependencies, db, order)
+  };
 
   return {
     dependencies,
     useCases,
-    controller: {}
+    ports,
+    controller: createInventoryController(useCases)
   };
 }
 

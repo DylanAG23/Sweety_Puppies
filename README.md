@@ -113,7 +113,8 @@ cd SwettyPuppies_Frontend && npm run build # vue-tsc + vite build
 | `auth` | Registro con verificación por correo, login, recuperación, perfil |
 | `clientPets`, `clientAppointments`, `clientHistory` | Portal del cliente |
 | `adminAgenda`, `adminClients`, `adminPets`, `adminServiceManagement`, `adminServices`, `adminReports`, `portalContent` | Panel administrativo |
-| `catalog`, `inventory`, `cart`, `orders` | **Fase 2** (estructura preparada, sin implementar) |
+| `inventory` | **Fase 2**: existencias, alertas de stock mínimo y movimientos (`/api/admin/inventario`) |
+| `catalog`, `cart`, `orders` | **Fase 2** (estructura preparada, sin implementar) |
 
 Cada módulo sigue la misma forma:
 
