@@ -1,3 +1,6 @@
+const { AuthError } = require('../../domain/errors/AuthError');
+const { sendUnexpectedError } = require('../../../shared/http/httpErrors');
+
 function createAuthController(useCases) {
   return {
     initiateRegistration: async (req, res) => {
@@ -93,11 +96,14 @@ function createAuthController(useCases) {
 }
 
 function handleError(res, error, defaultMessage) {
-  console.error(defaultMessage, error);
-  res.status(error.status || 500).json({
-    success: false,
-    message: error.message || defaultMessage
-  });
+  if (error instanceof AuthError) {
+    return res.status(error.status || 400).json({
+      success: false,
+      message: error.message
+    });
+  }
+
+  return sendUnexpectedError(res, error, defaultMessage);
 }
 
 module.exports = { createAuthController };

@@ -1,4 +1,5 @@
 const { AdminAgendaError } = require('../../domain/errors/AdminAgendaError');
+const { sendUnexpectedError } = require('../../../shared/http/httpErrors');
 
 function handleHttpError(res, error, defaultMessage) {
   if (error instanceof AdminAgendaError) {
@@ -8,11 +9,7 @@ function handleHttpError(res, error, defaultMessage) {
     });
   }
 
-  console.error(defaultMessage, error);
-  return res.status(500).json({
-    success: false,
-    message: error.message || defaultMessage
-  });
+  return sendUnexpectedError(res, error, defaultMessage);
 }
 
 function createAdminAgendaController(useCases) {

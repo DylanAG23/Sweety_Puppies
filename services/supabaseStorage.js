@@ -1,15 +1,25 @@
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
 const bucketName = process.env.BUCKET_NAME || 'imagenes';
+let supabaseClient = null;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('SUPABASE_URL y SUPABASE_KEY son requeridas para usar Supabase Storage');
+// El cliente se crea en el primer uso: el servidor puede arrancar (y probarse)
+// aunque Storage no este configurado; falla solo la operacion que lo necesita.
+function getSupabase() {
+  if (!supabaseClient) {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('SUPABASE_URL y SUPABASE_KEY son requeridas para usar Supabase Storage');
+    }
+
+    supabaseClient = createClient(supabaseUrl, supabaseKey);
+  }
+
+  return supabaseClient;
 }
-
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 function sanitizeFileName(value) {
   return String(value || 'archivo')
@@ -31,7 +41,7 @@ function buildStoragePath(folder, originalName) {
 async function uploadBufferToSupabase({ buffer, originalName, mimeType, folder }) {
   const filePath = buildStoragePath(folder, originalName);
 
-  const { error } = await supabase.storage.from(bucketName).upload(filePath, buffer, {
+  const { error } = await getSupabase().storage.from(bucketName).upload(filePath, buffer, {
     contentType: mimeType || 'application/octet-stream',
     cacheControl: '3600',
     upsert: false
@@ -41,7 +51,7 @@ async function uploadBufferToSupabase({ buffer, originalName, mimeType, folder }
     throw new Error(error.message || 'No se pudo subir el archivo a Supabase Storage');
   }
 
-  const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+  const { data } = getSupabase().storage.from(bucketName).getPublicUrl(filePath);
 
   return {
     path: filePath,
@@ -71,7 +81,7 @@ async function deleteByPublicUrl(publicUrl) {
     return;
   }
 
-  const { error } = await supabase.storage.from(bucketName).remove([storagePath]);
+  const { error } = await getSupabase().storage.from(bucketName).remove([storagePath]);
 
   if (error) {
     throw new Error(error.message || 'No se pudo eliminar el archivo de Supabase Storage');

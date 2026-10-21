@@ -1,4 +1,5 @@
 const { AppointmentError } = require('../../domain/errors/AppointmentError');
+const { sendUnexpectedError } = require('../../../shared/http/httpErrors');
 
 function firstFile(files, fieldName) {
   const fileList = files?.[fieldName];
@@ -41,11 +42,7 @@ function sendJsonError(res, error, defaultMessage) {
     });
   }
 
-  console.error(defaultMessage, error);
-  return res.status(500).json({
-    success: false,
-    message: defaultMessage
-  });
+  return sendUnexpectedError(res, error, defaultMessage);
 }
 
 function createClientAppointmentsController(useCases, reviewPageRenderer) {
