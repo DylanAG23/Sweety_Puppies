@@ -28,6 +28,7 @@ function readStoredSession() {
 
 function removeLegacySession() {
   legacyStorageRef.removeItem(SESSION_KEY)
+  legacyStorageRef.removeItem(SESSION_RESPONSE_KEY)
 }
 
 export function getSession(): SessionData | null {
@@ -173,6 +174,9 @@ function ensureSessionSync() {
           sessionData: session,
         })
       )
+      // El evento `storage` ya llego a las otras pestanas: la sesion no debe
+      // quedarse guardada en localStorage aunque nadie la consuma.
+      window.setTimeout(() => legacyStorageRef.removeItem(SESSION_RESPONSE_KEY), 1000)
     } catch (error) {
       console.error('No se pudo responder la sesion compartida:', error)
     }
@@ -193,7 +197,7 @@ function getSessionSnapshot(): SessionData | null {
     }
 
     return parsed
-  } catch (error) {
+  } catch {
     clearSession()
     return null
   }
