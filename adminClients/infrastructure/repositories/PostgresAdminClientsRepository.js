@@ -206,10 +206,8 @@ class PostgresAdminClientsRepository {
   }
 
   async updateClientProfile(clientId, payload) {
-    await client.query('BEGIN');
-
-    try {
-      const ownershipResult = await client.query(
+    await client.withTransaction(async (db) => {
+      const ownershipResult = await db.query(
         `
           SELECT usuario_id
           FROM clientes
@@ -225,7 +223,7 @@ class PostgresAdminClientsRepository {
 
       const userId = ownershipResult.rows[0].usuario_id;
 
-      await client.query(
+      await db.query(
         `
           UPDATE usuarios
           SET
@@ -236,7 +234,7 @@ class PostgresAdminClientsRepository {
         [userId, payload.email]
       );
 
-      await client.query(
+      await db.query(
         `
           UPDATE clientes
           SET
@@ -259,12 +257,7 @@ class PostgresAdminClientsRepository {
           payload.activo
         ]
       );
-
-      await client.query('COMMIT');
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    }
+    });
   }
 }
 

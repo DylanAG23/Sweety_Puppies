@@ -8,21 +8,23 @@ const {
   buildAppointmentEmailViewModel
 } = require('../../domain/services/appointmentRules');
 const { AppointmentError } = require('../../domain/errors/AppointmentError');
-
-function extractEmailFromMailFrom(mailFrom) {
-  const match = String(mailFrom || '').match(/<([^>]+)>/);
-  return match ? match[1] : mailFrom || null;
-}
+const {
+  getAppBaseUrl,
+  getAppointmentActionSecret,
+  getAdminNotificationEmail
+} = require('../../../config/env');
 
 class EmailAppointmentNotificationService {
-  constructor() {
-    this.appBaseUrl = process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
-    this.appointmentActionSecret =
-      process.env.APPOINTMENT_ACTION_SECRET || process.env.JWT_SECRET || 'sweetypuppies_secret_key';
+  get appBaseUrl() {
+    return getAppBaseUrl();
+  }
+
+  get appointmentActionSecret() {
+    return getAppointmentActionSecret();
   }
 
   getAdministrativeEmail() {
-    return process.env.MAIL_USER || extractEmailFromMailFrom(process.env.MAIL_FROM) || 'sweetypuppies01@gmail.com';
+    return getAdminNotificationEmail();
   }
 
   createActionToken(appointmentId, flowType = 'nueva') {

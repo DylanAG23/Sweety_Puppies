@@ -352,15 +352,7 @@ class PostgresAdminServiceManagementRepository {
   }
 
   async runInTransaction(work) {
-    await client.query('BEGIN');
-    try {
-      const result = await work(client);
-      await client.query('COMMIT');
-      return result;
-    } catch (error) {
-      await client.query('ROLLBACK').catch(() => {});
-      throw error;
-    }
+    return client.withTransaction(work);
   }
 
   async findHistoryByAppointmentId(appointmentId) {

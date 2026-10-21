@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 class JwtTokenService {
-  constructor(secret) {
-    this.secret = secret;
+  // `secretProvider` es una funcion para leer el secreto al firmar
+  // (y no al cargar el modulo).
+  constructor(secretProvider) {
+    this.secretProvider = typeof secretProvider === 'function' ? secretProvider : () => secretProvider;
   }
 
   sign(user) {
@@ -14,8 +16,8 @@ class JwtTokenService {
         clienteId: user.clienteId,
         administradorId: user.administradorId
       },
-      this.secret,
-      { expiresIn: '24h' }
+      this.secretProvider(),
+      { expiresIn: '24h', algorithm: 'HS256' }
     );
   }
 }

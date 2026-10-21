@@ -2,15 +2,11 @@ const {
   sendAppointmentStatusEmail,
   sendAppointmentCancellationEmail
 } = require('../../../services/emailService');
-
-function extractEmailFromMailFrom(mailFrom) {
-  const match = String(mailFrom || '').match(/<([^>]+)>/);
-  return match ? match[1] : mailFrom || null;
-}
+const { getAdminNotificationEmail } = require('../../../config/env');
 
 class AdminServiceManagementNotificationService {
   getAdministrativeEmail() {
-    return process.env.MAIL_USER || extractEmailFromMailFrom(process.env.MAIL_FROM) || 'sweetypuppies01@gmail.com';
+    return getAdminNotificationEmail();
   }
 
   async notifyAppointmentConfirmed({ email, appointment, flowType }) {

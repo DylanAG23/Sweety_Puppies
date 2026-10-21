@@ -15,12 +15,13 @@ const { JwtTokenService } = require('./infrastructure/services/JwtTokenService')
 const { VerificationCodeService } = require('./infrastructure/services/VerificationCodeService');
 const { EmailNotificationService } = require('./infrastructure/services/EmailNotificationService');
 const validation = require('./domain/services/authValidation');
+const { getJwtSecret } = require('../config/env');
 
 function createAuthModule() {
   const dependencies = {
     authRepository: new PostgresAuthRepository(),
     hashService: new BcryptHashService(10),
-    tokenService: new JwtTokenService(process.env.JWT_SECRET || 'sweetypuppies_secret_key'),
+    tokenService: new JwtTokenService(getJwtSecret),
     verificationCodeService: new VerificationCodeService(15),
     notificationService: new EmailNotificationService(),
     validation

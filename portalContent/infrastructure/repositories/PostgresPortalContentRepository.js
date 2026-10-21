@@ -156,11 +156,9 @@ class PostgresPortalContentRepository {
   }
 
   async reorderContent(items) {
-    await client.query('BEGIN');
-
-    try {
+    await client.withTransaction(async (db) => {
       for (const item of items) {
-        await client.query(
+        await db.query(
           `
             UPDATE imagenes
             SET orden = $2, updated_at = NOW()
@@ -169,12 +167,7 @@ class PostgresPortalContentRepository {
           [item.id, item.orden]
         );
       }
-
-      await client.query('COMMIT');
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    }
+    });
   }
 
   async listActiveContent() {

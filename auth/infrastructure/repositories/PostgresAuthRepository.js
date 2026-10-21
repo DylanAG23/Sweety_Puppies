@@ -2,8 +2,12 @@ const client = require('../../../baseDatos');
 const { AuthError } = require('../../domain/errors/AuthError');
 
 class TransactionContext {
+  constructor(db) {
+    this.db = db;
+  }
+
   async createUser({ email, passwordHash, rol }) {
-    const result = await client.query(
+    const result = await this.db.query(
       `
         INSERT INTO usuarios (email, password_hash, rol, activo)
         VALUES ($1, $2, $3, true)
@@ -16,7 +20,7 @@ class TransactionContext {
   }
 
   async createClient({ usuarioId, nombre, apellido, cedula, telefono }) {
-    const result = await client.query(
+    const result = await this.db.query(
       `
         INSERT INTO clientes (usuario_id, nombre, apellido, cedula, telefono, activo)
         VALUES ($1, $2, $3, $4, $5, true)
@@ -29,7 +33,7 @@ class TransactionContext {
   }
 
   async markVerificationCodeAsUsed(id) {
-    await client.query('UPDATE codigos_verificacion SET usado = true WHERE id = $1', [id]);
+    await this.db.query('UPDATE codigos_verificacion SET usado = true WHERE id = $1', [id]);
   }
 }
 
@@ -137,16 +141,7 @@ class PostgresAuthRepository {
   }
 
   async transaction(work) {
-    await client.query('BEGIN');
-
-    try {
-      const result = await work(new TransactionContext());
-      await client.query('COMMIT');
-      return result;
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    }
+    return client.withTransaction((db) => work(new TransactionContext(db)));
   }
 
   async findUserForLogin(email) {

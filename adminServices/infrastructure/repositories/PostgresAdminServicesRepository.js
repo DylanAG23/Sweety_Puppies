@@ -260,19 +260,11 @@ class PostgresAdminServicesRepository {
   }
 
   async runInTransaction(work) {
-    await client.query('BEGIN');
-    try {
-      const result = await work(client);
-      await client.query('COMMIT');
-      return result;
-    } catch (error) {
-      await client.query('ROLLBACK').catch(() => {});
-      throw error;
-    }
+    return client.withTransaction(work);
   }
 
   async createPrimaryService(payload) {
-    return this.runInTransaction(async (db) => {
+    const serviceId = await this.runInTransaction(async (db) => {
       const serviceResult = await db.query(
         `
           INSERT INTO servicios (
@@ -300,14 +292,16 @@ class PostgresAdminServicesRepository {
         ]
       );
 
-      const serviceId = serviceResult.rows[0].id;
-      await this.replacePrimaryTariffs(serviceId, payload.tarifas, db);
-      return this.findPrimaryServiceById(serviceId);
+      const createdId = serviceResult.rows[0].id;
+      await this.replacePrimaryTariffs(createdId, payload.tarifas, db);
+      return createdId;
     });
+
+    return this.findPrimaryServiceById(serviceId);
   }
 
   async updatePrimaryService(serviceId, payload) {
-    return this.runInTransaction(async (db) => {
+    await this.runInTransaction(async (db) => {
       await db.query(
         `
           UPDATE servicios
@@ -337,8 +331,9 @@ class PostgresAdminServicesRepository {
       );
 
       await this.replacePrimaryTariffs(serviceId, payload.tarifas, db);
-      return this.findPrimaryServiceById(serviceId);
     });
+
+    return this.findPrimaryServiceById(serviceId);
   }
 
   async updatePrimaryServiceStatus(serviceId, activo) {
@@ -369,7 +364,7 @@ class PostgresAdminServicesRepository {
   }
 
   async createAdditionalService(payload) {
-    return this.runInTransaction(async (db) => {
+    const serviceId = await this.runInTransaction(async (db) => {
       const serviceResult = await db.query(
         `
           INSERT INTO servicios_adicionales (
@@ -383,14 +378,16 @@ class PostgresAdminServicesRepository {
         [payload.nombre, payload.descripcion, payload.activo]
       );
 
-      const serviceId = serviceResult.rows[0].id;
-      await this.replaceAdditionalTariffs(serviceId, payload.tarifas, db);
-      return this.findAdditionalServiceById(serviceId);
+      const createdId = serviceResult.rows[0].id;
+      await this.replaceAdditionalTariffs(createdId, payload.tarifas, db);
+      return createdId;
     });
+
+    return this.findAdditionalServiceById(serviceId);
   }
 
   async updateAdditionalService(serviceId, payload) {
-    return this.runInTransaction(async (db) => {
+    await this.runInTransaction(async (db) => {
       await db.query(
         `
           UPDATE servicios_adicionales
@@ -405,8 +402,9 @@ class PostgresAdminServicesRepository {
       );
 
       await this.replaceAdditionalTariffs(serviceId, payload.tarifas, db);
-      return this.findAdditionalServiceById(serviceId);
     });
+
+    return this.findAdditionalServiceById(serviceId);
   }
 
   async updateAdditionalServiceStatus(serviceId, activo) {
