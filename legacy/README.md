@@ -1,21 +1,14 @@
-# Legacy controlado
+# Legacy backend (desmontado)
 
-Esta carpeta concentra compatibilidad heredada del proyecto anterior.
+Rutas heredadas del primer sistema (esquema con IDs enteros: `citas.id_cita`, `mascotas.cedula_cliente`…).
 
-## Objetivo
+## Estado (octubre de 2026)
 
-Evitar que el codigo viejo siga mezclado con la arquitectura activa del sistema.
+| Archivo | Montado | Motivo |
+|---|---|---|
+| `backend/routes/citas.js` | **No** (antes en `/api/citas`) | No pedía autenticación y permitía leer, crear, editar y borrar citas. Además consultaba columnas que ya no existen. |
+| `backend/routes/login.js` | No | Reemplazado por el módulo `auth` (`/api/auth`, `/api/login`). |
 
-## Contenido actual
+`routes/citas.js` y `routes/login.js` solo re-exportan estos archivos y tampoco se montan.
 
-- `backend/routes/citas.js`
-- `backend/routes/login.js`
-
-## Regla de mantenimiento
-
-No desarrollar logica nueva aqui.
-
-Cada archivo presente en esta carpeta debe entenderse como compatibilidad temporal hasta que:
-
-- exista reemplazo hexagonal equivalente
-- se retiren los consumidores que aun dependan de esta compatibilidad
+Se propone borrar esta carpeta, `routes/citas.js` y `routes/login.js` (ver `AUDITORIA_PRE_FASE2.md`). No desarrollar lógica nueva aquí.
