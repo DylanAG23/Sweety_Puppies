@@ -875,9 +875,8 @@ function donutOptions(labels: string[]): ApexOptions {
           <span class="section-kicker">Panel de resultados</span>
           <h1>Un tablero vivo para entender ingresos, citas y decisiones del negocio</h1>
           <p>
-            Este módulo toma la información real desde <code>historial_citas</code> y desde las
-            citas del sistema para mostrar indicadores accionables, gráficas comparativas y tablas
-            dinámicas listas para análisis administrativo.
+            Consulta los ingresos, las citas realizadas y las tendencias del negocio. Usa los filtros
+            para elegir el periodo, el servicio, el cliente o la mascota que quieres revisar.
           </p>
           <div class="hero-note-card">
             <strong>Regla financiera aplicada</strong>

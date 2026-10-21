@@ -107,7 +107,7 @@ const routes = new Map<
       component: AdminPlaceholderPage,
       props: {
         title: 'Dashboard',
-        description: 'Aqui se consolidaran las metricas principales, indicadores y decisiones del ERP de Sweety Puppies.',
+        description: 'Aquí verás las métricas principales y los indicadores del negocio.',
       },
     },
   ],

@@ -454,7 +454,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
     <PageSkeleton v-if="loading" title="Cargando gestion de citas y citas realizadas..." description="Estamos preparando la operacion del negocio." />
 
     <section v-else-if="error && !appointments.length && !completedServices.length" class="management-shell state-card">
-      <h1>No pudimos abrir este modulo</h1>
+      <h1>No pudimos abrir la gestión de citas</h1>
       <p>{{ error }}</p>
       <div class="row-actions">
         <button type="button" class="btn-secundario" @click="goTo('/admin')">Volver al inicio</button>
@@ -469,7 +469,7 @@ function isStartWindowAvailable(fecha: string | null, horaInicio: string | null)
         <div>
           <span class="soft-pill">Gestión de citas</span>
           <h1>El corazon operativo de Sweety Puppies</h1>
-          <p>Aquí administras la operación de citas y consultas el historial real de citas ya realizadas.</p>
+          <p>Aquí administras la operación de citas y consultas el historial de citas realizadas.</p>
           <div class="hero-note">
             <strong>Operacion central</strong>
             <span>Confirma, inicia, atiende y finaliza citas; luego revisa la cita ya completada desde su propio historial.</span>

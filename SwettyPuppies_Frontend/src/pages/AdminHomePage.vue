@@ -353,8 +353,8 @@ function formatLabel(value: string | null) {
       <section class="modules-section">
         <div class="section-head section-head-wide">
           <div>
-            <span class="admin-pill">Modulos principales</span>
-            <h2>Explora el ERP de Sweety Puppies</h2>
+            <span class="admin-pill">Accesos rápidos</span>
+            <h2>¿Qué quieres revisar hoy?</h2>
           </div>
         </div>
 

@@ -600,11 +600,11 @@ function additionalDetail(item: PrimaryServiceDetail | AdditionalServiceDetail) 
           <span class="services-pill">Catalogo y tarifas</span>
           <h1>Servicios que ofrece la peluquería</h1>
           <p>
-            Aqui administras los servicios fijos y los adicionales de Sweety Puppies. Las citas ya completadas se
-            gestionan por aparte como citas realizadas, asi que este espacio queda solo para lo que el negocio ofrece.
+            Aquí administras los servicios principales y adicionales que ofrece Sweety Puppies, con su
+            duración y sus tarifas.
           </p>
           <div class="hero-note">
-            <strong>Logica comercial</strong>
+            <strong>Cómo se calcula el precio</strong>
             <span>
               Cada servicio puede quedar listo con su configuracion base, su duracion y las tarifas que dependen de
               tamano, tipo de pelaje o talla, segun corresponda.

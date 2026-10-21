@@ -10,7 +10,7 @@ const props = defineProps<{
 
 const currentPath = window.location.pathname.toLowerCase()
 
-const subtitle = computed(() => `${props.description} Este espacio ya queda preparado para integrar la logica completa despues.`)
+const subtitle = computed(() => `${props.description} Muy pronto estará disponible.`)
 
 onMounted(() => {
   document.body.className = 'cliente-portal-body'

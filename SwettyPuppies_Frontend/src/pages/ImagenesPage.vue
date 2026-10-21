@@ -374,7 +374,7 @@ function formatDate(value: string | null) {
     <PageSkeleton v-if="loading" title="Cargando el contenido del portal..." description="Estamos preparando las publicaciones visuales del lobby cliente." />
 
     <section v-else-if="error && !publicaciones.length && !isFormOpen" class="admin-shell state-card">
-      <h1>No pudimos abrir el modulo de contenido</h1>
+      <h1>No pudimos abrir el contenido del portal</h1>
       <p>{{ error }}</p>
       <div class="card-actions">
         <a href="/login" class="btn-secundario">Volver al acceso</a>
@@ -390,15 +390,15 @@ function formatDate(value: string | null) {
           <span class="hero-kicker">Contenido del portal</span>
           <h1>Lobby visual para enamorar a cada familia peluda</h1>
           <p>
-            Aquí Sara podrá publicar peluditos del mes, promociones e imágenes destacadas
-            que se veran en el inicio del cliente autenticado.
+            Publica peluditos del mes, promociones e imágenes destacadas que verán tus clientes
+            al entrar a su portal.
           </p>
 
           <div class="hero-note-card">
             <strong>Lobby activo</strong>
             <p>
-              Las publicaciones activas se muestran en el home cliente ordenadas segun el
-              campo de visualización que configures aquí.
+              Las publicaciones activas aparecen en el inicio del portal del cliente, en el orden
+              que configures aquí.
             </p>
           </div>
         </div>
