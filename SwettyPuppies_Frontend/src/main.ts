@@ -19,5 +19,7 @@ import './styles/legacy/imagenes.css'
 import './styles/legacy/reportes.css'
 import './styles/app.css'
 import './styles/base.css'
+import './styles/theme-legacy.css'
+import './styles/theme.css'
 
 createApp(App).directive('dialog', vDialog).mount('#app')

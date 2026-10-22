@@ -24,12 +24,12 @@ export type NavGroup = {
   items: NavItem[]
 }
 
-// Fase 2 (tienda e inventario). Las opciones existen pero solo se muestran con
-// VITE_ENABLE_STORE=true, mientras la tienda no tenga pantallas funcionales.
-export const isStoreEnabled = import.meta.env.VITE_ENABLE_STORE === 'true'
+// La tienda está habilitada por defecto; false permite ocultarla en un despliegue.
+export const isStoreEnabled = import.meta.env.VITE_ENABLE_STORE !== 'false'
 
 const clientStoreItems: NavItem[] = [
   { label: 'Tienda', href: '/cliente/tienda', icon: 'TD', badge: 'Nuevo' },
+  { label: 'Carrito', href: '/cliente/carrito', icon: 'CR' },
   { label: 'Mis pedidos', href: '/cliente/pedidos', icon: 'PD', badge: 'Nuevo' },
 ]
 
@@ -70,6 +70,7 @@ export const adminNavGroups: NavGroup[] = [
             { label: 'Categorías', href: '/admin/categorias', icon: 'CA' },
             { label: 'Inventario', href: '/admin/inventario', icon: 'IV' },
             { label: 'Pedidos', href: '/admin/pedidos', icon: 'PE' },
+            { label: 'Ingresos', href: '/admin/ingresos', icon: 'IG' },
           ],
         },
       ]

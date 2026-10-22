@@ -46,6 +46,7 @@ function createApp() {
   app.use('/api/login', require('./routes/auth'));
   app.use('/api/reportes', require('./routes/reportes'));
   app.use('/api/admin/inventario', require('./routes/adminInventario'));
+  app.use('/api/tienda', require('./routes/tienda'));
   // `/api/citas` (legacy/backend/routes/citas.js) se desmonto: no tenia
   // autenticacion y consultaba el esquema antiguo. Ver AUDITORIA_PRE_FASE2.md (C4).
 

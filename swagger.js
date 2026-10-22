@@ -296,5 +296,6 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+require('./shared/store/openapi').addStoreDocs(swaggerSpec);
 
 module.exports = { swaggerUi, swaggerSpec };

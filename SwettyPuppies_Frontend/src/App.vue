@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch, typ
 import { getSession, hydrateSessionFromLiveTab } from './lib/session'
 import { isStoreEnabled } from './lib/navigation'
 import AuthPage from './pages/AuthPage.vue'
+import ThemeToggle from './components/ThemeToggle.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
 import PageLoadingState from './components/ui/PageLoadingState.vue'
 import PageLoadError from './components/ui/PageLoadError.vue'
@@ -22,7 +23,12 @@ const AdminHomePage = lazyPage(() => import('./pages/AdminHomePage.vue'))
 const AdminAgendaPage = lazyPage(() => import('./pages/AdminAgendaPage.vue'))
 const AdminManagementPage = lazyPage(() => import('./pages/AdminManagementPage.vue'))
 const AdminPlaceholderPage = lazyPage(() => import('./pages/AdminPlaceholderPage.vue'))
-const ClientPlaceholderPage = lazyPage(() => import('./pages/ClientPlaceholderPage.vue'))
+const StorePage = lazyPage(() => import('./pages/StorePage.vue'))
+const StoreCartPage = lazyPage(() => import('./pages/StoreCartPage.vue'))
+const StoreOrdersPage = lazyPage(() => import('./pages/StoreOrdersPage.vue'))
+const StoreCatalogAdminPage = lazyPage(() => import('./pages/StoreCatalogAdminPage.vue'))
+const StoreInventoryPage = lazyPage(() => import('./pages/StoreInventoryPage.vue'))
+const StoreReportPage = lazyPage(() => import('./pages/StoreReportPage.vue'))
 const ClientesPage = lazyPage(() => import('./pages/ClientesPage.vue'))
 const MascotasPage = lazyPage(() => import('./pages/MascotasPage.vue'))
 const ServiciosPage = lazyPage(() => import('./pages/ServiciosPage.vue'))
@@ -152,25 +158,15 @@ const routes = new Map<
   ],
 ])
 
-// Fase 2 (tienda e inventario): rutas reservadas que muestran "Modulo en
-// preparacion". Solo existen con VITE_ENABLE_STORE=true.
-const storePlaceholders: Array<[string, 'cliente' | 'admin', string, string]> = [
-  ['/cliente/tienda', 'cliente', 'Tienda', 'Aqui podras explorar y comprar productos para tu peludito.'],
-  ['/cliente/carrito', 'cliente', 'Tu carrito', 'Aqui veras los productos que agregues antes de pagar.'],
-  ['/cliente/pedidos', 'cliente', 'Mis pedidos', 'Aqui podras seguir el estado de tus compras.'],
-  ['/admin/productos', 'admin', 'Productos', 'Aqui se administrara el catalogo de la tienda.'],
-  ['/admin/categorias', 'admin', 'Categorias', 'Aqui se organizaran las categorias de la tienda.'],
-  ['/admin/inventario', 'admin', 'Inventario', 'Aqui se controlaran existencias, entradas, salidas y ajustes.'],
-  ['/admin/pedidos', 'admin', 'Pedidos', 'Aqui se atenderan los pedidos de la tienda.'],
-]
-
 if (isStoreEnabled) {
-  for (const [path, area, title, description] of storePlaceholders) {
-    routes.set(path, {
-      component: area === 'admin' ? AdminPlaceholderPage : ClientPlaceholderPage,
-      props: { title, description },
-    })
-  }
+  routes.set('/cliente/tienda', { component: StorePage })
+  routes.set('/cliente/carrito', { component: StoreCartPage })
+  routes.set('/cliente/pedidos', { component: StoreOrdersPage })
+  routes.set('/admin/productos', { component: StoreCatalogAdminPage })
+  routes.set('/admin/categorias', { component: StoreCatalogAdminPage, props: { mode: 'categorias' } })
+  routes.set('/admin/inventario', { component: StoreInventoryPage })
+  routes.set('/admin/pedidos', { component: StoreOrdersPage, props: { area: 'admin' } })
+  routes.set('/admin/ingresos', { component: StoreReportPage })
 }
 
 // Resuelve a que ruta debe ir el usuario segun su sesion y rol (sin efectos).
@@ -238,6 +234,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <div v-if="publicRoutes.has(targetPath)" class="public-theme-toggle"><ThemeToggle /></div>
   <main v-if="!sessionReady" class="app-loading-state">
     <section class="app-loading-card">
       <h1>Preparando Sweety Puppies...</h1>
@@ -248,6 +245,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.public-theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 100; }
 .app-loading-state {
   min-height: 100vh;
   display: flex;

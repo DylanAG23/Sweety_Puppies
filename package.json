@@ -29,5 +29,8 @@
   "overrides": {
     "qs": "6.16.0"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11"
+  }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { logoutToLogin } from '@/lib/session'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 import { isNavItemActive, navigateTo, type NavGroup } from '@/lib/navigation'
 
 // Armazon comun del portal del cliente y del panel administrativo:
@@ -269,6 +270,7 @@ onUnmounted(() => {
     </div>
 
     <div class="topbar-right">
+      <ThemeToggle />
       <slot name="topbar-actions" />
       <span v-if="showDate" class="topbar-date">{{ todayLabel }}</span>
       <div class="topbar-profile">
@@ -721,6 +723,8 @@ onUnmounted(() => {
 }
 
 @media (max-width: 720px) {
+  .topbar-right { flex-wrap: nowrap; flex-shrink: 0; gap: 8px; }
+  .topbar-left { gap: 10px; }
   .platform-sidebar {
     width: min(320px, 86vw);
     min-width: 0;
@@ -743,5 +747,9 @@ onUnmounted(() => {
   .topbar-profile {
     padding: 4px;
   }
+}
+@media (max-width: 420px) {
+  .topbar-profile { display: none; }
+  .platform-topbar { gap: 8px; }
 }
 </style>
