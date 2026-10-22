@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi espacio - Sweety Puppies</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/cliente-dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="cliente-body">
+  <main class="cliente-wrapper">
+    <section class="cliente-card">
+      <img src="img/logo.png" alt="Logo Sweety Puppies" class="cliente-logo">
+      <span class="panel-badge">Módulo cliente</span>
+      <h1>Hola, <span id="clienteNombre">peludito querido</span></h1>
+      <p>Tu acceso como cliente ya está funcionando. En este paso dejamos lista una vista temporal para diferenciar tu ingreso del módulo administrador.</p>
+      <div class="cliente-summary">
+        <div>
+          <strong>Correo</strong>
+          <span id="clienteEmail">-</span>
+        </div>
+        <div>
+          <strong>Rol</strong>
+          <span id="clienteRol">cliente</span>
+        </div>
+      </div>
+      <div class="cliente-actions">
+        <a href="/login" class="btn-secundario">Volver al acceso</a>
+        <button id="logout-btn" class="btn-enviar bounce-effect">Cerrar sesión</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/session.js"></script>
+  <script src="js/cliente_dashboard.js"></script>
+</body>
+</html>

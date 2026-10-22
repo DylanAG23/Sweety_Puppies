@@ -1,26 +1,36 @@
 {
+  "name": "sweety-puppies-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API del ERP Sweety Puppies (Express + PostgreSQL/Supabase, arquitectura hexagonal)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "node --test \"tests/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/supabase-js": "^2.117.3",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.2",
-    "mysql2": "^3.14.0",
+    "multer": "^2.4.0",
+    "nodemailer": "^10.0.14",
+    "pdfkit": "^0.18.0",
     "pg": "^8.15.1",
-    "postgres": "^3.4.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
-  "name": "parcialbd",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "overrides": {
+    "qs": "6.16.0"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
-  "description": ""
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11"
+  }
 }

@@ -1,0 +1,165 @@
+/*
+ * Tokens de diseno de Sweety Puppies.
+ * Fuente: ACT-15, guia de estilos (paginas 20 a 24). Unico lugar donde se
+ * definen colores, tipografia, espaciados, radios, sombras y movimiento.
+ *
+ * Ajustes de accesibilidad respecto a la guia (contraste AA, 4.5:1):
+ *  - texto de apoyo  #7f8ba0 -> --sp-text-subtle  #5f6b80 (5.4:1)
+ *  - enlace turquesa #0b9f93 -> --sp-link-text    #087a71 (5.2:1)
+ *  - texto de exito / advertencia / error sobre su fondo, oscurecidos.
+ *  Los valores originales se conservan para iconos, bordes y decoracion.
+ */
+:root {
+  /* ---- Marca ---- */
+  --sp-primary: #8f176e;
+  --sp-primary-deep: #79135f;
+  --sp-primary-hover: #9f207b;
+  --sp-primary-hover-deep: #86176a;
+  --sp-primary-strong: #9c0076; /* etiquetas y pildoras */
+  --sp-primary-soft: #fff1f9;
+  --sp-primary-tint: #fde7f5;
+  --sp-teal: #37bea7;
+  --sp-mint: #7eefd6;
+  --sp-link: #0b9f93;
+  --sp-link-text: #087a71;
+  --sp-on-teal: #1a202c;
+
+  /* ---- Neutros y fondos ---- */
+  --sp-dark: #1a202c;
+  --sp-dark-deep: #111827;
+  --sp-dark-hover: #273142;
+  --sp-ink: #22354b;
+  --sp-muted: #6e5064;
+  --sp-gray: #7f8ba0;
+  --sp-text-subtle: #5f6b80;
+  --sp-bg: #f5f7fb;
+  --sp-bg-deep: #eef3f9;
+  --sp-surface: #ffffff;
+  --sp-surface-muted: #fafbfd;
+  --sp-pink-border: #ffd6eb;
+  --sp-field-border: #f0d3e5;
+  --sp-line: #e0e5f0;
+  --sp-disabled-bg: #eceef3;
+  --sp-disabled-text: #8a93a3;
+
+  /* ---- Estados ---- */
+  --sp-success: #0c7a5f;
+  --sp-success-icon: #0f8a6c;
+  --sp-success-bg: #e9fbf7;
+  --sp-success-border: #a8e8d8;
+  --sp-warning: #8a5a00;
+  --sp-warning-icon: #f2a900;
+  --sp-warning-bg: #fff3d8;
+  --sp-warning-border: #f6d68a;
+  --sp-danger: #b42a41;
+  --sp-danger-icon: #c8324b;
+  --sp-danger-bg: #fde8ec;
+  --sp-danger-border: #f5b9c4;
+  --sp-info: #2f5fb3;
+  --sp-info-bg: #eef5ff;
+  --sp-info-border: #bcd0f2;
+
+  /* ---- Degradados ---- */
+  --sp-gradient-primary: linear-gradient(135deg, var(--sp-primary) 0%, var(--sp-primary-deep) 100%);
+  --sp-gradient-primary-hover: linear-gradient(135deg, var(--sp-primary-hover) 0%, var(--sp-primary-hover-deep) 100%);
+  --sp-gradient-dark: linear-gradient(135deg, var(--sp-dark) 0%, var(--sp-dark-deep) 100%);
+  --sp-gradient-dark-hover: linear-gradient(135deg, var(--sp-dark-hover) 0%, var(--sp-dark) 100%);
+  --sp-gradient-sidebar: linear-gradient(180deg, #95267c 0%, #7f1f6b 100%);
+  --sp-gradient-avatar: linear-gradient(135deg, #f7d8ef 0%, #bff3ea 100%);
+  --sp-gradient-page:
+    radial-gradient(circle at top left, rgba(255, 214, 236, 0.26), transparent 18%),
+    linear-gradient(180deg, var(--sp-bg) 0%, var(--sp-bg-deep) 100%);
+
+  /* ---- Tipografia ---- */
+  /* La guia ACT-15 define Montserrat. Para usar otra fuente basta con cambiar
+     esta variable y el enlace de Google Fonts en index.html. */
+  --sp-font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sp-font-h1: 2rem;
+  --sp-font-h2: 1.5rem;
+  --sp-font-h3: 1.125rem;
+  --sp-font-body: 1rem;
+  --sp-font-button: 0.9375rem;
+  --sp-font-label: 0.875rem;
+  --sp-font-pill: 0.8125rem;
+  --sp-font-small: 0.8125rem;
+  --sp-weight-regular: 400;
+  --sp-weight-semibold: 600;
+  --sp-weight-bold: 700;
+  --sp-weight-extrabold: 800;
+  --sp-line-height-body: 1.7;
+  --sp-line-height-tight: 1.2;
+
+  /* ---- Espaciado (base 4 px) ---- */
+  --sp-space-1: 4px;
+  --sp-space-2: 8px;
+  --sp-space-3: 12px;
+  --sp-space-4: 16px;
+  --sp-space-5: 20px;
+  --sp-space-6: 24px;
+  --sp-space-8: 32px;
+  --sp-space-12: 48px;
+
+  /* ---- Radios ---- */
+  --sp-radius-xs: 10px;
+  --sp-radius-sm: 14px;
+  --sp-radius-md: 18px;
+  --sp-radius-card: 22px;
+  --sp-radius-lg: 24px;
+  --sp-radius-xl: 32px;
+  --sp-radius-pill: 999px;
+
+  /* ---- Sombras ---- */
+  --sp-shadow-card: 0 28px 70px rgba(204, 115, 174, 0.12);
+  --sp-shadow-card-sm: 0 12px 30px rgba(204, 115, 174, 0.1);
+  --sp-shadow-card-hover: 0 22px 48px rgba(204, 115, 174, 0.18);
+  --sp-shadow-button: 0 16px 30px rgba(127, 31, 107, 0.26);
+  --sp-shadow-dark: 0 14px 26px rgba(17, 24, 39, 0.28);
+  --sp-shadow-modal: 0 40px 90px rgba(23, 16, 37, 0.28);
+
+  /* ---- Foco (navegacion con teclado) ---- */
+  --sp-focus-color: #8f176e;
+  --sp-focus-ring: 0 0 0 3px #ffffff, 0 0 0 6px rgba(143, 23, 110, 0.55);
+
+  /* ---- Controles ---- */
+  --sp-control-height: 44px;
+  --sp-control-padding-x: 20px;
+  --sp-field-border-width: 1.5px;
+
+  /* ---- Movimiento ---- */
+  --sp-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --sp-duration-fast: 150ms;
+  --sp-duration: 200ms;
+  --sp-duration-slow: 300ms;
+
+  /* ---- Capas ---- */
+  --sp-z-topbar: 40;
+  --sp-z-overlay: 48;
+  --sp-z-sidebar: 50;
+  --sp-z-modal: 80;
+  --sp-z-toast: 90;
+
+  /* ---- Estructura de la plataforma ---- */
+  --platform-sidebar-width: 272px;
+  --platform-sidebar-collapsed-width: 104px;
+  --platform-topbar-height: 86px;
+  --platform-page-padding: 28px;
+
+  /* ---- Alias de nombres anteriores (compatibilidad con estilos existentes) ---- */
+  --sp-primary-purple: var(--sp-primary);
+  --sp-primary-purple-deep: var(--sp-primary-deep);
+  --sp-primary-purple-hover: var(--sp-primary-hover);
+  --sp-primary-purple-hover-deep: var(--sp-primary-hover-deep);
+  --sp-primary-shadow: rgba(127, 31, 107, 0.26);
+  --sp-dark-button: var(--sp-dark);
+  --sp-dark-button-deep: var(--sp-dark-deep);
+  --sp-dark-button-hover: var(--sp-dark-hover);
+  --sp-dark-shadow: rgba(17, 24, 39, 0.28);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --sp-control-height: 48px;
+    --platform-page-padding: 16px;
+    --platform-topbar-height: 64px;
+  }
+}

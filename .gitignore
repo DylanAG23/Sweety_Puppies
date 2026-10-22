@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno.
+# DECISION DEL EQUIPO (Fase 2): .env se versiona temporalmente para compartir
+# la conexion de desarrollo. Antes de salir a produccion: volver a ignorarlo,
+# sacarlo de git (git rm --cached .env) y rotar todas sus credenciales.
+.env.*
+!.env.example
+
+# Archivos generados en tiempo de ejecucion
+temp/
+logs/
+*.log
+
+# Build del frontend
+SwettyPuppies_Frontend/dist/
+
+# Editor y sistema
+.claude/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
