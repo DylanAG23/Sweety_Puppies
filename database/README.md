@@ -1,6 +1,6 @@
 # Base de datos de desarrollo (ACT-20 / ACT-22)
 
-Esta carpeta permite reproducir **el esquema de la aplicación** desde el respaldo suministrado `db_cluster-29-10-2026@18-46-17.backup.gz`, sin recuperar usuarios, contraseñas, correos, pedidos ni otros registros. No se ha ejecutado contra Supabase.
+Esta carpeta permite reproducir **el esquema de la aplicación** desde el respaldo suministrado `db_cluster-29-10-2026@18-46-17.backup.gz`, sin recuperar usuarios, contraseñas, correos, pedidos ni otros registros. El baseline no se ha aplicado contra Supabase. El comprobador de solo lectura sí se ejecutó tras reactivar el proyecto: 24 tablas y esquema compatible.
 
 ## Archivos y procedencia
 
@@ -32,7 +32,7 @@ node database/manage.cjs apply-empty --confirm-empty
 
 La opción expresa la intención de instalar una base nueva; no elimina la guardia SQL. Si existe una instalación parcial o completa, utilizar `check` y preparar una migración incremental revisada. No se registra el baseline retroactivamente ni se sustituye un esquema existente. RLS permanece habilitado, sin políticas públicas; el acceso continúa por el backend autorizado, como en el respaldo.
 
-Este DDL prepara la estructura; no crea usuarios administrativos ni carga los horarios, tarifas o contenidos reales necesarios para operar. Para recuperación de datos del negocio se requiere un procedimiento separado y explícito. La conexión con Supabase pausado no está validada.
+Este DDL prepara la estructura; no crea usuarios administrativos ni carga los horarios, tarifas o contenidos reales necesarios para operar. Para recuperación de datos del negocio se requiere un procedimiento separado y explícito. Supabase está activo y la conexión local fue verificada.
 
 ## Catálogo DEMO aislado
 

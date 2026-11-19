@@ -61,6 +61,8 @@ El smoke no prueba credenciales de correo, almacenamiento ni compras reales. El 
 
 ## Estado de esta preparacion
 
-Destino sin elegir: VM de la empresa o alojamiento temporal. Supabase permanece aplazado por decision del propietario. La publicacion y las pruebas en ese destino requieren decidirlo y disponer de acceso. No se ha contratado ni creado un servicio externo.
+El propietario eligio localhost por ahora. Supabase esta activo: conexion, esquema, consultas de negocio y lectura de imagenes verificados. Gmail autentica correctamente; se activo en la configuracion local sin enviar mensajes de prueba. La publicacion en VM o alojamiento temporal sigue pendiente de elegir destino y disponer de acceso. No se ha contratado ni creado un servicio externo.
+
+Se detectaron permisos de escritura/borrado anonimos en el bucket `imagenes`. Antes de publicar, configurar una clave privada de servidor para Storage y restringir esas politicas; mantener la lectura publica solo donde corresponda. No copiar la clave privada al frontend ni al repositorio.
 
 Referencias tecnicas: [Node LTS](https://nodejs.org/en/about/previous-releases), [Express detras de un proxy](https://expressjs.com/en/guide/behind-proxies/), [build por etapas de Docker](https://docs.docker.com/build/building/multi-stage/).

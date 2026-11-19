@@ -15,7 +15,7 @@ npm start
 
 Abrir http://localhost:3000 e iniciar sesión con una cuenta existente. La terminal debe permanecer abierta. Para desarrollo del frontend: `npm run dev --prefix SwettyPuppies_Frontend`, manteniendo el backend iniciado.
 
-La conexión utiliza la configuración existente de PostgreSQL/Supabase y Storage. Supabase está pausado: iniciar el servidor no significa que las operaciones con esa base estén disponibles. No se agregaron tablas, columnas, políticas RLS ni migraciones en la base compartida. `database/` permite reproducir el esquema en una base nueva y compararlo sin alterar la instalación existente. No se necesitan los paquetes SSR de Next.js: la aplicación es Vue + Express.
+La conexión utiliza la configuración existente de PostgreSQL/Supabase y Storage. Supabase está activo y el esquema remoto fue comprobado como compatible; las lecturas de la aplicación en localhost responden correctamente. No se agregaron tablas, columnas, políticas RLS ni migraciones en la base compartida. `database/` permite reproducir el esquema en una base nueva y compararlo sin alterar la instalación existente. No se necesitan los paquetes SSR de Next.js: la aplicación es Vue + Express.
 
 ## Operación
 
@@ -86,14 +86,14 @@ node tests/support/store-preview.cjs
 
 Abrir `http://127.0.0.1:3011/__preview/cliente` o `http://127.0.0.1:3011/__preview/administrador`. Este servidor escucha solo loopback, usa usuarios temporales, el esquema completo y una base en memoria con cinco productos DEMO e imágenes ilustrativas. No es una opción de despliegue. Detenerlo con Ctrl+C elimina el entorno temporal. Los enlaces de otros módulos no están preparados en esta vista previa.
 
-La revisión original comprobó la carga, lectura pública y eliminación de una imagen temporal en el bucket real. Es evidencia histórica: no se repitió durante este cierre porque Supabase está pausado. En este cierre no se insertaron productos, pedidos o movimientos de prueba en Supabase.
+La revisión original comprobó la carga, lectura pública y eliminación de una imagen temporal en el bucket real. Tras reactivar Supabase se comprobaron las cinco imágenes existentes mediante HEAD, sin repetir escrituras. Las políticas de escritura anónima del bucket requieren restricción junto con una clave privada de servidor; detalle en `CIERRE_DESARROLLO.md`.
 
 ### Resultado de la validación
 
-- Backend: 91 pruebas aprobadas, incluidas siete de preparación de despliegue; detalle de cobertura y alcance en `CIERRE_DESARROLLO.md`.
+- Backend: 92 pruebas aprobadas, incluidas siete de preparación de despliegue; detalle de cobertura y alcance en `CIERRE_DESARROLLO.md`.
 - Frontend: ESLint completo y compilación con verificación TypeScript aprobados. Permanece la advertencia previa de tamaño de los bundles de gráficas/reportes.
 - Navegador, cierre actual: catálogo con imágenes, carrito, aceptación de datos y condiciones, checkout, pago simulado aprobado, descuento de inventario e ingresos verificados en entorno aislado. Las revisiones anteriores también cubrieron alta, edición, entrega y vista móvil.
-- Supabase real: pendiente de reanudar y verificar. Las respuestas 200 y la prueba de Storage de la revisión original no acreditan disponibilidad actual.
+- Supabase real: esquema compatible, smoke local aprobado y consultas autenticadas de cliente/administración e imágenes verificadas. La publicación externa sigue pendiente por decisión del propietario.
 - Las operaciones nuevas también están disponibles en Swagger, etiquetas Tienda y Admin Tienda.
 
 ## Tema visual

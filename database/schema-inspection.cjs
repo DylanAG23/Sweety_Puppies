@@ -20,7 +20,7 @@ const queries = {
     pg_get_triggerdef(t.oid) AS definition FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid
     JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND NOT t.tgisinternal
     ORDER BY c.relname,t.tgname`,
-  enums: `SELECT t.typname AS name,array_agg(e.enumlabel ORDER BY e.enumsortorder) AS values
+  enums: `SELECT t.typname AS name,json_agg(e.enumlabel::text ORDER BY e.enumsortorder) AS values
     FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace JOIN pg_enum e ON e.enumtypid=t.oid
     WHERE n.nspname='public' GROUP BY t.typname ORDER BY t.typname`,
   functions: `SELECT p.proname AS name,pg_get_functiondef(p.oid) AS definition FROM pg_proc p
@@ -45,7 +45,19 @@ async function inspectSchema(db) {
 }
 
 function differences(expected, actual) {
-  return Object.keys(queries).filter(key => JSON.stringify(expected[key]) !== JSON.stringify(actual[key]));
+  return Object.keys(queries).filter(key => JSON.stringify(canonicalGroup(key, expected[key])) !== JSON.stringify(canonicalGroup(key, actual[key])));
+}
+
+function canonicalGroup(group, rows) {
+  if (group !== 'constraints' || !Array.isArray(rows)) return rows;
+  // Dos representaciones equivalentes observadas entre el respaldo/PGlite y
+  // PostgreSQL remoto: conversion por elemento frente a conversion del array.
+  // Solo se normaliza esta expresion exacta; otros cambios siguen alertando.
+  const elementCast = "CHECK (((tipo)::text = ANY (ARRAY[('registro'::character varying)::text, ('recuperacion'::character varying)::text])))";
+  const arrayCast = "CHECK (((tipo)::text = ANY ((ARRAY['registro'::character varying, 'recuperacion'::character varying])::text[])))";
+  return rows.map(row => row.table_name === 'codigos_verificacion' &&
+    row.name === 'codigos_verificacion_tipo_check' && row.definition === arrayCast
+    ? { ...row, definition: elementCast } : row);
 }
 
 module.exports = { inspectSchema, differences };

@@ -9,6 +9,17 @@ const expected = require('../database/schema-manifest.json');
 const baseline = fs.readFileSync(path.join(__dirname, '../database/001_application_baseline.sql'), 'utf8');
 const { seedDemoCatalog, products, assetsDirectory } = require('../database/demo-catalog.cjs');
 
+test('comparacion admite casts equivalentes de PostgreSQL sin ocultar cambios de valores o enums', () => {
+  const actual = structuredClone(expected);
+  const check = actual.constraints.find(row => row.name === 'codigos_verificacion_tipo_check');
+  check.definition = "CHECK (((tipo)::text = ANY ((ARRAY['registro'::character varying, 'recuperacion'::character varying])::text[])))";
+  assert.deepEqual(differences(expected, actual), []);
+  check.definition = check.definition.replace("'recuperacion'", "'otro'");
+  assert.deepEqual(differences(expected, actual), ['constraints']);
+  actual.enums[0].values.push('nuevo');
+  assert.deepEqual(differences(expected, actual), ['constraints', 'enums']);
+});
+
 test('baseline reproduce las 24 tablas del respaldo, sin datos ni dependencias de Supabase', async () => {
   const pg = new PGlite();
   try {
