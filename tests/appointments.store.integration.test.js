@@ -35,7 +35,9 @@ test('ACT-35: cita completa, compra y doble flujo conservan separados el histori
     const petId = await insert("INSERT INTO mascotas(cliente_id,nombre,tamano,tipo_pelaje,edad) VALUES($1,'Luna','pequeno','corto',2)", [clientId]);
     const serviceId = await insert("INSERT INTO servicios(nombre,duracion_minutos) VALUES('Baño de prueba',60)");
     await db.query("INSERT INTO tarifas_servicio(servicio_id,tamano,tipo_pelaje,precio_base) VALUES($1,'pequeno','corto',50000)", [serviceId]);
-    const date = appointmentRules.addDays(appointmentRules.getBusinessNow().date, 3);
+    // La peluquería no atiende los domingos: si la fecha de prueba cae en domingo se usa el lunes.
+    let date = appointmentRules.addDays(appointmentRules.getBusinessNow().date, 3);
+    if (appointmentRules.getDayName(date) === 'domingo') date = appointmentRules.addDays(date, 1);
     await db.query("INSERT INTO horarios_negocio(dia,hora_apertura,hora_cierre,ultima_cita,duracion_base_minutos) VALUES($1,'08:00','18:00','16:00',60)", [appointmentRules.getDayName(date)]);
     const user = { id: uid, rol: 'cliente' }, admin = { id: aid, rol: 'administrador' };
     const notifications = [];
