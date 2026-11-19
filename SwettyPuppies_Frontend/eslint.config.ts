@@ -13,7 +13,8 @@ export default defineConfigWithVueTs(
     files: ['**/*.{ts,mts,tsx,vue}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  // src/legacy y public/legacy son codigo archivado que la SPA no usa.
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'src/legacy/**', 'public/legacy/**']),
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,

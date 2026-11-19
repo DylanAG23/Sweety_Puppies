@@ -1,0 +1,4 @@
+{
+  "files": ["app.js", "index.js", "baseDatos.js", "swagger.js", "package.json", "package-lock.json", "scripts/start-production.cjs", "scripts/check-production.cjs", "scripts/smoke-deployment.cjs", "deploy/README.md", "deploy/production.env.example", "deploy/sweety-puppies.service"],
+  "modules": ["adminAgenda", "adminClients", "adminPets", "adminReports", "adminServiceManagement", "adminServices", "auth", "cart", "catalog", "clientAppointments", "clientHistory", "clientPets", "config", "inventory", "middleware", "orders", "portalContent", "routes", "services", "shared"]
+}

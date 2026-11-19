@@ -1,0 +1,176 @@
+/* Dark palette and compatibility layer for the existing scoped/legacy screens.
+   Applied on html so page-level body classes cannot reset the preference. */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --sp-ink: #f1edf5;
+  --sp-muted: #c8bbce;
+  --sp-gray: #b2a8bf;
+  --sp-text-subtle: #bfb5ca;
+  --sp-bg: #15131e;
+  --sp-bg-deep: #191622;
+  --sp-surface: #221e2d;
+  --sp-surface-muted: #2c2639;
+  --sp-pink-border: #57445e;
+  --sp-field-border: #786681;
+  --sp-line: #514559;
+  --sp-primary: #8f176e;
+  --sp-primary-deep: #79135f;
+  --sp-primary-strong: #f5a9dc;
+  --sp-primary-soft: #38243c;
+  --sp-primary-tint: #462b48;
+  --sp-link-text: #80e5d3;
+  --sp-link: #80e5d3;
+  --sp-disabled-bg: #34303e;
+  --sp-disabled-text: #b3aabd;
+  --sp-success: #8ce5c0;
+  --sp-success-bg: #193c33;
+  --sp-success-border: #41856f;
+  --sp-warning: #f5d48c;
+  --sp-warning-bg: #40351d;
+  --sp-warning-border: #a08a50;
+  --sp-danger: #ffb2bb;
+  --sp-danger-bg: #472631;
+  --sp-danger-border: #a66073;
+  --sp-info: #a9ccff;
+  --sp-info-bg: #23344d;
+  --sp-info-border: #627fa5;
+  --sp-gradient-page: linear-gradient(145deg, #15131e, #1c1727);
+  --sp-gradient-sidebar: linear-gradient(180deg, #392039, #241827);
+  --sp-gradient-avatar: linear-gradient(135deg, #49304b, #23483f);
+  --sp-focus-color: #88ebd8;
+  --sp-focus-ring: 0 0 0 3px #221e2d, 0 0 0 6px #88ebd8;
+  --sp-shadow-card: 0 20px 50px #00000030;
+  --sp-shadow-card-sm: 0 8px 24px #00000024;
+  --sp-shadow-modal: 0 30px 90px #00000080;
+}
+
+html[data-theme='dark'] body,
+html[data-theme='dark'] :is(.auth-shell, .cliente-portal-body, .store-page) {
+  background: var(--sp-gradient-page) !important;
+  color: var(--sp-ink) !important;
+}
+
+/* Existing pages use both tokens and literal white/pink backgrounds. */
+html[data-theme='dark'] :is(
+  [class$='-card'], [class*='-card '], [class$='-panel'], [class*='-panel '],
+  [class$='-shell'], [class*='-shell '], [class$='-hero'], [class*='-hero '],
+  .modal-content, .modal-body, .modal-header, .modal-footer, .modal-container,
+  .platform-topbar, .topbar-profile, .topbar-date, .sidebar-toggle,
+  .store-modal-card, .store-card, .store-hero, .table-shell,
+  .filter-bar, .filters-bar, .tabs-card, .tabs-container, .tab-content,
+  .form-section, .detail-section, .profile-section, .summary-section,
+  .pet-summary, .appointment-summary, .service-summary, .empty-state,
+  .dropdown-menu, .select-options, .breed-options
+) {
+  background: var(--sp-surface) !important;
+  color: var(--sp-ink) !important;
+  border-color: var(--sp-line) !important;
+  box-shadow: var(--sp-shadow-card-sm);
+}
+html[data-theme='dark'] :is(.store-hero, .auth-hero, [class$='-hero']) {
+  background: linear-gradient(120deg, #322037, #1d3334) !important;
+}
+html[data-theme='dark'] :is(h1,h2,h3,h4,h5,h6,label,legend,th,td,dt,dd,strong) {
+  color: var(--sp-ink) !important;
+}
+html[data-theme='dark'] :is(p,small,figcaption,.store-muted,.auth-helper,.auth-field-label,
+  .topbar-profile-copy,.topbar-breadcrumb,.store-eyebrow,[class$='-subtitle'],[class$='-description'],[class$='-hint']) {
+  color: var(--sp-muted) !important;
+}
+html[data-theme='dark'] :is(a,.store-price,.auth-title h2,.auth-link,.auth-inline-link,.topbar-brand) {
+  color: #f5a9dc !important;
+}
+html[data-theme='dark'] :is(.store-hero nav a,.cart-link,.store-badge,.badge,.pill,[class$='-pill'],[class$='-badge'],.topbar-profile-avatar,.panel-badge) {
+  background: #3c2a43 !important;
+  color: #f2d6ed !important;
+  border-color: #755881 !important;
+}
+html[data-theme='dark'] :is(.platform-sidebar,.sidebar-user,.sidebar-logout) {
+  border-color: #674367 !important;
+}
+html[data-theme='dark'] .platform-sidebar { background: var(--sp-gradient-sidebar) !important; }
+html[data-theme='dark'] .sidebar-link { color: #efdfef !important; }
+html[data-theme='dark'] .sidebar-link:is(.active,:hover) { background: #563652 !important; color: #fff !important; }
+html[data-theme='dark'] :is(.sidebar-brand-copy,.sidebar-link-label,.sidebar-user-name,.sidebar-link-icon) { color: #f8edf5 !important; }
+
+/* Controls retain clear borders, native dark pickers and visible focus. */
+html[data-theme='dark'] :is(input:not([type='checkbox']):not([type='radio']),select,textarea,option) {
+  color: #f1edf5 !important;
+  background: #191621 !important;
+  border-color: #786681 !important;
+}
+html[data-theme='dark'] input::placeholder,
+html[data-theme='dark'] textarea::placeholder { color: #b8aabe !important; opacity: 1; }
+html[data-theme='dark'] :is(input[type='checkbox'],input[type='radio']) { accent-color: #b85c9f; }
+html[data-theme='dark'] input:-webkit-autofill {
+  -webkit-text-fill-color: #f1edf5 !important;
+  box-shadow: 0 0 0 1000px #191621 inset !important;
+}
+html[data-theme='dark'] .auth-field-label { background: #191621 !important; }
+html[data-theme='dark'] :is(button,.store-button,.sp-btn) {
+  color: #fff !important;
+  border-color: #ab699d !important;
+}
+html[data-theme='dark'] :is(.store-page button,.btn-primary,.btn-enviar,.auth-primary-button,.sp-btn-primary) {
+  background: #8f176e !important;
+  color: #fff !important;
+}
+html[data-theme='dark'] :is(.store-page button.secondary,.theme-toggle,.sidebar-toggle,.btn-secondary,.btn-secundario,.auth-secondary-button,.modal-close,.close-button,.close-btn,.store-page button[type='button'].secondary) {
+  background: #332b40 !important;
+  color: #f5d3ea !important;
+  border: 1px solid #786681 !important;
+}
+html[data-theme='dark'] :is(button,.sp-btn):hover:not(:disabled) { filter: brightness(1.16); }
+html[data-theme='dark'] :is(button,.sp-btn) :is(span,strong,i) { color: inherit !important; }
+html[data-theme='dark'] :is(button,input,select,textarea):disabled {
+  background: var(--sp-disabled-bg) !important;
+  color: var(--sp-disabled-text) !important;
+  border-color: #5b5166 !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+html[data-theme='dark'] :is(.tab,.tab-button,.table-tab,.filter-chip,.period-button,.view-button) {
+  background: #2c2639 !important;
+  color: #ded3e6 !important;
+  border-color: #786681 !important;
+}
+html[data-theme='dark'] :is(.tab,.tab-button,.table-tab,.filter-chip,.period-button,.view-button).active {
+  background: #69345e !important; color: #fff !important;
+}
+
+/* Tables, product photos and dialogs. Images keep their original colors. */
+html[data-theme='dark'] :is(table,tbody,tr,td) { background-color: transparent !important; border-color: #514559 !important; }
+html[data-theme='dark'] :is(thead,th) { background: #2c2639 !important; border-color: #514559 !important; }
+html[data-theme='dark'] tbody tr:hover { background: #30283b !important; }
+html[data-theme='dark'] :is(hr,.product-photo-section,.store-timeline) { border-color: #62506c !important; }
+html[data-theme='dark'] :is(.store-placeholder,.store-product img,.store-image) { background: #2c2639 !important; color: #cdb7d2 !important; }
+html[data-theme='dark'] :is(.store-modal,.modal-overlay,.sp-modal-backdrop,.platform-overlay) { background: #08060dbd !important; }
+html[data-theme='dark'] :is(.store-notice,.success-message,.alert-success,.status-success) {
+  background: #193c33 !important; color: #8ce5c0 !important; border-color: #41856f !important;
+}
+html[data-theme='dark'] :is(.store-error,.error-message,.alert-danger,.error-banner,.store-page button.danger,.btn-danger) {
+  background: #472631 !important; color: #ffb2bb !important; border-color: #a66073 !important;
+}
+html[data-theme='dark'] :is(.warning-message,.alert-warning) {
+  background: #40351d !important; color: #f5d48c !important; border-color: #a08a50 !important;
+}
+html[data-theme='dark'] :is(.apexcharts-text,.apexcharts-legend-text) { fill: #d6c9df !important; color: #d6c9df !important; }
+html[data-theme='dark'] .apexcharts-gridline { stroke: #514559 !important; }
+html[data-theme='dark'] :is(.apexcharts-tooltip,.apexcharts-tooltip-title,.apexcharts-menu) { background: #2c2639 !important; color: #f1edf5 !important; border-color: #786681 !important; }
+html[data-theme='dark'] .apexcharts-tooltip * { color: #f1edf5 !important; }
+html[data-theme='dark'] ::selection { background: #71506f; color: #fff; }
+html[data-theme='dark'] .sidebar-brand-logo { background: white !important; }
+html[data-theme='dark'] .sidebar-toggle span { background: #f5a9dc !important; }
+html[data-theme='dark'] .sp-skeleton { background: linear-gradient(90deg,#30283c 25%,#45384e 50%,#30283c 75%) !important; background-size: 200% 100% !important; }
+html[data-theme='dark'] :is(button.active,button.selected,button.is-active,button[aria-pressed='true'],button[aria-selected='true'],.range-day-card.active) {
+  background: #69345e !important; color: #fff !important; border-color: #e8a0d4 !important;
+  box-shadow: inset 0 0 0 1px #e8a0d4;
+}
+html[data-theme='dark'] .profile-grid div { min-width: 0; overflow-wrap: anywhere; }
+
+/* Print output remains legible on white paper regardless of screen preference. */
+@media print {
+  html[data-theme='dark'] body { background: white !important; color: black !important; }
+  html[data-theme='dark'] #app :is(main,section,article,div,p,span,strong,small,h1,h2,h3,h4,label,th,td) { background: white !important; color: black !important; box-shadow: none !important; }
+  .theme-toggle,.public-theme-toggle { display: none !important; }
+}

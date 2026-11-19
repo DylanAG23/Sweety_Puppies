@@ -1,193 +1,136 @@
 const express = require('express');
+const { authenticateToken, authorizeRoles } = require('../middleware/auth');
+const { createAdminClientsModule } = require('../adminClients');
+
 const router = express.Router();
-const client = require('../baseDatos');
+const { controller } = createAdminClientsModule();
 
 /**
- * @swagger
+ * @openapi
  * tags:
- *   name: Clientes
- *   description: Operaciones relacionadas con los clientes
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Cliente:
- *       type: object
- *       required:
- *         - cedula
- *         - nombre
- *       properties:
- *         cedula:
- *           type: string
- *           description: Número de cédula del cliente
- *         nombre:
- *           type: string
- *         telefono:
- *           type: string
- *         direccion:
- *           type: string
- *         email:
- *           type: string
- */
-
-/**
- * @swagger
+ *   - name: Admin Clientes
+ *     description: Consulta y actualización de clientes desde administración.
+ *
  * /clientes:
  *   get:
- *     summary: Obtener todos los clientes
- *     tags: [Clientes]
+ *     summary: Lista clientes del portal
+ *     tags: [Admin Clientes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *           description: Búsqueda por nombre, apellido, cédula, teléfono o correo.
  *     responses:
  *       200:
- *         description: Lista de todos los clientes
+ *         description: Clientes obtenidos correctamente
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Cliente'
- */
-router.get('/', async (req, res) => {
-  try {
-    const result = await client.query('SELECT * FROM clientes');
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener clientes', error: error.message });
-  }
-});
-
-/**
- * @swagger
- * /clientes/{cedula}:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 clientes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     additionalProperties: true
+ *                 search:
+ *                   type: string
+ *
+ * /clientes/{id}:
  *   get:
- *     summary: Obtener un cliente por cédula
- *     tags: [Clientes]
+ *     summary: Obtiene el detalle de un cliente
+ *     tags: [Admin Clientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: cedula
+ *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: Cédula del cliente
+ *           format: uuid
  *     responses:
  *       200:
- *         description: Datos del cliente
+ *         description: Cliente obtenido correctamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Cliente'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 cliente:
+ *                   type: object
+ *                   additionalProperties: true
  *       404:
  *         description: Cliente no encontrado
- */
-router.get('/:cedula', async (req, res) => {
-  const { cedula } = req.params;
-  try {
-    const result = await client.query('SELECT * FROM clientes WHERE cedula = $1', [cedula]);
-    if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener cliente', error: error.message });
-  }
-});
-
-/**
- * @swagger
- * /clientes:
- *   post:
- *     summary: Crear un nuevo cliente
- *     tags: [Clientes]
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *   patch:
+ *     summary: Actualiza un cliente desde administración
+ *     tags: [Admin Clientes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Cliente'
- *     responses:
- *       201:
- *         description: Cliente creado exitosamente
- *       500:
- *         description: Error al crear cliente
- */
-router.post('/', async (req, res) => {
-  const { cedula, nombre, telefono, direccion, email } = req.body;
-  try {
-    await client.query(
-      'INSERT INTO clientes (cedula, nombre, telefono, direccion, email) VALUES ($1, $2, $3, $4, $5)',
-      [cedula, nombre, telefono, direccion, email]
-    );
-    res.status(201).json({ message: 'Cliente creado', cedula, nombre, telefono, direccion, email });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear cliente', error: error.message });
-  }
-});
-
-/**
- * @swagger
- * /clientes/{cedula}:
- *   put:
- *     summary: Actualizar un cliente por cédula
- *     tags: [Clientes]
- *     parameters:
- *       - in: path
- *         name: cedula
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Cliente'
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               apellido:
+ *                 type: string
+ *               telefono:
+ *                 type: string
+ *               telefono_secundario:
+ *                 type: string
+ *               direccion:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               activo:
+ *                 type: boolean
  *     responses:
  *       200:
- *         description: Cliente actualizado
- *       404:
- *         description: Cliente no encontrado
+ *         description: Cliente actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                 cliente:
+ *                   type: object
+ *                   additionalProperties: true
  */
-router.put('/:cedula', async (req, res) => {
-  const { cedula } = req.params;
-  const { nombre, telefono, direccion, email } = req.body;
-  try {
-    const result = await client.query(
-      'UPDATE clientes SET nombre=$1, telefono=$2, direccion=$3, email=$4 WHERE cedula=$5',
-      [nombre, telefono, direccion, email, cedula]
-    );
-    if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
-    res.json({ message: 'Cliente actualizado', cedula, nombre, telefono, direccion, email });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar cliente', error: error.message });
-  }
-});
 
-/**
- * @swagger
- * /clientes/{cedula}:
- *   delete:
- *     summary: Eliminar un cliente por cédula
- *     tags: [Clientes]
- *     parameters:
- *       - in: path
- *         name: cedula
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Cliente eliminado
- *       404:
- *         description: Cliente no encontrado
- */
-router.delete('/:cedula', async (req, res) => {
-  const { cedula } = req.params;
-  try {
-    const result = await client.query('DELETE FROM clientes WHERE cedula = $1', [cedula]);
-    if (result.rowCount === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
-    res.json({ message: 'Cliente eliminado' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar cliente', error: error.message });
-  }
-});
+router.use(authenticateToken, authorizeRoles('administrador'));
+
+router.get('/', controller.listClients);
+router.get('/:id', controller.getClientDetail);
+router.patch('/:id', controller.updateClient);
 
 module.exports = router;

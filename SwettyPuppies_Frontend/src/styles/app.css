@@ -1,0 +1,86 @@
+/*
+ * Estructura de la plataforma: menu lateral fijo + barra superior.
+ * Los tokens viven en tokens.css y los componentes en base.css.
+ */
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.bounce-effect {
+  animation: none !important;
+}
+
+body.platform-shell-active {
+  --platform-current-sidebar-width: var(--platform-sidebar-width);
+}
+
+body.platform-shell-active.platform-shell-collapsed {
+  --platform-current-sidebar-width: var(--platform-sidebar-collapsed-width);
+}
+
+body.platform-shell-admin .admin-home-page,
+body.platform-shell-admin .admin-agenda-page,
+body.platform-shell-admin .admin-clients-page,
+body.platform-shell-admin .admin-pets-page,
+body.platform-shell-admin .admin-services-page,
+body.platform-shell-admin .admin-content-page,
+body.platform-shell-admin .admin-reports-page,
+body.platform-shell-admin .management-page,
+body.platform-shell-admin .admin-placeholder-page,
+body.platform-shell-client .cliente-portal,
+body.platform-shell-client .booking-page,
+body.platform-shell-client .history-page,
+body.platform-shell-client .pets-page,
+body.platform-shell-client .profile-page,
+body.platform-shell-client .placeholder-page {
+  min-height: 100vh;
+  padding-top: calc(var(--platform-topbar-height) + 18px);
+  padding-left: calc(var(--platform-current-sidebar-width, 0px) + var(--platform-page-padding));
+  padding-right: var(--platform-page-padding);
+  padding-bottom: 28px;
+  box-sizing: border-box;
+  transition: padding-left var(--sp-duration-slow) var(--sp-ease);
+}
+
+@media (max-width: 980px) {
+  body.platform-shell-active {
+    --platform-current-sidebar-width: 0px;
+  }
+
+  body.platform-shell-admin .admin-home-page,
+  body.platform-shell-admin .admin-agenda-page,
+  body.platform-shell-admin .admin-clients-page,
+  body.platform-shell-admin .admin-pets-page,
+  body.platform-shell-admin .admin-services-page,
+  body.platform-shell-admin .admin-content-page,
+  body.platform-shell-admin .admin-reports-page,
+  body.platform-shell-admin .management-page,
+  body.platform-shell-admin .admin-placeholder-page,
+  body.platform-shell-client .cliente-portal,
+  body.platform-shell-client .booking-page,
+  body.platform-shell-client .history-page,
+  body.platform-shell-client .pets-page,
+  body.platform-shell-client .profile-page,
+  body.platform-shell-client .placeholder-page {
+    /* El armazon ya aporta el margen lateral: la pagina usa todo el ancho
+       (antes restaba otros 42 px y en celular quedaban ~290 px utiles). */
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: calc(var(--platform-topbar-height) + 16px);
+  }
+}
