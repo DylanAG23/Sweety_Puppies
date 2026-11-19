@@ -1,4 +1,5 @@
 const client = require('../../../baseDatos');
+const { InventoryError } = require('../../domain/errors/InventoryError');
 
 const BOGOTA_TIME_ZONE = 'America/Bogota';
 
@@ -55,6 +56,16 @@ const INVENTORY_SELECT = `
 `;
 
 class PostgresInventoryRepository {
+  async assertAdmin(sessionUser, db = client) {
+    const id = sessionUser?.id || sessionUser?.sub || sessionUser?.userId;
+    if (sessionUser?.rol !== 'administrador' ||
+        typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+      throw new InventoryError('Se requiere una cuenta administrativa activa', 403, 'ADMIN_REQUIRED');
+    const result = await db.query("SELECT id FROM usuarios WHERE id=$1 AND activo AND rol='administrador'", [id]);
+    if (!result.rowCount)
+      throw new InventoryError('Se requiere una cuenta administrativa activa', 403, 'ADMIN_REQUIRED');
+  }
+
   async runInTransaction(work) {
     return client.withTransaction(work);
   }

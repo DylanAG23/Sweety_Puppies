@@ -206,7 +206,7 @@ const { controller } = createAuthModule();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [nombre, apellido, cedula, telefono, email, password, confirmPassword]
+ *             required: [nombre, apellido, cedula, telefono, email, password, confirmPassword, consentimiento_datos, politica_version]
  *             properties:
  *               nombre:
  *                 type: string
@@ -232,6 +232,12 @@ const { controller } = createAuthModule();
  *                 type: string
  *                 format: password
  *                 example: MiClave123
+ *               consentimiento_datos:
+ *                 type: boolean
+ *                 enum: [true]
+ *               politica_version:
+ *                 type: string
+ *                 description: Versión vigente obtenida en GET /api/politica-datos
  *     responses:
  *       200:
  *         description: Código de verificación generado

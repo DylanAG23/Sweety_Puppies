@@ -1,28 +1,32 @@
 const { AuthError } = require('../../domain/errors/AuthError');
+const { policy } = require('../../../shared/legal/consent');
 
 async function verifyRegistrationCode(dependencies, payload) {
   const { authRepository, validation } = dependencies;
   const { email, codigo } = validation.validateVerificationInput(payload);
 
-  const verification = await authRepository.findValidVerificationCode({
-    email,
-    codigo,
-    tipo: 'registro'
-  });
-
-  if (!verification) {
-    throw new AuthError('El código es inválido o ya expiró', 400);
-  }
-
-  const pendingData = verification.payload || {};
-
-  await authRepository.ensureNoDuplicateUser({
-    email,
-    cedula: pendingData.cedula,
-    excludeVerificationId: verification.id
-  });
-
   return authRepository.transaction(async (transaction) => {
+    // El código y su autorización se verifican dentro de la misma transacción
+    // que crea la cuenta, para no usar un código invalidado por un reenvío.
+    const verification = await transaction.lockRegistrationCode({ email, codigo });
+
+    if (!verification) {
+      throw new AuthError('El código es inválido o ya expiró', 400);
+    }
+
+    const pendingData = verification.payload || {};
+    if (pendingData.consentimiento_datos?.aceptado !== true ||
+        pendingData.consentimiento_datos.version !== policy.version ||
+        pendingData.consentimiento_datos.sha256 !== policy.sha256) {
+      throw new AuthError('Vuelve al registro y acepta la política de datos vigente para solicitar otro código', 400);
+    }
+
+    await transaction.ensureNoDuplicateUser({
+      email,
+      cedula: pendingData.cedula,
+      excludeVerificationId: verification.id
+    });
+
     const usuario = await transaction.createUser({
       email,
       passwordHash: pendingData.passwordHash,
@@ -37,7 +41,7 @@ async function verifyRegistrationCode(dependencies, payload) {
       telefono: pendingData.telefono
     });
 
-    await transaction.markVerificationCodeAsUsed(verification.id);
+    await transaction.markVerificationCodeAsUsed(verification.id, usuario.id);
 
     return {
       message: 'Tu correo fue verificado correctamente. Ya puedes iniciar sesión.',

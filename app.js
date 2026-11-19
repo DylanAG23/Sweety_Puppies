@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { swaggerUi, swaggerSpec } = require('./swagger');
-const { getCorsOrigins } = require('./config/env');
+const { getCorsOrigins, getTrustProxy } = require('./config/env');
 const { securityHeaders } = require('./middleware/securityHeaders');
 const { errorHandler } = require('./middleware/errorHandler');
 
@@ -11,12 +11,20 @@ const frontendDist = path.join(__dirname, 'SwettyPuppies_Frontend', 'dist');
 
 // Construye la aplicacion Express sin abrir el puerto ni conectar la base de
 // datos, para poder probarla de forma aislada.
-function createApp() {
+function createApp({ checkDatabase = () => require('./baseDatos').checkConnection() } = {}) {
   const app = express();
   const allowedOrigins = getCorsOrigins();
 
   app.disable('x-powered-by');
+  app.set('trust proxy', getTrustProxy());
   app.use(securityHeaders);
+  app.use((req, res, next) => {
+    // Los nombres ocultos no deben caer en el fallback de Vue.
+    if (req.path.split('/').some(segment => segment.startsWith('.'))) {
+      return res.status(404).json({ success: false, message: 'Recurso no encontrado' });
+    }
+    next();
+  });
   app.use(
     cors({
       // Sin origen (misma pagina, curl, servidor) siempre se permite;
@@ -27,9 +35,26 @@ function createApp() {
   app.use(express.json({ limit: '1mb' }));
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.get('/api/politica-datos', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(require('./shared/legal/consent').policy);
+  });
 
   app.get('/api/health', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
     res.json({ success: true, status: 'ok' });
+  });
+
+  // Liveness y readiness son distintos: una base pausada no significa que
+  // el proceso deba reiniciarse, pero tampoco que el negocio este disponible.
+  app.get('/api/ready', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    try {
+      await checkDatabase();
+      res.json({ success: true, status: 'ready', database: 'available' });
+    } catch {
+      res.status(503).json({ success: false, status: 'unavailable', database: 'unavailable' });
+    }
   });
 
   app.use('/api/clientes', require('./routes/clientes'));

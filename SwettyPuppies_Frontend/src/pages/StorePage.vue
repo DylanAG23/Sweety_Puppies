@@ -8,6 +8,7 @@ const products = ref<Product[]>([]),
   categories = ref<Category[]>([]),
   selected = ref<Product | null>(null);
 const loading = ref(false),
+  loaded = ref(false),
   busy = ref(false),
   error = ref(''),
   notice = ref(''),
@@ -25,6 +26,7 @@ const filters = reactive({
 async function load(reset = false) {
   if (reset) page.value = 1;
   loading.value = true;
+  loaded.value = false;
   error.value = '';
   try {
     const r = await apiGet<{ productos: Product[]; total: number }>(
@@ -32,6 +34,7 @@ async function load(reset = false) {
     );
     products.value = r.productos;
     total.value = r.total;
+    loaded.value = true;
   } catch (e) {
     error.value = (e as Error).message;
   } finally {
@@ -39,6 +42,7 @@ async function load(reset = false) {
   }
 }
 async function add(p: Product, amount = 1) {
+  if (busy.value) return;
   busy.value = true;
   error.value = '';
   notice.value = '';
@@ -102,6 +106,11 @@ onMounted(async () => {
       ><button :disabled="loading">Aplicar</button>
     </form>
     <p v-if="loading" role="status">Cargando catálogo…</p>
+    <section v-else-if="!loaded" class="store-card store-empty">
+      <h2>No pudimos cargar el catálogo</h2>
+      <p>Intenta de nuevo para consultar productos y existencias.</p>
+      <button @click="load()">Reintentar</button>
+    </section>
     <section v-else-if="!products.length" class="store-card store-empty">
       <h2>No hay productos para mostrar</h2>
       <p>Prueba con otros filtros o vuelve pronto.</p>
@@ -156,8 +165,8 @@ onMounted(async () => {
       v-if="selected"
       v-dialog-focus
       class="store-modal"
-      @click.self="selected = null"
-      @keydown.esc="selected = null"
+      @click.self="!busy && (selected = null)"
+      @keydown.esc="!busy && (selected = null)"
     >
       <section
         role="dialog"
@@ -167,7 +176,7 @@ onMounted(async () => {
       >
         <header class="store-modal-heading">
           <h2 id="product-title">{{ selected.nombre }}</h2>
-          <button class="secondary" @click="selected = null">Cerrar</button>
+          <button class="secondary" :disabled="busy" @click="selected = null">Cerrar</button>
         </header>
         <p v-if="error" role="alert" class="store-notice store-error">{{ error }}</p>
         <div class="store-thumbnails">

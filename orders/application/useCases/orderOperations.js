@@ -1,4 +1,5 @@
 const r = require('../../../shared/store/rules');
+const { validConsentInput, consentEvidence } = require('../../../shared/legal/consent');
 function metadata(order) {
   try {
     const m = JSON.parse(order.observaciones);
@@ -35,6 +36,7 @@ function operations({ repository, cart, inventory, now, newId }) {
         r.fail(
           'Debes aceptar las condiciones de compra y tratamiento de datos'
         );
+      if (!validConsentInput(b)) r.fail('Debes leer y aceptar la política de tratamiento de datos vigente');
       const order = await repository.transaction(async (tx) => {
         const clientId = await repository.client(user, tx);
         await repository.lockClient(tx, clientId);
@@ -67,7 +69,8 @@ function operations({ repository, cart, inventory, now, newId }) {
           consentimiento: {
             aceptado: true,
             version: 'tienda-v1',
-            fecha: now().toISOString()
+            fecha: now().toISOString(),
+            datos: consentEvidence(now())
           },
           cart: items.map((i) => ({
             id: i.id,
@@ -128,12 +131,17 @@ function operations({ repository, cart, inventory, now, newId }) {
         const requestId = b.requestId ? r.uuid(b.requestId) : null;
         if (action === 'pagar' && !requestId)
           r.fail('Falta el identificador del intento');
-        if (requestId && meta.events.some((e) => e.requestId === requestId))
+        const previousAttempt = requestId && meta.events.find((e) => e.requestId === requestId);
+        if (previousAttempt) {
+          if (previousAttempt.accion !== action ||
+              (['pagar', 'metodo'].includes(action) && previousAttempt.metodo !== b.metodo_pago) ||
+              (action === 'pagar' && previousAttempt.resultado !== b.resultado))
+            r.fail('El identificador del intento ya se usó para otra operación', 409);
           return {
             orden: publicOrder(order),
-            resultado: meta.events.find((e) => e.requestId === requestId)
-              .resultado
+            resultado: previousAttempt.resultado
           };
+        }
         let outcome = 'aprobado';
         if (action === 'cancelar') {
           if (order.estado === 'cancelado')

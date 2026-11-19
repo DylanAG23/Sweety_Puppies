@@ -6,6 +6,18 @@ class TransactionContext {
     this.db = db;
   }
 
+  async lockRegistrationCode({ email, codigo }) {
+    const result = await this.db.query(`SELECT * FROM codigos_verificacion
+      WHERE lower(email) = $1 AND codigo = $2 AND tipo = 'registro'
+        AND usado = false AND expiracion > NOW()
+      ORDER BY created_at DESC LIMIT 1 FOR UPDATE`, [email, codigo]);
+    return result.rows[0] || null;
+  }
+
+  ensureNoDuplicateUser(input) {
+    return new PostgresAuthRepository().ensureNoDuplicateUser(input, this.db);
+  }
+
   async createUser({ email, passwordHash, rol }) {
     const result = await this.db.query(
       `
@@ -32,7 +44,13 @@ class TransactionContext {
     return result.rows[0];
   }
 
-  async markVerificationCodeAsUsed(id) {
+  async markVerificationCodeAsUsed(id, usuarioId) {
+    if (usuarioId) {
+      await this.db.query(`UPDATE codigos_verificacion SET usado = true,
+        payload = (payload - 'passwordHash') || jsonb_build_object('usuarioId', $2::text)
+        WHERE id = $1`, [id, usuarioId]);
+      return;
+    }
     await this.db.query('UPDATE codigos_verificacion SET usado = true WHERE id = $1', [id]);
   }
 }
@@ -53,7 +71,7 @@ class PostgresAuthRepository {
     return result.rows.map((row) => row.id);
   }
 
-  async ensureNoDuplicateUser({ email, cedula, excludeVerificationId = null }) {
+  async ensureNoDuplicateUser({ email, cedula, excludeVerificationId = null, allowPendingEmail = false }, connection = client) {
     const duplicateEmailQuery = `
       SELECT 'usuarios' AS origen
       FROM usuarios
@@ -66,6 +84,7 @@ class PostgresAuthRepository {
         AND usado = false
         AND expiracion > NOW()
         AND ($2::uuid IS NULL OR id <> $2::uuid)
+        AND NOT $3::boolean
       LIMIT 1
     `;
 
@@ -81,12 +100,13 @@ class PostgresAuthRepository {
         AND expiracion > NOW()
         AND payload->>'cedula' = $1
         AND ($2::uuid IS NULL OR id <> $2::uuid)
+        AND (NOT $3::boolean OR lower(email) <> $4)
       LIMIT 1
     `;
 
     const [emailResult, cedulaResult] = await Promise.all([
-      client.query(duplicateEmailQuery, [email, excludeVerificationId]),
-      client.query(duplicateCedulaQuery, [cedula, excludeVerificationId])
+      connection.query(duplicateEmailQuery, [email, excludeVerificationId, allowPendingEmail]),
+      connection.query(duplicateCedulaQuery, [cedula, excludeVerificationId, allowPendingEmail, email])
     ]);
 
     if (emailResult.rowCount > 0) {

@@ -100,6 +100,8 @@ async function checkout(method = 'tarjeta', qty = 2) {
       requestId: randomUUID(),
       metodo_pago: method,
       consentimiento: true,
+      consentimiento_datos: true,
+      politica_version: require('../shared/legal/consent').policy.version,
       total_esperado: product.precio * qty
     })
   ).orden;
@@ -180,6 +182,27 @@ test('carrito persiste por cliente y rechaza cantidades inválidas o superiores 
     /inválido/
   );
 });
+test('inventario rechaza administradores desactivados o con rol revocado sin modificar existencias', async () => {
+  await fixture();
+  const actions = [
+    () => inventory.useCases.getInventoryOverview(admin, {}),
+    () => inventory.useCases.getProductInventory(admin, product.id),
+    () => inventory.useCases.updateMinimumStock(admin, product.id, { stockMinimo: 3 }),
+    () => inventory.useCases.listInventoryMovements(admin, {}),
+    () => inventory.useCases.exportInventoryMovements(admin, {}),
+    () => inventory.useCases.registerInventoryMovement(admin, { productoId: product.id, tipo: 'salida', cantidad: 1, motivo: 'Prueba' })
+  ];
+  try {
+    await db.query('UPDATE usuarios SET activo=false WHERE id=$1', [admin.id]);
+    for (const action of actions) await assert.rejects(action(), /administrativa activa/);
+    await db.query("UPDATE usuarios SET activo=true,rol='cliente' WHERE id=$1", [admin.id]);
+    for (const action of actions) await assert.rejects(action(), /administrativa activa/);
+    assert.equal(await stock(), 10);
+    assert.equal((await db.query('SELECT stock_minimo FROM inventario WHERE producto_id=$1', [product.id])).rows[0].stock_minimo, 0);
+  } finally {
+    await db.query("UPDATE usuarios SET activo=true,rol='administrador' WHERE id=$1", [admin.id]);
+  }
+});
 test('checkout valida consentimiento, precios y reutiliza la misma solicitud', async () => {
   await fixture();
   await cart.set(user, { producto_id: product.id, cantidad: 1 });
@@ -187,7 +210,9 @@ test('checkout valida consentimiento, precios y reutiliza la misma solicitud', a
     requestId: randomUUID(),
     metodo_pago: 'tarjeta',
     total_esperado: 10000,
-    consentimiento: true
+    consentimiento: true,
+    consentimiento_datos: true,
+    politica_version: require('../shared/legal/consent').policy.version
   };
   await assert.rejects(
     orders.checkout(user, { ...body, consentimiento: false }),
@@ -200,6 +225,9 @@ test('checkout valida consentimiento, precios y reutiliza la misma solicitud', a
   const first = await orders.checkout(user, body),
     again = await orders.checkout(user, body);
   assert.equal(first.orden.id, again.orden.id);
+  assert.equal(first.orden.consentimiento.datos.version, body.politica_version);
+  await assert.rejects(orders.checkout(user, { ...body, consentimiento_datos: false }), /política/);
+  await assert.rejects(orders.checkout(user, { ...body, politica_version: 'antigua' }), /política/);
   assert.equal(await stock(), 10);
   await assert.rejects(orders.detail(other, first.orden.id), /no encontrado/);
 });
@@ -231,6 +259,52 @@ test('pago aprobado descuenta stock una sola vez, vacía carrito y no permite ca
       .estado,
     'entregado'
   );
+});
+test('checkout no confunde su clave con eventos de pago ni observaciones históricas', async () => {
+  await fixture();
+  const first = await checkout(), paymentKey = randomUUID();
+  await payment(first.id, 'rechazado', paymentKey);
+  const body = { requestId: paymentKey, metodo_pago: 'tarjeta', total_esperado: 20000,
+    consentimiento: true, consentimiento_datos: true,
+    politica_version: require('../shared/legal/consent').policy.version };
+  const second = (await orders.checkout(user, body)).orden;
+  assert.notEqual(second.id, first.id);
+  // Formatting the JSON must not make a retry create a second order.
+  const raw = (await db.query('SELECT observaciones FROM ordenes WHERE id=$1', [second.id])).rows[0];
+  await db.query('UPDATE ordenes SET observaciones=$2 WHERE id=$1',
+    [second.id, JSON.stringify(JSON.parse(raw.observaciones), null, 2)]);
+  assert.equal((await orders.checkout(user, body)).orden.id, second.id);
+  await db.query('UPDATE ordenes SET observaciones=$2 WHERE id=$1', [first.id, `Nota antigua ${paymentKey}`]);
+  assert.equal((await orders.checkout(user, body)).orden.id, second.id);
+});
+
+test('un intento de pago no puede reutilizarse con otra acción o resultado', async () => {
+  await fixture();
+  const order = await checkout(), key = randomUUID();
+  await payment(order.id, 'rechazado', key);
+  assert.equal((await payment(order.id, 'rechazado', key)).resultado, 'rechazado');
+  await assert.rejects(payment(order.id, 'aprobado', key), /otra operación/);
+  await assert.rejects(orders.action(user, order.id, { accion: 'cancelar', requestId: key }), /otra operación/);
+  assert.equal(await stock(), 10);
+  assert.equal((await orders.detail(user, order.id)).orden.estado, 'en_espera_pago');
+});
+
+test('dos clientes con pedidos de la última unidad no producen sobreventa', async () => {
+  await fixture(1);
+  const first = await checkout('tarjeta', 1);
+  await cart.set(other, { producto_id: product.id, cantidad: 1 });
+  const second = (await orders.checkout(other, {
+    requestId: randomUUID(), metodo_pago: 'nequi', total_esperado: 10000,
+    consentimiento: true, consentimiento_datos: true,
+    politica_version: require('../shared/legal/consent').policy.version
+  })).orden;
+  await payment(first.id);
+  await assert.rejects(orders.action(other, second.id, { accion: 'pagar', metodo_pago: 'nequi', resultado: 'aprobado', requestId: randomUUID() }), /stock/i);
+  assert.equal(await stock(), 0);
+  assert.equal((await orders.detail(other, second.id)).orden.estado, 'en_espera_pago');
+  assert.equal((await cart.get(other)).cantidad, 1);
+  assert.equal((await db.query('SELECT count(*)::int n FROM movimientos_inventario WHERE orden_id=$1', [second.id])).rows[0].n, 0);
+  await cart.clear(other);
 });
 test('rechazo y cancelación de simulación conservan stock y carrito; se puede reintentar', async () => {
   await fixture();
@@ -355,6 +429,8 @@ test('varios productos: un fallo posterior revierte descuentos anteriores', asyn
       requestId: randomUUID(),
       metodo_pago: 'nequi',
       consentimiento: true,
+      consentimiento_datos: true,
+      politica_version: require('../shared/legal/consent').policy.version,
       total_esperado: 40000
     })
   ).orden;

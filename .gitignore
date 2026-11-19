@@ -15,6 +15,7 @@ logs/
 
 # Build del frontend
 SwettyPuppies_Frontend/dist/
+release/
 
 # Editor y sistema
 .claude/

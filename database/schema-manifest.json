@@ -1,0 +1,3729 @@
+{
+  "tables": [
+    {
+      "name": "administradores",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "bloqueos_agenda",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "carrito_items",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "carritos",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "categorias",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "cita_servicios_adicionales",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "citas",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "clientes",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "codigos_verificacion",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "detalle_orden",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "historial_citas",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "horarios_negocio",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "imagenes",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "inventario",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "mascotas",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "movimientos_inventario",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "ordenes",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "producto_imagenes",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "productos",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "servicios",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "servicios_adicionales",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "tarifas_servicio",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "tarifas_servicio_adicional",
+      "rls": true,
+      "force_rls": false
+    },
+    {
+      "name": "usuarios",
+      "rls": true,
+      "force_rls": false
+    }
+  ],
+  "columns": [
+    {
+      "table_name": "administradores",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "usuario_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "username",
+      "position": 3,
+      "type": "character varying(50)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "nombre",
+      "position": 4,
+      "type": "character varying(100)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "apellido",
+      "position": 5,
+      "type": "character varying(100)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "telefono",
+      "position": 6,
+      "type": "character varying(20)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "activo",
+      "position": 7,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "created_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "administradores",
+      "name": "updated_at",
+      "position": 9,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "administrador_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "fecha",
+      "position": 3,
+      "type": "date",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "hora_inicio",
+      "position": 4,
+      "type": "time without time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "hora_fin",
+      "position": 5,
+      "type": "time without time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "motivo",
+      "position": 6,
+      "type": "character varying(255)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "activo",
+      "position": 7,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "created_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "updated_at",
+      "position": 9,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "carrito_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "producto_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "cantidad",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "created_at",
+      "position": 5,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "updated_at",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carritos",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carritos",
+      "name": "cliente_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carritos",
+      "name": "created_at",
+      "position": 3,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "carritos",
+      "name": "updated_at",
+      "position": 4,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "nombre",
+      "position": 2,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "descripcion",
+      "position": 3,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "orden",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "0",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "activo",
+      "position": 5,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "created_at",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "categorias",
+      "name": "updated_at",
+      "position": 7,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "servicio_adicional_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "precio_aplicado",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "created_at",
+      "position": 5,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "cliente_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "mascota_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "servicio_id",
+      "position": 4,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "administrador_id",
+      "position": 5,
+      "type": "uuid",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "fecha",
+      "position": 6,
+      "type": "date",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "hora_inicio",
+      "position": 7,
+      "type": "time without time zone",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "hora_fin_estimada",
+      "position": 8,
+      "type": "time without time zone",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "estado",
+      "position": 9,
+      "type": "estado_cita_enum",
+      "not_null": true,
+      "default_value": "'pendiente'::estado_cita_enum",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "estado_pelaje_reportado",
+      "position": 10,
+      "type": "estado_pelaje_enum",
+      "not_null": true,
+      "default_value": "'normal'::estado_pelaje_enum",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "comportamiento_reportado",
+      "position": 11,
+      "type": "comportamiento_enum",
+      "not_null": true,
+      "default_value": "'normal'::comportamiento_enum",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "foto_estado_actual_url",
+      "position": 12,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "observaciones_cliente",
+      "position": 13,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "estado_pelaje_real",
+      "position": 14,
+      "type": "estado_pelaje_enum",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "comportamiento_observado",
+      "position": 15,
+      "type": "comportamiento_enum",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "observaciones_admin",
+      "position": 16,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "precio_base",
+      "position": 17,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "0",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "precio_calculado",
+      "position": 18,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "0",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "precio_final",
+      "position": 19,
+      "type": "integer",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "activo",
+      "position": 20,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "created_at",
+      "position": 21,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "citas",
+      "name": "updated_at",
+      "position": 22,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "usuario_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "nombre",
+      "position": 3,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "apellido",
+      "position": 4,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "cedula",
+      "position": 5,
+      "type": "character varying(20)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "telefono",
+      "position": 6,
+      "type": "character varying(20)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "telefono_secundario",
+      "position": 7,
+      "type": "character varying(20)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "direccion",
+      "position": 8,
+      "type": "character varying(255)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "activo",
+      "position": 9,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "created_at",
+      "position": 10,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "clientes",
+      "name": "updated_at",
+      "position": 11,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "email",
+      "position": 2,
+      "type": "character varying",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "codigo",
+      "position": 3,
+      "type": "character varying",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "tipo",
+      "position": 4,
+      "type": "character varying",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "payload",
+      "position": 5,
+      "type": "jsonb",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "expiracion",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "usado",
+      "position": 7,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "false",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "created_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "orden_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "producto_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "producto_nombre",
+      "position": 4,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "cantidad",
+      "position": 5,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "precio_unitario",
+      "position": 6,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "subtotal",
+      "position": 7,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "created_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "cita_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "cliente_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "mascota_id",
+      "position": 4,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "fecha_servicio",
+      "position": 5,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "cliente_nombre_completo",
+      "position": 6,
+      "type": "character varying(250)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "cliente_cedula",
+      "position": 7,
+      "type": "character varying(20)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "cliente_email",
+      "position": 8,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "cliente_telefono",
+      "position": 9,
+      "type": "character varying(20)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "mascota_nombre",
+      "position": 10,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "mascota_raza",
+      "position": 11,
+      "type": "character varying(100)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "mascota_tamano",
+      "position": 12,
+      "type": "tamano_mascota_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "mascota_tipo_pelaje",
+      "position": 13,
+      "type": "tipo_pelaje_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "servicio_principal_nombre",
+      "position": 14,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "servicios_adicionales_resumen",
+      "position": 15,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "resumen_servicio_realizado",
+      "position": 16,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "estado_pelaje_real",
+      "position": 17,
+      "type": "estado_pelaje_enum",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "comportamiento_observado",
+      "position": 18,
+      "type": "comportamiento_enum",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "observaciones_finales",
+      "position": 19,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "recomendaciones",
+      "position": 20,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "precio_base",
+      "position": 21,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "precio_calculado",
+      "position": 22,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "precio_final",
+      "position": 23,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "created_at",
+      "position": 24,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "dia",
+      "position": 2,
+      "type": "dia_semana_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "hora_apertura",
+      "position": 3,
+      "type": "time without time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "hora_cierre",
+      "position": 4,
+      "type": "time without time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "ultima_cita",
+      "position": 5,
+      "type": "time without time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "duracion_base_minutos",
+      "position": 6,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "150",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "abierto",
+      "position": 7,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "created_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "updated_at",
+      "position": 9,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "titulo",
+      "position": 2,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "descripcion",
+      "position": 3,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "ruta",
+      "position": 4,
+      "type": "text",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "categoria",
+      "position": 5,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": "'carrusel'::character varying",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "orden",
+      "position": 6,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "0",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "activo",
+      "position": 7,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "created_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "imagenes",
+      "name": "updated_at",
+      "position": 9,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "inventario",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "inventario",
+      "name": "producto_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "inventario",
+      "name": "stock_actual",
+      "position": 3,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "0",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "inventario",
+      "name": "stock_minimo",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "0",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "inventario",
+      "name": "created_at",
+      "position": 5,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "inventario",
+      "name": "updated_at",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "cliente_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "nombre",
+      "position": 3,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "raza",
+      "position": 4,
+      "type": "character varying(100)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "tamano",
+      "position": 5,
+      "type": "tamano_mascota_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "sexo",
+      "position": 6,
+      "type": "sexo_mascota_enum",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "edad",
+      "position": 7,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "tipo_pelaje",
+      "position": 8,
+      "type": "tipo_pelaje_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "comportamiento_habitual",
+      "position": 9,
+      "type": "comportamiento_enum",
+      "not_null": true,
+      "default_value": "'normal'::comportamiento_enum",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "alergias",
+      "position": 10,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "enfermedades",
+      "position": 11,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "cosas_no_le_gustan",
+      "position": 12,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "fecha_ultimo_bano",
+      "position": 13,
+      "type": "date",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "vacunacion_al_dia",
+      "position": 14,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "false",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "desparasitacion_interna_al_dia",
+      "position": 15,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "false",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "desparasitacion_externa_al_dia",
+      "position": 16,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "false",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "foto_mascota_url",
+      "position": 17,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "foto_carnet_vacunacion_url",
+      "position": 18,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "observaciones",
+      "position": 19,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "activo",
+      "position": 20,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "created_at",
+      "position": 21,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "mascotas",
+      "name": "updated_at",
+      "position": 22,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "producto_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "orden_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "usuario_id",
+      "position": 4,
+      "type": "uuid",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "tipo_movimiento",
+      "position": 5,
+      "type": "tipo_movimiento_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "cantidad",
+      "position": 6,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "stock_anterior",
+      "position": 7,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "stock_resultante",
+      "position": 8,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "motivo",
+      "position": 9,
+      "type": "character varying(100)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "observacion",
+      "position": 10,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "created_at",
+      "position": 11,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "codigo",
+      "position": 2,
+      "type": "character varying(20)",
+      "not_null": true,
+      "default_value": "('SP-'::text || lpad((nextval('ordenes_codigo_seq'::regclass))::text, 6, '0'::text))",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "cliente_id",
+      "position": 3,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "estado",
+      "position": 4,
+      "type": "estado_orden_enum",
+      "not_null": true,
+      "default_value": "'en_espera_pago'::estado_orden_enum",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "metodo_pago",
+      "position": 5,
+      "type": "metodo_pago_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "total",
+      "position": 6,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "fecha_pago",
+      "position": 7,
+      "type": "timestamp with time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "motivo_cancelacion",
+      "position": 8,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "fecha_cancelacion",
+      "position": 9,
+      "type": "timestamp with time zone",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "observaciones",
+      "position": 10,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "created_at",
+      "position": 11,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "ordenes",
+      "name": "updated_at",
+      "position": 12,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "producto_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "url",
+      "position": 3,
+      "type": "text",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "orden",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": "1",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "created_at",
+      "position": 5,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "categoria_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "referencia",
+      "position": 3,
+      "type": "character varying(50)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "nombre",
+      "position": 4,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "descripcion_corta",
+      "position": 5,
+      "type": "character varying(255)",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "descripcion",
+      "position": 6,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "precio",
+      "position": 7,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "activo",
+      "position": 8,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "created_at",
+      "position": 9,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "productos",
+      "name": "updated_at",
+      "position": 10,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "nombre",
+      "position": 2,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "descripcion",
+      "position": 3,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "duracion_minutos",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "requiere_tamano",
+      "position": 5,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "requiere_tipo_pelaje",
+      "position": 6,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "aplica_recargo_nudos",
+      "position": 7,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "false",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "aplica_recargo_comportamiento",
+      "position": 8,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "false",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "activo",
+      "position": 9,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "created_at",
+      "position": 10,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios",
+      "name": "updated_at",
+      "position": 11,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "nombre",
+      "position": 2,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "descripcion",
+      "position": 3,
+      "type": "text",
+      "not_null": false,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "activo",
+      "position": 4,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "created_at",
+      "position": 5,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "updated_at",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "servicio_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tamano",
+      "position": 3,
+      "type": "tamano_mascota_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tipo_pelaje",
+      "position": 4,
+      "type": "tipo_pelaje_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "precio_base",
+      "position": 5,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "activo",
+      "position": 6,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "created_at",
+      "position": 7,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "updated_at",
+      "position": 8,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "servicio_adicional_id",
+      "position": 2,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tamano",
+      "position": 3,
+      "type": "tamano_mascota_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "precio",
+      "position": 4,
+      "type": "integer",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "activo",
+      "position": 5,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "created_at",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "updated_at",
+      "position": 7,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "id",
+      "position": 1,
+      "type": "uuid",
+      "not_null": true,
+      "default_value": "gen_random_uuid()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "email",
+      "position": 2,
+      "type": "character varying(150)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "password_hash",
+      "position": 3,
+      "type": "character varying(255)",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "rol",
+      "position": 4,
+      "type": "rol_usuario_enum",
+      "not_null": true,
+      "default_value": null,
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "activo",
+      "position": 5,
+      "type": "boolean",
+      "not_null": true,
+      "default_value": "true",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "created_at",
+      "position": 6,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    },
+    {
+      "table_name": "usuarios",
+      "name": "updated_at",
+      "position": 7,
+      "type": "timestamp with time zone",
+      "not_null": true,
+      "default_value": "now()",
+      "identity": "",
+      "generated": ""
+    }
+  ],
+  "constraints": [
+    {
+      "table_name": "administradores",
+      "name": "administradores_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "administradores",
+      "name": "administradores_username_key",
+      "type": "u",
+      "definition": "UNIQUE (username)"
+    },
+    {
+      "table_name": "administradores",
+      "name": "administradores_usuario_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "administradores",
+      "name": "administradores_usuario_id_key",
+      "type": "u",
+      "definition": "UNIQUE (usuario_id)"
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "bloqueos_agenda_administrador_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (administrador_id) REFERENCES administradores(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "bloqueos_agenda_check",
+      "type": "c",
+      "definition": "CHECK ((((hora_inicio IS NULL) AND (hora_fin IS NULL)) OR ((hora_inicio IS NOT NULL) AND (hora_fin IS NOT NULL) AND (hora_fin > hora_inicio))))"
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "bloqueos_agenda_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "carrito_items_cantidad_check",
+      "type": "c",
+      "definition": "CHECK ((cantidad > 0))"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "carrito_items_carrito_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (carrito_id) REFERENCES carritos(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "carrito_items_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "carrito_items_producto_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "uq_carrito_items_producto",
+      "type": "u",
+      "definition": "UNIQUE (carrito_id, producto_id)"
+    },
+    {
+      "table_name": "carritos",
+      "name": "carritos_cliente_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cliente_id) REFERENCES clientes(id)"
+    },
+    {
+      "table_name": "carritos",
+      "name": "carritos_cliente_id_key",
+      "type": "u",
+      "definition": "UNIQUE (cliente_id)"
+    },
+    {
+      "table_name": "carritos",
+      "name": "carritos_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "categorias",
+      "name": "categorias_nombre_key",
+      "type": "u",
+      "definition": "UNIQUE (nombre)"
+    },
+    {
+      "table_name": "categorias",
+      "name": "categorias_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_cita_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cita_id) REFERENCES citas(id) ON UPDATE CASCADE ON DELETE CASCADE"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_cita_id_servicio_adicional_id_key",
+      "type": "u",
+      "definition": "UNIQUE (cita_id, servicio_adicional_id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_precio_aplicado_check",
+      "type": "c",
+      "definition": "CHECK ((precio_aplicado >= 0))"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_servicio_adicional_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (servicio_adicional_id) REFERENCES servicios_adicionales(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_administrador_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (administrador_id) REFERENCES administradores(id) ON UPDATE CASCADE ON DELETE SET NULL"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_check",
+      "type": "c",
+      "definition": "CHECK ((hora_fin_estimada > hora_inicio))"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_cliente_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_mascota_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (mascota_id) REFERENCES mascotas(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_precio_base_check",
+      "type": "c",
+      "definition": "CHECK ((precio_base >= 0))"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_precio_calculado_check",
+      "type": "c",
+      "definition": "CHECK ((precio_calculado >= 0))"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_precio_final_check",
+      "type": "c",
+      "definition": "CHECK (((precio_final IS NULL) OR (precio_final >= 0)))"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_servicio_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (servicio_id) REFERENCES servicios(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_cedula_key",
+      "type": "u",
+      "definition": "UNIQUE (cedula)"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_usuario_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_usuario_id_key",
+      "type": "u",
+      "definition": "UNIQUE (usuario_id)"
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "codigos_verificacion_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "codigos_verificacion_tipo_check",
+      "type": "c",
+      "definition": "CHECK (((tipo)::text = ANY (ARRAY[('registro'::character varying)::text, ('recuperacion'::character varying)::text])))"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "ck_detalle_orden_subtotal",
+      "type": "c",
+      "definition": "CHECK ((subtotal = (cantidad * precio_unitario)))"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_cantidad_check",
+      "type": "c",
+      "definition": "CHECK ((cantidad > 0))"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_orden_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (orden_id) REFERENCES ordenes(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_precio_unitario_check",
+      "type": "c",
+      "definition": "CHECK ((precio_unitario > 0))"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_producto_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (producto_id) REFERENCES productos(id)"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_subtotal_check",
+      "type": "c",
+      "definition": "CHECK ((subtotal > 0))"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "uq_detalle_orden_producto",
+      "type": "u",
+      "definition": "UNIQUE (orden_id, producto_id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_cita_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cita_id) REFERENCES citas(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_cita_id_key",
+      "type": "u",
+      "definition": "UNIQUE (cita_id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_cliente_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_mascota_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (mascota_id) REFERENCES mascotas(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_precio_base_check",
+      "type": "c",
+      "definition": "CHECK ((precio_base >= 0))"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_precio_calculado_check",
+      "type": "c",
+      "definition": "CHECK ((precio_calculado >= 0))"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_precio_final_check",
+      "type": "c",
+      "definition": "CHECK ((precio_final >= 0))"
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "horarios_negocio_dia_key",
+      "type": "u",
+      "definition": "UNIQUE (dia)"
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "horarios_negocio_duracion_base_minutos_check",
+      "type": "c",
+      "definition": "CHECK ((duracion_base_minutos > 0))"
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "horarios_negocio_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "imagenes",
+      "name": "imagenes_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_producto_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_producto_id_key",
+      "type": "u",
+      "definition": "UNIQUE (producto_id)"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_stock_actual_check",
+      "type": "c",
+      "definition": "CHECK ((stock_actual >= 0))"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_stock_minimo_check",
+      "type": "c",
+      "definition": "CHECK ((stock_minimo >= 0))"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "mascotas_cliente_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "mascotas_edad_check",
+      "type": "c",
+      "definition": "CHECK ((edad >= 0))"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "mascotas_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "ck_movimientos_cantidad",
+      "type": "c",
+      "definition": "CHECK (((cantidad <> 0) AND ((tipo_movimiento <> 'entrada'::tipo_movimiento_enum) OR (cantidad > 0)) AND ((tipo_movimiento <> 'salida'::tipo_movimiento_enum) OR (cantidad < 0))))"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "ck_movimientos_stock",
+      "type": "c",
+      "definition": "CHECK ((stock_resultante = (stock_anterior + cantidad)))"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_orden_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (orden_id) REFERENCES ordenes(id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_producto_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (producto_id) REFERENCES productos(id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_stock_anterior_check",
+      "type": "c",
+      "definition": "CHECK ((stock_anterior >= 0))"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_stock_resultante_check",
+      "type": "c",
+      "definition": "CHECK ((stock_resultante >= 0))"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_usuario_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (usuario_id) REFERENCES usuarios(id)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ck_ordenes_cancelacion",
+      "type": "c",
+      "definition": "CHECK (((estado <> 'cancelado'::estado_orden_enum) OR (fecha_cancelacion IS NOT NULL)))"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ck_ordenes_fecha_pago",
+      "type": "c",
+      "definition": "CHECK (((estado = ANY (ARRAY['en_espera_pago'::estado_orden_enum, 'cancelado'::estado_orden_enum])) OR (fecha_pago IS NOT NULL)))"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ck_ordenes_flujo_efectivo",
+      "type": "c",
+      "definition": "CHECK (((metodo_pago <> 'efectivo'::metodo_pago_enum) OR (estado = ANY (ARRAY['en_espera_pago'::estado_orden_enum, 'entregado'::estado_orden_enum, 'cancelado'::estado_orden_enum]))))"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ordenes_cliente_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (cliente_id) REFERENCES clientes(id)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ordenes_codigo_key",
+      "type": "u",
+      "definition": "UNIQUE (codigo)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ordenes_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ordenes_total_check",
+      "type": "c",
+      "definition": "CHECK ((total > 0))"
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "producto_imagenes_orden_check",
+      "type": "c",
+      "definition": "CHECK (((orden >= 1) AND (orden <= 4)))"
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "producto_imagenes_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "producto_imagenes_producto_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "uq_producto_imagenes_orden",
+      "type": "u",
+      "definition": "UNIQUE (producto_id, orden)"
+    },
+    {
+      "table_name": "productos",
+      "name": "productos_categoria_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (categoria_id) REFERENCES categorias(id)"
+    },
+    {
+      "table_name": "productos",
+      "name": "productos_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "productos",
+      "name": "productos_precio_check",
+      "type": "c",
+      "definition": "CHECK ((precio > 0))"
+    },
+    {
+      "table_name": "productos",
+      "name": "productos_referencia_key",
+      "type": "u",
+      "definition": "UNIQUE (referencia)"
+    },
+    {
+      "table_name": "servicios",
+      "name": "servicios_duracion_minutos_check",
+      "type": "c",
+      "definition": "CHECK ((duracion_minutos > 0))"
+    },
+    {
+      "table_name": "servicios",
+      "name": "servicios_nombre_key",
+      "type": "u",
+      "definition": "UNIQUE (nombre)"
+    },
+    {
+      "table_name": "servicios",
+      "name": "servicios_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "servicios_adicionales_nombre_key",
+      "type": "u",
+      "definition": "UNIQUE (nombre)"
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "servicios_adicionales_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tarifas_servicio_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tarifas_servicio_precio_base_check",
+      "type": "c",
+      "definition": "CHECK ((precio_base >= 0))"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tarifas_servicio_servicio_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (servicio_id) REFERENCES servicios(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tarifas_servicio_servicio_id_tamano_tipo_pelaje_key",
+      "type": "u",
+      "definition": "UNIQUE (servicio_id, tamano, tipo_pelaje)"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tarifas_servicio_adicional_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tarifas_servicio_adicional_precio_check",
+      "type": "c",
+      "definition": "CHECK ((precio >= 0))"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tarifas_servicio_adicional_servicio_adicional_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (servicio_adicional_id) REFERENCES servicios_adicionales(id) ON UPDATE CASCADE ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tarifas_servicio_adicional_servicio_adicional_id_tamano_key",
+      "type": "u",
+      "definition": "UNIQUE (servicio_adicional_id, tamano)"
+    },
+    {
+      "table_name": "usuarios",
+      "name": "usuarios_email_key",
+      "type": "u",
+      "definition": "UNIQUE (email)"
+    },
+    {
+      "table_name": "usuarios",
+      "name": "usuarios_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "indexes": [
+    {
+      "table_name": "administradores",
+      "name": "administradores_pkey",
+      "definition": "CREATE UNIQUE INDEX administradores_pkey ON public.administradores USING btree (id)"
+    },
+    {
+      "table_name": "administradores",
+      "name": "administradores_username_key",
+      "definition": "CREATE UNIQUE INDEX administradores_username_key ON public.administradores USING btree (username)"
+    },
+    {
+      "table_name": "administradores",
+      "name": "administradores_usuario_id_key",
+      "definition": "CREATE UNIQUE INDEX administradores_usuario_id_key ON public.administradores USING btree (usuario_id)"
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "bloqueos_agenda_pkey",
+      "definition": "CREATE UNIQUE INDEX bloqueos_agenda_pkey ON public.bloqueos_agenda USING btree (id)"
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "idx_bloqueos_agenda_fecha",
+      "definition": "CREATE INDEX idx_bloqueos_agenda_fecha ON public.bloqueos_agenda USING btree (fecha)"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "carrito_items_pkey",
+      "definition": "CREATE UNIQUE INDEX carrito_items_pkey ON public.carrito_items USING btree (id)"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "idx_carrito_items_producto_id",
+      "definition": "CREATE INDEX idx_carrito_items_producto_id ON public.carrito_items USING btree (producto_id)"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "uq_carrito_items_producto",
+      "definition": "CREATE UNIQUE INDEX uq_carrito_items_producto ON public.carrito_items USING btree (carrito_id, producto_id)"
+    },
+    {
+      "table_name": "carritos",
+      "name": "carritos_cliente_id_key",
+      "definition": "CREATE UNIQUE INDEX carritos_cliente_id_key ON public.carritos USING btree (cliente_id)"
+    },
+    {
+      "table_name": "carritos",
+      "name": "carritos_pkey",
+      "definition": "CREATE UNIQUE INDEX carritos_pkey ON public.carritos USING btree (id)"
+    },
+    {
+      "table_name": "categorias",
+      "name": "categorias_nombre_key",
+      "definition": "CREATE UNIQUE INDEX categorias_nombre_key ON public.categorias USING btree (nombre)"
+    },
+    {
+      "table_name": "categorias",
+      "name": "categorias_pkey",
+      "definition": "CREATE UNIQUE INDEX categorias_pkey ON public.categorias USING btree (id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_cita_id_servicio_adicional_id_key",
+      "definition": "CREATE UNIQUE INDEX cita_servicios_adicionales_cita_id_servicio_adicional_id_key ON public.cita_servicios_adicionales USING btree (cita_id, servicio_adicional_id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "cita_servicios_adicionales_pkey",
+      "definition": "CREATE UNIQUE INDEX cita_servicios_adicionales_pkey ON public.cita_servicios_adicionales USING btree (id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "idx_cita_servicios_adicionales_cita_id",
+      "definition": "CREATE INDEX idx_cita_servicios_adicionales_cita_id ON public.cita_servicios_adicionales USING btree (cita_id)"
+    },
+    {
+      "table_name": "cita_servicios_adicionales",
+      "name": "idx_cita_servicios_adicionales_servicio_adicional_id",
+      "definition": "CREATE INDEX idx_cita_servicios_adicionales_servicio_adicional_id ON public.cita_servicios_adicionales USING btree (servicio_adicional_id)"
+    },
+    {
+      "table_name": "citas",
+      "name": "citas_pkey",
+      "definition": "CREATE UNIQUE INDEX citas_pkey ON public.citas USING btree (id)"
+    },
+    {
+      "table_name": "citas",
+      "name": "idx_citas_administrador_id",
+      "definition": "CREATE INDEX idx_citas_administrador_id ON public.citas USING btree (administrador_id)"
+    },
+    {
+      "table_name": "citas",
+      "name": "idx_citas_cliente_id",
+      "definition": "CREATE INDEX idx_citas_cliente_id ON public.citas USING btree (cliente_id)"
+    },
+    {
+      "table_name": "citas",
+      "name": "idx_citas_estado",
+      "definition": "CREATE INDEX idx_citas_estado ON public.citas USING btree (estado)"
+    },
+    {
+      "table_name": "citas",
+      "name": "idx_citas_fecha",
+      "definition": "CREATE INDEX idx_citas_fecha ON public.citas USING btree (fecha)"
+    },
+    {
+      "table_name": "citas",
+      "name": "idx_citas_mascota_id",
+      "definition": "CREATE INDEX idx_citas_mascota_id ON public.citas USING btree (mascota_id)"
+    },
+    {
+      "table_name": "citas",
+      "name": "idx_citas_servicio_id",
+      "definition": "CREATE INDEX idx_citas_servicio_id ON public.citas USING btree (servicio_id)"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_cedula_key",
+      "definition": "CREATE UNIQUE INDEX clientes_cedula_key ON public.clientes USING btree (cedula)"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_pkey",
+      "definition": "CREATE UNIQUE INDEX clientes_pkey ON public.clientes USING btree (id)"
+    },
+    {
+      "table_name": "clientes",
+      "name": "clientes_usuario_id_key",
+      "definition": "CREATE UNIQUE INDEX clientes_usuario_id_key ON public.clientes USING btree (usuario_id)"
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "codigos_verificacion_pkey",
+      "definition": "CREATE UNIQUE INDEX codigos_verificacion_pkey ON public.codigos_verificacion USING btree (id)"
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "idx_codigos_verificacion_email_tipo",
+      "definition": "CREATE INDEX idx_codigos_verificacion_email_tipo ON public.codigos_verificacion USING btree (lower((email)::text), tipo, usado)"
+    },
+    {
+      "table_name": "codigos_verificacion",
+      "name": "idx_codigos_verificacion_expiracion",
+      "definition": "CREATE INDEX idx_codigos_verificacion_expiracion ON public.codigos_verificacion USING btree (expiracion)"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "detalle_orden_pkey",
+      "definition": "CREATE UNIQUE INDEX detalle_orden_pkey ON public.detalle_orden USING btree (id)"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "idx_detalle_orden_orden_id",
+      "definition": "CREATE INDEX idx_detalle_orden_orden_id ON public.detalle_orden USING btree (orden_id)"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "idx_detalle_orden_producto_id",
+      "definition": "CREATE INDEX idx_detalle_orden_producto_id ON public.detalle_orden USING btree (producto_id)"
+    },
+    {
+      "table_name": "detalle_orden",
+      "name": "uq_detalle_orden_producto",
+      "definition": "CREATE UNIQUE INDEX uq_detalle_orden_producto ON public.detalle_orden USING btree (orden_id, producto_id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_cita_id_key",
+      "definition": "CREATE UNIQUE INDEX historial_servicios_cita_id_key ON public.historial_citas USING btree (cita_id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "historial_servicios_pkey",
+      "definition": "CREATE UNIQUE INDEX historial_servicios_pkey ON public.historial_citas USING btree (id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "idx_historial_servicios_cliente_id",
+      "definition": "CREATE INDEX idx_historial_servicios_cliente_id ON public.historial_citas USING btree (cliente_id)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "idx_historial_servicios_fecha",
+      "definition": "CREATE INDEX idx_historial_servicios_fecha ON public.historial_citas USING btree (fecha_servicio)"
+    },
+    {
+      "table_name": "historial_citas",
+      "name": "idx_historial_servicios_mascota_id",
+      "definition": "CREATE INDEX idx_historial_servicios_mascota_id ON public.historial_citas USING btree (mascota_id)"
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "horarios_negocio_dia_key",
+      "definition": "CREATE UNIQUE INDEX horarios_negocio_dia_key ON public.horarios_negocio USING btree (dia)"
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "horarios_negocio_pkey",
+      "definition": "CREATE UNIQUE INDEX horarios_negocio_pkey ON public.horarios_negocio USING btree (id)"
+    },
+    {
+      "table_name": "imagenes",
+      "name": "idx_imagenes_categoria",
+      "definition": "CREATE INDEX idx_imagenes_categoria ON public.imagenes USING btree (categoria)"
+    },
+    {
+      "table_name": "imagenes",
+      "name": "idx_imagenes_orden",
+      "definition": "CREATE INDEX idx_imagenes_orden ON public.imagenes USING btree (orden)"
+    },
+    {
+      "table_name": "imagenes",
+      "name": "imagenes_pkey",
+      "definition": "CREATE UNIQUE INDEX imagenes_pkey ON public.imagenes USING btree (id)"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_pkey",
+      "definition": "CREATE UNIQUE INDEX inventario_pkey ON public.inventario USING btree (id)"
+    },
+    {
+      "table_name": "inventario",
+      "name": "inventario_producto_id_key",
+      "definition": "CREATE UNIQUE INDEX inventario_producto_id_key ON public.inventario USING btree (producto_id)"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "idx_mascotas_cliente_id",
+      "definition": "CREATE INDEX idx_mascotas_cliente_id ON public.mascotas USING btree (cliente_id)"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "idx_mascotas_nombre",
+      "definition": "CREATE INDEX idx_mascotas_nombre ON public.mascotas USING btree (nombre)"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "mascotas_pkey",
+      "definition": "CREATE UNIQUE INDEX mascotas_pkey ON public.mascotas USING btree (id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "idx_movimientos_created_at",
+      "definition": "CREATE INDEX idx_movimientos_created_at ON public.movimientos_inventario USING btree (created_at DESC)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "idx_movimientos_orden_id",
+      "definition": "CREATE INDEX idx_movimientos_orden_id ON public.movimientos_inventario USING btree (orden_id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "idx_movimientos_producto_id",
+      "definition": "CREATE INDEX idx_movimientos_producto_id ON public.movimientos_inventario USING btree (producto_id)"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "movimientos_inventario_pkey",
+      "definition": "CREATE UNIQUE INDEX movimientos_inventario_pkey ON public.movimientos_inventario USING btree (id)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "idx_ordenes_cliente_id",
+      "definition": "CREATE INDEX idx_ordenes_cliente_id ON public.ordenes USING btree (cliente_id)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "idx_ordenes_created_at",
+      "definition": "CREATE INDEX idx_ordenes_created_at ON public.ordenes USING btree (created_at DESC)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "idx_ordenes_estado",
+      "definition": "CREATE INDEX idx_ordenes_estado ON public.ordenes USING btree (estado)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "idx_ordenes_fecha_pago",
+      "definition": "CREATE INDEX idx_ordenes_fecha_pago ON public.ordenes USING btree (fecha_pago)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ordenes_codigo_key",
+      "definition": "CREATE UNIQUE INDEX ordenes_codigo_key ON public.ordenes USING btree (codigo)"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "ordenes_pkey",
+      "definition": "CREATE UNIQUE INDEX ordenes_pkey ON public.ordenes USING btree (id)"
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "producto_imagenes_pkey",
+      "definition": "CREATE UNIQUE INDEX producto_imagenes_pkey ON public.producto_imagenes USING btree (id)"
+    },
+    {
+      "table_name": "producto_imagenes",
+      "name": "uq_producto_imagenes_orden",
+      "definition": "CREATE UNIQUE INDEX uq_producto_imagenes_orden ON public.producto_imagenes USING btree (producto_id, orden)"
+    },
+    {
+      "table_name": "productos",
+      "name": "idx_productos_activo",
+      "definition": "CREATE INDEX idx_productos_activo ON public.productos USING btree (activo)"
+    },
+    {
+      "table_name": "productos",
+      "name": "idx_productos_categoria_id",
+      "definition": "CREATE INDEX idx_productos_categoria_id ON public.productos USING btree (categoria_id)"
+    },
+    {
+      "table_name": "productos",
+      "name": "productos_pkey",
+      "definition": "CREATE UNIQUE INDEX productos_pkey ON public.productos USING btree (id)"
+    },
+    {
+      "table_name": "productos",
+      "name": "productos_referencia_key",
+      "definition": "CREATE UNIQUE INDEX productos_referencia_key ON public.productos USING btree (referencia)"
+    },
+    {
+      "table_name": "servicios",
+      "name": "servicios_nombre_key",
+      "definition": "CREATE UNIQUE INDEX servicios_nombre_key ON public.servicios USING btree (nombre)"
+    },
+    {
+      "table_name": "servicios",
+      "name": "servicios_pkey",
+      "definition": "CREATE UNIQUE INDEX servicios_pkey ON public.servicios USING btree (id)"
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "servicios_adicionales_nombre_key",
+      "definition": "CREATE UNIQUE INDEX servicios_adicionales_nombre_key ON public.servicios_adicionales USING btree (nombre)"
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "servicios_adicionales_pkey",
+      "definition": "CREATE UNIQUE INDEX servicios_adicionales_pkey ON public.servicios_adicionales USING btree (id)"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "idx_tarifas_servicio_servicio_id",
+      "definition": "CREATE INDEX idx_tarifas_servicio_servicio_id ON public.tarifas_servicio USING btree (servicio_id)"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tarifas_servicio_pkey",
+      "definition": "CREATE UNIQUE INDEX tarifas_servicio_pkey ON public.tarifas_servicio USING btree (id)"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "tarifas_servicio_servicio_id_tamano_tipo_pelaje_key",
+      "definition": "CREATE UNIQUE INDEX tarifas_servicio_servicio_id_tamano_tipo_pelaje_key ON public.tarifas_servicio USING btree (servicio_id, tamano, tipo_pelaje)"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "idx_tarifas_servicio_adicional_id",
+      "definition": "CREATE INDEX idx_tarifas_servicio_adicional_id ON public.tarifas_servicio_adicional USING btree (servicio_adicional_id)"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tarifas_servicio_adicional_pkey",
+      "definition": "CREATE UNIQUE INDEX tarifas_servicio_adicional_pkey ON public.tarifas_servicio_adicional USING btree (id)"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "tarifas_servicio_adicional_servicio_adicional_id_tamano_key",
+      "definition": "CREATE UNIQUE INDEX tarifas_servicio_adicional_servicio_adicional_id_tamano_key ON public.tarifas_servicio_adicional USING btree (servicio_adicional_id, tamano)"
+    },
+    {
+      "table_name": "usuarios",
+      "name": "usuarios_email_key",
+      "definition": "CREATE UNIQUE INDEX usuarios_email_key ON public.usuarios USING btree (email)"
+    },
+    {
+      "table_name": "usuarios",
+      "name": "usuarios_pkey",
+      "definition": "CREATE UNIQUE INDEX usuarios_pkey ON public.usuarios USING btree (id)"
+    }
+  ],
+  "triggers": [
+    {
+      "table_name": "administradores",
+      "name": "trg_administradores_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_administradores_updated_at BEFORE UPDATE ON public.administradores FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "bloqueos_agenda",
+      "name": "trg_bloqueos_agenda_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_bloqueos_agenda_updated_at BEFORE UPDATE ON public.bloqueos_agenda FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "carrito_items",
+      "name": "trg_carrito_items_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_carrito_items_updated_at BEFORE UPDATE ON public.carrito_items FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "carritos",
+      "name": "trg_carritos_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_carritos_updated_at BEFORE UPDATE ON public.carritos FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "categorias",
+      "name": "trg_categorias_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_categorias_updated_at BEFORE UPDATE ON public.categorias FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "citas",
+      "name": "trg_citas_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_citas_updated_at BEFORE UPDATE ON public.citas FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "clientes",
+      "name": "trg_clientes_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_clientes_updated_at BEFORE UPDATE ON public.clientes FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "horarios_negocio",
+      "name": "trg_horarios_negocio_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_horarios_negocio_updated_at BEFORE UPDATE ON public.horarios_negocio FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "imagenes",
+      "name": "trg_imagenes_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_imagenes_updated_at BEFORE UPDATE ON public.imagenes FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "inventario",
+      "name": "trg_inventario_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_inventario_updated_at BEFORE UPDATE ON public.inventario FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "mascotas",
+      "name": "trg_mascotas_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_mascotas_updated_at BEFORE UPDATE ON public.mascotas FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "movimientos_inventario",
+      "name": "trg_movimientos_inmutables",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_movimientos_inmutables BEFORE DELETE OR UPDATE ON public.movimientos_inventario FOR EACH ROW EXECUTE FUNCTION bloquear_cambios_movimientos()"
+    },
+    {
+      "table_name": "ordenes",
+      "name": "trg_ordenes_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_ordenes_updated_at BEFORE UPDATE ON public.ordenes FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "productos",
+      "name": "trg_productos_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_productos_updated_at BEFORE UPDATE ON public.productos FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "servicios",
+      "name": "trg_servicios_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_servicios_updated_at BEFORE UPDATE ON public.servicios FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "servicios_adicionales",
+      "name": "trg_servicios_adicionales_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_servicios_adicionales_updated_at BEFORE UPDATE ON public.servicios_adicionales FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "tarifas_servicio",
+      "name": "trg_tarifas_servicio_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_tarifas_servicio_updated_at BEFORE UPDATE ON public.tarifas_servicio FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "tarifas_servicio_adicional",
+      "name": "trg_tarifas_servicio_adicional_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_tarifas_servicio_adicional_updated_at BEFORE UPDATE ON public.tarifas_servicio_adicional FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "usuarios",
+      "name": "trg_usuarios_updated_at",
+      "enabled": "O",
+      "definition": "CREATE TRIGGER trg_usuarios_updated_at BEFORE UPDATE ON public.usuarios FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    }
+  ],
+  "enums": [
+    {
+      "name": "comportamiento_enum",
+      "values": [
+        "normal",
+        "sensible",
+        "agresivo"
+      ]
+    },
+    {
+      "name": "dia_semana_enum",
+      "values": [
+        "lunes",
+        "martes",
+        "miercoles",
+        "jueves",
+        "viernes",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "name": "estado_cita_enum",
+      "values": [
+        "pendiente",
+        "confirmada",
+        "en_atencion",
+        "completada",
+        "cancelada",
+        "reprogramada"
+      ]
+    },
+    {
+      "name": "estado_orden_enum",
+      "values": [
+        "en_espera_pago",
+        "pagado",
+        "pendiente_recoger",
+        "entregado",
+        "cancelado"
+      ]
+    },
+    {
+      "name": "estado_pelaje_enum",
+      "values": [
+        "normal",
+        "con_nudos",
+        "muy_enredado"
+      ]
+    },
+    {
+      "name": "metodo_pago_enum",
+      "values": [
+        "tarjeta",
+        "nequi",
+        "efectivo"
+      ]
+    },
+    {
+      "name": "rol_usuario_enum",
+      "values": [
+        "cliente",
+        "administrador"
+      ]
+    },
+    {
+      "name": "sexo_mascota_enum",
+      "values": [
+        "macho",
+        "hembra"
+      ]
+    },
+    {
+      "name": "tamano_mascota_enum",
+      "values": [
+        "miniatura",
+        "pequeno",
+        "mediano",
+        "grande",
+        "extra_grande"
+      ]
+    },
+    {
+      "name": "tipo_movimiento_enum",
+      "values": [
+        "entrada",
+        "salida",
+        "ajuste"
+      ]
+    },
+    {
+      "name": "tipo_pelaje_enum",
+      "values": [
+        "corto",
+        "largo"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "actualizar_fecha_actualizacion",
+      "definition": "CREATE OR REPLACE FUNCTION public.actualizar_fecha_actualizacion()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n    NEW.fecha_actualizacion = CURRENT_TIMESTAMP;\n    RETURN NEW;\nEND;\n$function$\n"
+    },
+    {
+      "name": "bloquear_cambios_movimientos",
+      "definition": "CREATE OR REPLACE FUNCTION public.bloquear_cambios_movimientos()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  RAISE EXCEPTION 'Los movimientos de inventario no se pueden editar ni eliminar';\nEND;\n$function$\n"
+    },
+    {
+      "name": "set_updated_at",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  NEW.updated_at = now();\n  RETURN NEW;\nEND;\n$function$\n"
+    }
+  ],
+  "sequences": [
+    {
+      "name": "ordenes_codigo_seq",
+      "data_type": "bigint",
+      "start_value": "1",
+      "min_value": "1",
+      "max_value": "9223372036854775807",
+      "increment_by": "1",
+      "cycle": false,
+      "cache_size": "1"
+    }
+  ],
+  "policies": []
+}

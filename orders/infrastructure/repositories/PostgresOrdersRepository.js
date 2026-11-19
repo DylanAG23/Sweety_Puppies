@@ -4,12 +4,22 @@ const {
 } = require('../../../shared/store/PostgresStoreContext');
 class PostgresOrdersRepository extends PostgresStoreContext {
   async existing(tx, clientId, key) {
-    return (
+    // observaciones can also contain payment request IDs or legacy free text.
+    // Narrow candidates in SQL, then compare only the checkout key at the root.
+    const candidates = (
       await tx.query(
-        'SELECT * FROM ordenes WHERE cliente_id=$1 AND observaciones LIKE $2 ORDER BY created_at LIMIT 1',
-        [clientId, '%"requestId":"' + key + '"%']
+        'SELECT * FROM ordenes WHERE cliente_id=$1 AND observaciones LIKE $2 ORDER BY created_at,id',
+        [clientId, '%' + key + '%']
       )
-    ).rows[0];
+    ).rows;
+    return candidates.find((order) => {
+      try {
+        const metadata = JSON.parse(order.observaciones);
+        return metadata?.version === 1 && metadata.requestId === key;
+      } catch {
+        return false;
+      }
+    });
   }
   async lockProducts(tx, ids) {
     return (
@@ -132,7 +142,7 @@ class PostgresOrdersRepository extends PostgresStoreContext {
       consolidado: Number(products.ingresos) + Number(services.ingresos),
       pedidos: products.pedidos,
       serviciosCompletados: services.servicios,
-      metodos: methods
+      metodos: methods.map((item) => ({ ...item, ingresos: Number(item.ingresos) }))
     };
   }
 }

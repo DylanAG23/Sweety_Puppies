@@ -1,6 +1,6 @@
 # Tienda, carrito e inventario
 
-Implementación en `feature/tienda-carrito-pagos`, basada en `dylan` y en el inventario de `origin/Edwin`. El diagnóstico anterior permanece en `ANALISIS_TIENDA_Y_PAGOS.md`; este documento describe el resultado implementado.
+Implementación integrada en `ACT`, a partir del trabajo de tienda y del inventario del equipo. El diagnóstico anterior permanece en `ANALISIS_TIENDA_Y_PAGOS.md`. Este documento describe el funcionamiento; `CIERRE_DESARROLLO.md` relaciona la revisión actual con las actividades del Excel.
 
 ## Ejecutar
 
@@ -15,7 +15,7 @@ npm start
 
 Abrir http://localhost:3000 e iniciar sesión con una cuenta existente. La terminal debe permanecer abierta. Para desarrollo del frontend: `npm run dev --prefix SwettyPuppies_Frontend`, manteniendo el backend iniciado.
 
-La conexión utiliza la configuración existente de PostgreSQL/Supabase y Storage. No se agregaron tablas, columnas, políticas RLS ni migraciones en la base compartida. No se necesitan los paquetes SSR de Next.js: la aplicación es Vue + Express.
+La conexión utiliza la configuración existente de PostgreSQL/Supabase y Storage. Supabase está pausado: iniciar el servidor no significa que las operaciones con esa base estén disponibles. No se agregaron tablas, columnas, políticas RLS ni migraciones en la base compartida. `database/` permite reproducir el esquema en una base nueva y compararlo sin alterar la instalación existente. No se necesitan los paquetes SSR de Next.js: la aplicación es Vue + Express.
 
 ## Operación
 
@@ -23,7 +23,7 @@ La conexión utiliza la configuración existente de PostgreSQL/Supabase y Storag
 2. Administración → Productos: crear referencia, precio entero en COP y descripciones. Seleccionar hasta cuatro fotos JPG/PNG de 2 MB desde el formulario de creación, con vista previa; se suben al guardar. Al editar se pueden agregar, quitar y reordenar. La portada aparece en el listado. Si falla una carga, el producto ya creado conserva su identificador y las fotos pendientes se pueden reintentar. El producto nace con cero existencias.
 3. Administración → Inventario: registrar entrada con motivo, establecer mínimo y consultar alertas. Las salidas y ajustes por conteo dejan movimientos inmutables. Exportación CSV con filtros y neutralización de fórmulas.
 4. Cliente → Tienda: buscar y filtrar productos, abrir detalle y agregar al carrito. El carrito pertenece a la cuenta y persiste al cerrar sesión; el encabezado muestra sus unidades.
-5. Cliente → Carrito: revisar precio y cantidad, aceptar condiciones y confirmar. Solo recogida en el local, sin entrega a domicilio ni impuestos añadidos.
+5. Cliente → Carrito: revisar fotos, precios y cantidades, leer la política de datos y aceptar por separado la autorización de datos y las condiciones de compra. Confirmar el pedido. Solo recogida en el local, sin entrega a domicilio ni impuestos añadidos.
 6. Cliente → Mis pedidos: consultar detalle e historial, reintentar pago, cambiar método o cancelar cuando corresponda. La URL `?id=UUID` abre un pedido concreto.
 7. Administración → Pedidos: marcar pedidos pagados listos para recoger y confirmar su entrega; para efectivo, registrar cobro y entrega juntos.
 8. Administración → Ingresos: productos según fecha de pago, servicios según fecha de servicio, total consolidado y desglose por método. El reporte de servicios existente continúa disponible.
@@ -32,7 +32,7 @@ La tienda está habilitada por defecto. `VITE_ENABLE_STORE=false` oculta sus opc
 
 ## Reglas de compra
 
-- Tarjeta y Nequi son simulaciones explícitas. No se solicitan ni almacenan números de tarjeta, CVV, claves o datos bancarios. Los botones permiten aprobar, rechazar o cancelar el intento.
+- Tarjeta y Nequi son simulaciones explícitas, sin cobros. El formulario de tarjeta acepta exclusivamente los números de demostración `4242 4242 4242 4242` (aprobación) y `4000 0000 0000 0002` (rechazo), con titular, vencimiento y CVV ficticios. Estos campos permanecen en el navegador; al servidor solo se envía el resultado simulado. Nequi permite elegir el resultado sin pedir credenciales bancarias. Se puede cancelar el intento.
 - En línea: `en_espera_pago → pagado → pendiente_recoger → entregado`. Se descuenta inventario solo al aprobar.
 - Efectivo: `en_espera_pago → entregado`. La administradora confirma que recibió el efectivo; en esa transacción se comprueba stock y se registra la entrega.
 - El carrito no reserva existencias. Al pagar se vuelve a comprobar disponibilidad, también para efectivo. Un rechazo conserva carrito y stock. Cancelar la simulación vuelve al carrito y deja el pedido sin pagar.
@@ -52,9 +52,9 @@ Las rutas nuevas están bajo `/api/tienda`; inventario conserva `/api/admin/inve
 | Administración | `/api/tienda/admin/categorias`, `/productos`, `/productos/:id/imagenes`, `/pedidos` |
 | Ingresos | `GET /api/tienda/admin/reporte?desde=YYYY-MM-DD&hasta=YYYY-MM-DD` |
 
-Checkout recibe `requestId` UUID, `metodo_pago`, `consentimiento: true` y `total_esperado`. El servidor calcula los precios reales, guarda nombre/precio de cada línea y exige revisar el carrito si cambió el total.
+Checkout recibe `requestId` UUID, `metodo_pago`, `consentimiento: true`, `consentimiento_datos: true`, `politica_version` vigente y `total_esperado`. El servidor calcula los precios reales, guarda nombre/precio de cada línea y exige revisar el carrito si cambió el total. La versión vigente se consulta en `GET /api/politica-datos`; la fecha y huella de aceptación las genera el servidor.
 
-Acciones del cliente: `pagar`, `metodo`, `cancelar`. Administración: `listo`, `entregar`, `cobrar_efectivo`. `pagar` requiere `requestId`, `metodo_pago` y `resultado` (`aprobado`, `rechazado`, `cancelado`). Reutilizar el identificador del intento al reintentar una solicitud cuya respuesta se perdió.
+Acciones del cliente: `pagar`, `metodo`, `cancelar`. Administración: `listo`, `entregar`, `cobrar_efectivo`. `pagar` requiere `requestId`, `metodo_pago` y `resultado` (`aprobado`, `rechazado`, `cancelado`). Reutilizar el identificador del intento al reintentar una solicitud cuya respuesta se perdió. Si se cambia la acción, el resultado o el método manteniendo el identificador, la API responde 409; un intento distinto requiere otro identificador.
 
 Se usa una sola transacción para estado, fecha de pago, inventario, movimientos y limpieza del carrito. Los bloqueos por cliente y pedido serializan los reintentos; inventario bloquea productos en orden estable. Un fallo en cualquier línea revierte toda la compra. La limpieza del carrito compara identificador, cantidad y timestamp exacto para conservar cambios hechos después del checkout.
 
@@ -66,15 +66,17 @@ Las imágenes se guardan en Supabase Storage. Si falla la asociación con el pro
 
 ```powershell
 npm test
-npm exec --prefix SwettyPuppies_Frontend -- eslint .
-npm run build --prefix SwettyPuppies_Frontend
+Push-Location SwettyPuppies_Frontend
+npx eslint .
+npm run build
+Pop-Location
 ```
 
 Para lint también se puede entrar a `SwettyPuppies_Frontend` y ejecutar `npx eslint .`.
 
-Las pruebas de integración usan PGlite en memoria con las definiciones, restricciones y triggers de las nueve tablas comerciales leídos de Supabase, y tablas mínimas de usuarios/clientes/servicios. **`tests/fixtures/store-schema.sql` es exclusivamente una fixture de pruebas, no un script para ejecutar en Supabase.** Las pruebas no cargan `.env` ni conectan a la base compartida.
+Las pruebas de integración usan PGlite en memoria. La suite de tienda conserva su fixture específica; las pruebas del baseline y la integración entre citas y tienda usan el esquema completo de 24 tablas extraído del respaldo. **`tests/fixtures/store-schema.sql` es exclusivamente una fixture de pruebas, no un script para ejecutar en Supabase.** Las pruebas no conectan a la base compartida.
 
-Cubren permisos HTTP, propiedad de pedidos, validaciones, fotos y límites, checkout repetido, pago duplicado, rechazo/reintento, efectivo, cambio de método, cancelación, rollback de múltiples productos, cambios posteriores de carrito, reportes y movimientos inmutables. PGlite comprueba transacciones pero no sustituye una prueba de carga con conexiones simultáneas a PostgreSQL.
+Cubren permisos HTTP, revocación de acceso administrativo, propiedad de pedidos, validaciones, fotos y límites, checkout repetido, claves de solicitud en conflicto, pago duplicado, rechazo/reintento, efectivo, cambio de método, cancelación, rollback de múltiples productos, competencia por la última unidad, cambios posteriores de carrito, reportes y movimientos inmutables. También verifican consentimiento y la coexistencia de citas, ventas e ingresos. PGlite comprueba transacciones pero no sustituye una prueba de carga con conexiones simultáneas a PostgreSQL.
 
 Para repetir la revisión visual con datos ficticios:
 
@@ -82,16 +84,16 @@ Para repetir la revisión visual con datos ficticios:
 node tests/support/store-preview.cjs
 ```
 
-Abrir `http://127.0.0.1:3011/__preview/cliente` o `http://127.0.0.1:3011/__preview/administrador`. Este servidor escucha solo loopback, usa usuarios temporales y una base en memoria; no es una opción de despliegue. Detenerlo con Ctrl+C elimina el entorno temporal. Los enlaces de otros módulos no están preparados en esta fixture.
+Abrir `http://127.0.0.1:3011/__preview/cliente` o `http://127.0.0.1:3011/__preview/administrador`. Este servidor escucha solo loopback, usa usuarios temporales, el esquema completo y una base en memoria con cinco productos DEMO e imágenes ilustrativas. No es una opción de despliegue. Detenerlo con Ctrl+C elimina el entorno temporal. Los enlaces de otros módulos no están preparados en esta vista previa.
 
-Se comprobó también la carga, lectura pública y eliminación de una imagen temporal en el bucket real. No se insertaron productos, pedidos o movimientos de prueba en Supabase.
+La revisión original comprobó la carga, lectura pública y eliminación de una imagen temporal en el bucket real. Es evidencia histórica: no se repitió durante este cierre porque Supabase está pausado. En este cierre no se insertaron productos, pedidos o movimientos de prueba en Supabase.
 
 ### Resultado de la validación
 
-- Backend: 71 pruebas aprobadas (59 previas y 12 de integración de tienda).
+- Backend: 91 pruebas aprobadas, incluidas siete de preparación de despliegue; detalle de cobertura y alcance en `CIERRE_DESARROLLO.md`.
 - Frontend: ESLint completo y compilación con verificación TypeScript aprobados. Permanece la advertencia previa de tamaño de los bundles de gráficas/reportes.
-- Navegador: alta de producto, entrada de stock, carrito, rechazo/reintento de pago, retorno al carrito al cancelar simulación, preparación y entrega, ingresos y vista móvil verificados en entorno aislado.
-- Supabase real: consultas HTTP de catálogo, categorías, carrito, pedidos, inventario, movimientos e ingresos respondieron 200; Storage permitió subir, leer y eliminar la imagen temporal.
+- Navegador, cierre actual: catálogo con imágenes, carrito, aceptación de datos y condiciones, checkout, pago simulado aprobado, descuento de inventario e ingresos verificados en entorno aislado. Las revisiones anteriores también cubrieron alta, edición, entrega y vista móvil.
+- Supabase real: pendiente de reanudar y verificar. Las respuestas 200 y la prueba de Storage de la revisión original no acreditan disponibilidad actual.
 - Las operaciones nuevas también están disponibles en Swagger, etiquetas Tienda y Admin Tienda.
 
 ## Tema visual

@@ -1,5 +1,6 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const path = require('node:path');
 
 const options = {
   definition: {
@@ -12,8 +13,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000/api',
-        description: 'Servidor local de desarrollo',
+        url: '/api',
+        description: 'API de esta instalacion',
       },
     ],
     tags: [
@@ -292,7 +293,7 @@ const options = {
       },
     },
   },
-  apis: ['./routes/*.js'],
+  apis: [path.join(__dirname, 'routes', '*.js').replace(/\\/g, '/')],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

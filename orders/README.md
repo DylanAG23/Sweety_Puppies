@@ -1,44 +1,15 @@
-# Modulo `orders` — Pedidos (Fase 2)
+# Pedidos y segundo flujo de ingresos
 
-Estado: **estructura preparada, sin implementar.** No esta montado en `app.js`.
+Implementado en /api/tienda/checkout y /api/tienda/pedidos; administración en /api/tienda/admin/pedidos y /api/tienda/admin/reporte. Composición en index.js, casos de uso en application/useCases/orderOperations.js y SQL en infrastructure/repositories/PostgresOrdersRepository.js.
 
-## Tablas (ya creadas en Supabase)
+Checkout integrado en /cliente/carrito. Detalle, pago e historial en /cliente/pedidos; gestión en /admin/pedidos y consolidado en /admin/ingresos.
 
-- `ordenes`
-- `detalle_orden`
+Tarjeta y Nequi son simulados. Efectivo se registra al entregar. Solo recogida física. Pago, descuento de inventario y movimientos se confirman en la misma transacción. Rechazo no descuenta stock. Solo se cancelan pedidos sin pagar durante los primeros 15 minutos; no hay cancelación administrativa ni devolución de pedidos pagados.
 
-> El script de creacion (`Fase2_Script_Supabase_tienda_inventario.sql`) debe versionarse en el repositorio antes de implementar, para validar columnas y restricciones.
+El identificador de checkout se distingue de los identificadores de acciones. Repetir una acción con el mismo identificador conserva su resultado; reutilizarlo para otra acción devuelve conflicto. El detalle guarda precio y nombre al comprar.
 
-## Pantallas que lo usan (ACT-15)
+Consentimiento y eventos se guardan en ordenes.observaciones como JSON versionado. La política de datos tiene su evidencia independiente; ver shared/legal/README.md. No se guardan números de tarjeta ni CVV.
 
-- Cliente 4. Checkout (/cliente/checkout)
-- Cliente 5. Pasarela simulada y resultado (/cliente/pago/resultado)
-- Cliente 6. Mis pedidos (/cliente/pedidos)
-- Admin 12. Gestion de pedidos (/admin/pedidos)
+Ingresos de productos por fecha de pago y servicios desde historial_citas. Los reportes previos de servicios permanecen separados.
 
-## Casos de uso previstos
-
-- checkoutOrder: crea el pedido "En espera de pago" desde el carrito (sin domicilio; recogida en la peluqueria)
-- simulatePayment: aprobado -> "Pagado" y descuento de stock; rechazado -> sin cambios; cancelado -> vuelve al carrito
-- cancelClientOrder: solo dentro de los primeros 15 minutos
-- markOrderReadyForPickup / markOrderDelivered (administradora)
-- registerCashPaymentAndDelivery: efectivo -> "Entregado" y descuento de stock en ese momento
-
-## Notas de diseno
-
-- Estados oficiales: En espera de pago, Pagado, Pendiente por recoger, Entregado, Cancelado.
-- El descuento de stock y el cambio de estado van en la MISMA transaccion (withTransaction), verificando stock suficiente al momento de pagar.
-- Codigo de pedido legible (SP-000123) para la peluqueria.
-- Pendiente de definir con la administradora: si ella tambien cancela pedidos y si el stock vuelve al cancelar un pedido pagado.
-
-## Estructura
-
-```
-orders/
-  index.js                      composicion: crea dependencias, casos de uso y controlador
-  application/useCases/         un archivo por caso de uso: (dependencies, sessionUser, payload) => resultado
-  domain/errors/OrderError.js   error de dominio con status HTTP y codigo
-  domain/services/              reglas puras (validaciones, calculos), sin I/O
-  infrastructure/http/          controlador: lee req, llama al caso de uso, traduce errores
-  infrastructure/repositories/  SQL parametrizado con pg (unico lugar con SQL)
-```
+Pruebas: tests/store.integration.test.js y tests/appointments.store.integration.test.js. Esquema: database/001_application_baseline.sql.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { apiPost } from '@/lib/api'
+import PrivacyConsent from '@/components/PrivacyConsent.vue'
 import { getSession, setSession } from '@/lib/session'
 
 type AuthView = 'landing' | 'login' | 'register' | 'verify' | 'recovery-request' | 'recovery-verify' | 'recovery-reset'
@@ -62,6 +63,8 @@ const loginForm = reactive({
 })
 
 const registerForm = reactive({
+  consentimiento_datos: false,
+  politica_version: '',
   nombre: '',
   apellido: '',
   cedula: '',
@@ -429,8 +432,9 @@ async function submitRecoveryReset() {
               <input id="confirmPassword" v-model="registerForm.confirmPassword" class="auth-input" type="password" placeholder=" " required>
               <label for="confirmPassword" class="auth-field-label">Confirmar contraseña</label>
             </div>
+            <PrivacyConsent v-model="registerForm.consentimiento_datos" :disabled="registerLoading" @version="registerForm.politica_version = $event" />
             <div class="auth-button-stack auth-full-width">
-              <button type="submit" class="auth-primary-button" :disabled="registerLoading">
+              <button type="submit" class="auth-primary-button" :disabled="registerLoading || !registerForm.consentimiento_datos">
                 {{ registerLoading ? 'Generando código...' : 'Generar código' }}
               </button>
             </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { vDialogFocus } from '@/lib/dialogFocus';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import StoreLayout from '@/components/StoreLayout.vue';
 import SimulatedCardPayment from '@/components/SimulatedCardPayment.vue';
 import { apiGet, apiPost } from '@/lib/api';
@@ -24,6 +24,9 @@ const orders = ref<Order[]>([]),
   state = ref(''),
   busy = ref(false),
   loading = ref(false),
+  detailLoading = ref(false),
+  loaded = ref(false),
+  now = ref(Date.now()),
   error = ref(''),
   notice = ref(''),
   method = ref('tarjeta'),
@@ -31,18 +34,22 @@ const orders = ref<Order[]>([]),
 const canCancel = computed(
   () =>
     selected.value?.estado === 'en_espera_pago' &&
-    Date.now() - new Date(selected.value.created_at).getTime() <= 15 * 60 * 1000
+    now.value - new Date(selected.value.created_at).getTime() <= 15 * 60 * 1000
 );
 let attempt = crypto.randomUUID(),
   attemptSignature = '';
 async function load() {
+  if (loading.value) return;
   loading.value = true;
+  loaded.value = false;
+  error.value = '';
   try {
     const r = await apiGet<{ ordenes: Order[]; total: number }>(
       base.value + '?' + query({ page: page.value, estado: state.value })
     );
     orders.value = r.ordenes;
     total.value = r.total;
+    loaded.value = true;
   } catch (e) {
     error.value = (e as Error).message;
   } finally {
@@ -50,7 +57,11 @@ async function load() {
   }
 }
 async function detail(id: string) {
+  if (detailLoading.value || busy.value) return;
+  detailLoading.value = true;
   error.value = '';
+  notice.value = '';
+  reason.value = '';
   try {
     const r = await apiGet<{ orden: Order; items: OrderLine[] }>(base.value + '/' + id);
     selected.value = r.orden;
@@ -59,10 +70,12 @@ async function detail(id: string) {
     window.history.replaceState({}, '', window.location.pathname + '?id=' + id);
   } catch (e) {
     error.value = (e as Error).message;
+  } finally {
+    detailLoading.value = false;
   }
 }
 async function action(accion: string, resultado?: string) {
-  if (!selected.value) return;
+  if (!selected.value || busy.value) return;
   busy.value = true;
   error.value = '';
   notice.value = '';
@@ -100,7 +113,10 @@ function close() {
   notice.value = '';
   window.history.replaceState({}, '', window.location.pathname);
 }
+let clockTimer: ReturnType<typeof setInterval> | undefined;
+onUnmounted(() => clearInterval(clockTimer));
 onMounted(async () => {
+  clockTimer = setInterval(() => { now.value = Date.now(); }, 1000);
   await load();
   const id = new URLSearchParams(window.location.search).get('id');
   if (id) await detail(id);
@@ -128,6 +144,10 @@ onMounted(async () => {
       ><button :disabled="loading">Consultar</button>
     </form>
     <p v-if="loading" role="status">Cargando pedidos…</p>
+    <section v-else-if="!loaded" class="store-card store-empty">
+      <h2>No pudimos consultar tus pedidos</h2>
+      <button @click="load">Reintentar</button>
+    </section>
     <section v-else class="store-card">
       <div v-if="orders.length" class="store-table-wrap">
         <table>
@@ -150,7 +170,7 @@ onMounted(async () => {
                 <span class="store-badge">{{ states[o.estado] }}</span>
               </td>
               <td>{{ money(o.total) }}</td>
-              <td><button class="secondary" @click="detail(o.id)">Ver pedido</button></td>
+              <td><button class="secondary" :disabled="detailLoading || busy" @click="detail(o.id)">Ver pedido</button></td>
             </tr>
           </tbody>
         </table>
@@ -163,7 +183,7 @@ onMounted(async () => {
       </div>
       <div v-if="total > 20" class="store-pagination">
         <button
-          :disabled="page === 1"
+          :disabled="page === 1 || loading"
           @click="
             page--;
             load();
@@ -172,7 +192,7 @@ onMounted(async () => {
           Anterior</button
         ><span>{{ page }} / {{ Math.ceil(total / 20) }}</span
         ><button
-          :disabled="page * 20 >= total"
+          :disabled="page * 20 >= total || loading"
           @click="
             page++;
             load();

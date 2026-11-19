@@ -1,4 +1,5 @@
 const { AuthError } = require('../errors/AuthError');
+const { validConsentInput } = require('../../../shared/legal/consent');
 
 function normalizeEmail(email = '') {
   return email.trim().toLowerCase();
@@ -13,6 +14,9 @@ function validateEmail(email) {
 }
 
 function validateRegistrationInput(data) {
+  if (!validConsentInput(data)) {
+    throw new AuthError('Debes leer y aceptar la política de tratamiento de datos vigente', 400);
+  }
   const nombre = sanitizeText(data.nombre);
   const apellido = sanitizeText(data.apellido);
   const cedula = sanitizeText(data.cedula);

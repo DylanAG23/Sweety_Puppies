@@ -2,9 +2,11 @@
 
 ERP académico para la peluquería canina Sweety Puppies (UNIMINUTO). Incluye portal del cliente (perfil, mascotas, citas, historial) y panel administrativo (agenda, clientes, mascotas, gestión de citas, servicios, contenido y reportes). La Fase 2 agrega tienda e inventario.
 
+Revisión de desarrollo frente al Excel: [actividades, pruebas y límites de verificación](CIERRE_DESARROLLO.md). Operación de la tienda: [guía técnica](TIENDA_IMPLEMENTACION.md). Esquema reproducible y comprobación de la base: [database/README.md](database/README.md).
+
 | Capa | Tecnología |
 |---|---|
-| Backend | Node.js ≥ 20, Express 5, arquitectura hexagonal por módulo |
+| Backend | Node.js ≥ 22, Express 5, arquitectura hexagonal por módulo |
 | Base de datos | PostgreSQL en Supabase (conexión directa con `pg`, pool de conexiones) |
 | Archivos | Supabase Storage (solo desde el backend) |
 | Frontend | Vue 3 + Vite + TypeScript (`SwettyPuppies_Frontend/`) |
@@ -80,6 +82,8 @@ cd SwettyPuppies_Frontend && npm run build # vue-tsc + vite build
 
 `GET /api/health` responde `{"success":true,"status":"ok"}` cuando el servidor está arriba.
 
+Preparación para VM o alojamiento temporal: [configuración y entrega](deploy/README.md). `npm run release` genera una carpeta con el frontend compilado y backend, sin credenciales ni datos. `GET /api/ready` comprueba además PostgreSQL; responde 503 mientras la base no esté disponible. Producción toma las variables del entorno o de un archivo privado pasado explícitamente con `node --env-file=...`; no carga el `.env` de desarrollo.
+
 ---
 
 ## 4. Estructura
@@ -114,7 +118,7 @@ cd SwettyPuppies_Frontend && npm run build # vue-tsc + vite build
 | `clientPets`, `clientAppointments`, `clientHistory` | Portal del cliente |
 | `adminAgenda`, `adminClients`, `adminPets`, `adminServiceManagement`, `adminServices`, `adminReports`, `portalContent` | Panel administrativo |
 | `inventory` | **Fase 2**: existencias, alertas de stock mínimo y movimientos (`/api/admin/inventario`) |
-| `catalog`, `cart`, `orders` | **Fase 2** (estructura preparada, sin implementar) |
+| `catalog`, `cart`, `orders` | **Fase 2**: catálogo, carrito persistente, checkout, pedidos y segundo flujo de ingresos |
 
 Cada módulo sigue la misma forma:
 

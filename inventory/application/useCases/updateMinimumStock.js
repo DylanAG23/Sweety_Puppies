@@ -6,6 +6,7 @@ async function updateMinimumStock(dependencies, sessionUser, productId, payload)
   const { inventoryRepository, rules } = dependencies;
   const productoId = rules.normalizeProductId(productId);
   const stockMinimo = rules.normalizeMinimumStock(payload);
+  await inventoryRepository.assertAdmin(sessionUser);
   const item = await inventoryRepository.updateMinimumStock(productoId, stockMinimo);
 
   if (!item) {

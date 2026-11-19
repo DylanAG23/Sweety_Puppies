@@ -23,6 +23,9 @@ function buildDependencies(initial = { [SHAMPOO]: { stockActual: 5, stockMinimo:
   };
 
   const inventoryRepository = {
+    assertAdmin: async (user) => {
+      if (user?.rol !== 'administrador') throw new InventoryError('Se requiere una cuenta administrativa activa', 403, 'ADMIN_REQUIRED');
+    },
     runInTransaction: async (work) => {
       state.transactions += 1;
       const snapshot = { stock: structuredClone(state.stock), movements: [...state.movements] };

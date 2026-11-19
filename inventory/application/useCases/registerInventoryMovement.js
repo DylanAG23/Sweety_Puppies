@@ -6,9 +6,10 @@ async function registerInventoryMovement(dependencies, sessionUser, payload) {
   const usuarioId = resolveSessionUserId(sessionUser);
   const movement = dependencies.rules.normalizeMovementPayload(payload);
 
-  const result = await dependencies.inventoryRepository.runInTransaction((db) =>
-    applyStockMovement(dependencies, db, { ...movement, usuarioId })
-  );
+  const result = await dependencies.inventoryRepository.runInTransaction(async (db) => {
+    await dependencies.inventoryRepository.assertAdmin(sessionUser, db);
+    return applyStockMovement(dependencies, db, { ...movement, usuarioId });
+  });
 
   return {
     message: 'Movimiento registrado correctamente',

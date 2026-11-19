@@ -1,38 +1,11 @@
-# Modulo `cart` — Carrito (Fase 2)
+# Carrito
 
-Estado: **estructura preparada, sin implementar.** No esta montado en `app.js`.
+Implementado en /api/tienda/carrito. La composición está en index.js, los casos de uso en application/useCases/cartOperations.js y el SQL en infrastructure/repositories/PostgresCartRepository.js.
 
-## Tablas (ya creadas en Supabase)
+Tablas: carritos y carrito_items. Cada cliente consulta y modifica únicamente su carrito. Se conserva por cuenta; precios y disponibilidad se consultan del catálogo. Agregar, actualizar, eliminar y vaciar exigen sesión y validaciones de stock.
 
-- `carritos`
-- `carrito_items`
+Pantalla: /cliente/carrito, con fotografías, cantidades y resumen de compra. El contador del encabezado se actualiza al cambiar el carrito. No reserva stock; al pagar se valida otra vez.
 
-> El script de creacion (`Fase2_Script_Supabase_tienda_inventario.sql`) debe versionarse en el repositorio antes de implementar, para validar columnas y restricciones.
+El checkout vacía las líneas originales al aprobar el pago o confirmar efectivo. Conserva cambios posteriores al checkout mediante cantidad y timestamp de cada línea.
 
-## Pantallas que lo usan (ACT-15)
-
-- Cliente 3. Carrito (/cliente/carrito)
-- Icono del carrito con contador en la barra superior (slot topbar-actions de PlatformShell)
-
-## Casos de uso previstos
-
-- getClientCart: lineas con precio actual y estado de stock (amarillo bajo, rojo agotado)
-- addCartItem / updateCartItemQuantity / removeCartItem / clearCart
-- Cantidad maxima = stock disponible; minimo 1
-
-## Notas de diseno
-
-- El carrito se guarda en la cuenta del cliente aunque cierre sesion (decision confirmada).
-- Solo el cliente dueno puede leer o modificar su carrito (filtrar siempre por cliente_id, como en clientPets).
-
-## Estructura
-
-```
-cart/
-  index.js                      composicion: crea dependencias, casos de uso y controlador
-  application/useCases/         un archivo por caso de uso: (dependencies, sessionUser, payload) => resultado
-  domain/errors/CartError.js   error de dominio con status HTTP y codigo
-  domain/services/              reglas puras (validaciones, calculos), sin I/O
-  infrastructure/http/          controlador: lee req, llama al caso de uso, traduce errores
-  infrastructure/repositories/  SQL parametrizado con pg (unico lugar con SQL)
-```
+Esquema: database/001_application_baseline.sql. Pruebas: tests/store.integration.test.js.

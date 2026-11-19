@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { money } from '@/lib/store'
-defineProps<{ busy: boolean; total: number }>()
+const props = defineProps<{ busy: boolean; total: number }>()
 const emit = defineEmits<{ pay: [result: string] }>()
 const holder = ref(''), number = ref(''), expiry = ref(''), cvv = ref(''), error = ref('')
 const digits = computed(() => number.value.replace(/\s/g, ''))
@@ -13,6 +13,7 @@ function demo(rejected = false) {
   error.value = ''
 }
 function submit() {
+  if (props.busy) return
   error.value = ''
   if (!['4242424242424242', '4000000000000002'].includes(digits.value)) {
     error.value = 'Usa una de las tarjetas de prueba indicadas. No se aceptan tarjetas reales.'

@@ -26,7 +26,7 @@ function addStoreDocs(spec) {
   route('/tienda/carrito', 'patch', 'Establecer cantidad absoluta', cart);
   route('/tienda/carrito', 'delete', 'Vaciar carrito');
   route('/tienda/carrito/{id}', 'delete', 'Quitar producto por su UUID');
-  route('/tienda/checkout', 'post', 'Crear pedido; reutilizar requestId en reintentos', fields({ requestId: uuid, metodo_pago: method, total_esperado: integer, consentimiento: { type: 'boolean', enum: [true] } }, ['requestId', 'metodo_pago', 'total_esperado', 'consentimiento']));
+  route('/tienda/checkout', 'post', 'Crear pedido; reutilizar requestId en reintentos', fields({ requestId: uuid, metodo_pago: method, total_esperado: integer, consentimiento: { type: 'boolean', enum: [true] }, consentimiento_datos: { type: 'boolean', enum: [true] }, politica_version: text }, ['requestId', 'metodo_pago', 'total_esperado', 'consentimiento', 'consentimiento_datos', 'politica_version']));
   for (const prefix of ['/tienda', '/tienda/admin']) {
     const admin = prefix.endsWith('admin');
     route(prefix + '/pedidos', 'get', 'Listar pedidos ' + (admin ? 'de todos los clientes' : 'propios'), null, [...pagination, query('estado')]);

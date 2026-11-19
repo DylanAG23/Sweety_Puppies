@@ -1,6 +1,6 @@
 // En pruebas (NODE_ENV=test) no se carga el .env real: cada prueba define
 // sus propias variables y nunca usa secretos ni la base de datos real.
-if (process.env.NODE_ENV !== 'test') {
+if (!['test', 'production'].includes(process.env.NODE_ENV)) {
   require('dotenv').config();
 }
 
@@ -34,7 +34,29 @@ function isProduction() {
 }
 
 function getPort() {
-  return Number(readEnv('PORT')) || 3000;
+  const port = Number(readEnv('PORT') || 3000);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new ConfigError('PORT debe ser un entero entre 1 y 65535.');
+  }
+  return port;
+}
+
+function getTrustProxy() {
+  const value = readEnv('TRUST_PROXY');
+  if (!value || value === 'false' || value === '0') return false;
+  if (/^[1-5]$/.test(value)) return Number(value);
+  const ranges = value.split(',').map(item => item.trim());
+  const { isIP } = require('node:net');
+  const valid = ranges.every(item => {
+    if (['loopback', 'linklocal', 'uniquelocal'].includes(item)) return true;
+    const parts = item.split('/');
+    const [address, prefix] = parts;
+    const family = isIP(address);
+    return family && parts.length <= 2 && (prefix === undefined ||
+      (/^\d+$/.test(prefix) && Number(prefix) <= (family === 4 ? 32 : 128)));
+  });
+  if (!valid) throw new ConfigError('TRUST_PROXY debe ser false, de 1 a 5 saltos o una lista de IP/subredes confiables.');
+  return ranges;
 }
 
 function getJwtSecret() {
@@ -46,7 +68,7 @@ function getAppointmentActionSecret() {
 }
 
 function getAppBaseUrl() {
-  return readEnv('APP_BASE_URL') || `http://localhost:${getPort()}`;
+  return (readEnv('APP_BASE_URL') || `http://localhost:${getPort()}`).replace(/\/+$/, '');
 }
 
 function getCorsOrigins() {
@@ -111,8 +133,54 @@ function getAdminNotificationEmail() {
 
 // Se llama al arrancar el servidor para fallar con un mensaje claro.
 function assertStartupConfig() {
+  getPort();
+  getTrustProxy();
   getJwtSecret();
   getDatabaseConfig();
+  if (isProduction()) assertProductionConfig();
+}
+
+function assertProductionConfig() {
+  for (const name of ['JWT_SECRET', 'APPOINTMENT_ACTION_SECRET']) {
+    const secret = requireEnv(name);
+    if (secret.length < 32 || /cambiar|reemplaza|change.?me/i.test(secret)) {
+      throw new ConfigError(`${name} debe ser un secreto aleatorio de al menos 32 caracteres en produccion.`);
+    }
+  }
+  if (getJwtSecret() === getAppointmentActionSecret()) {
+    throw new ConfigError('JWT_SECRET y APPOINTMENT_ACTION_SECRET deben ser diferentes en produccion.');
+  }
+  const baseUrl = requireEnv('APP_BASE_URL');
+  let url;
+  try { url = new URL(baseUrl); } catch { throw new ConfigError('APP_BASE_URL debe ser una URL valida.'); }
+  const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+  if ((url.protocol !== 'https:' && !(url.protocol === 'http:' && loopback)) ||
+      url.username || url.password || url.search || url.hash || url.pathname !== '/') {
+    throw new ConfigError('APP_BASE_URL debe ser el origen HTTPS publico, sin ruta ni credenciales (HTTP solo en loopback).');
+  }
+  for (const origin of getCorsOrigins()) {
+    let parsed;
+    try { parsed = new URL(origin); } catch { throw new ConfigError('CORS_ORIGINS contiene un origen invalido.'); }
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.origin !== origin) {
+      throw new ConfigError('CORS_ORIGINS debe contener origenes exactos, sin rutas ni barra final.');
+    }
+  }
+  requireEnv('SUPABASE_URL');
+  requireEnv('SUPABASE_KEY');
+  requireEnv('BUCKET_NAME');
+  requireEnv('MAIL_FROM');
+  const mode = getMailMode();
+  if (mode === 'remote') {
+    if (requireEnv('RESEND_API_KEY').includes('reemplaza') || readEnv('MAIL_FROM').includes('reemplaza')) {
+      throw new ConfigError('Completa RESEND_API_KEY y MAIL_FROM con la configuracion real del proveedor.');
+    }
+  }
+  else if (mode === 'gmail' || mode === 'smtp') {
+    requireEnv('MAIL_USER');
+    requireEnv('MAIL_APP_PASSWORD');
+  } else {
+    throw new ConfigError('Produccion requiere MAIL_MODE=gmail, smtp (Gmail) o remote; local no entrega los codigos.');
+  }
 }
 
 module.exports = {
@@ -121,6 +189,7 @@ module.exports = {
   requireEnv,
   isProduction,
   getPort,
+  getTrustProxy,
   getJwtSecret,
   getAppointmentActionSecret,
   getAppBaseUrl,
@@ -129,5 +198,6 @@ module.exports = {
   getMailMode,
   shouldExposeDevelopmentCodes,
   getAdminNotificationEmail,
-  assertStartupConfig
+  assertStartupConfig,
+  assertProductionConfig
 };

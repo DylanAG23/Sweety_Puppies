@@ -10,7 +10,7 @@ const db = require('../../baseDatos');
   const pg = new PGlite();
   await pg.exec(
     fs.readFileSync(
-      path.join(__dirname, '../fixtures/store-schema.sql'),
+      path.join(__dirname, '../../database/001_application_baseline.sql'),
       'utf8'
     )
   );
@@ -26,51 +26,21 @@ const db = require('../../baseDatos');
   for (const rol of ['cliente', 'administrador']) {
     const u = (
       await db.query(
-        'INSERT INTO usuarios(rol,email) VALUES($1,$2) RETURNING *',
+        "INSERT INTO usuarios(rol,email,password_hash) VALUES($1,$2,'cuenta-solo-preview') RETURNING *",
         [rol, rol + '@example.test']
       )
     ).rows[0];
     users[rol] = u;
     if (rol === 'cliente')
       await db.query(
-        "INSERT INTO clientes(usuario_id,nombre,apellido) VALUES($1,'Cliente','Prueba')",
+        "INSERT INTO clientes(usuario_id,nombre,apellido,cedula,telefono) VALUES($1,'Cliente','Prueba','100000000','3000000000')",
         [u.id]
       );
   }
-  const catalog = require('../../catalog').createCatalogModule().useCases;
-  const inv = require('../../inventory').createInventoryModule().useCases;
-  const c = (
-    await catalog.saveCategory(users.administrador, null, {
-      nombre: 'Accesorios'
-    })
-  ).categoria;
-  for (const [n, name, price, count] of [
-    [1, 'Pelota para juegos', 18000, 12],
-    [2, 'Correa de paseo', 35000, 4],
-    [3, 'Cepillo suave', 22000, 0]
-  ]) {
-    const p = (
-      await catalog.saveProduct(users.administrador, null, {
-        nombre: name,
-        referencia: 'DEMO-' + n,
-        categoria_id: c.id,
-        precio: price,
-        descripcion_corta: 'Un favorito para acompañar a tu mascota.',
-        descripcion:
-          'Producto de demostración para verificar la tienda. Solo recogida en el local.'
-      })
-    ).producto;
-    if (count)
-      await inv.registerInventoryMovement(users.administrador, {
-        productoId: p.id,
-        tipo: 'entrada',
-        cantidad: count,
-        motivo: 'Prueba aislada'
-      });
-    await inv.updateMinimumStock(users.administrador, p.id, { stockMinimo: 5 });
-  }
-  const express = require('express'),
-    app = express();
+  const { seedDemoCatalog, assetsDirectory } = require('../../database/demo-catalog.cjs');
+  await seedDemoCatalog(pg);
+  const express = require('express'), app = express();
+  app.use('/demo-catalog', express.static(assetsDirectory));
   app.get('/__preview/:role', (req, res) => {
     const u = users[req.params.role];
     if (!u) return res.sendStatus(404);

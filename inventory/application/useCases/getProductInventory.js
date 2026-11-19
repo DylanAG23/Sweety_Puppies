@@ -4,6 +4,7 @@ const { InventoryError } = require('../../domain/errors/InventoryError');
 async function getProductInventory(dependencies, sessionUser, productId) {
   const { inventoryRepository, rules } = dependencies;
   const productoId = rules.normalizeProductId(productId);
+  await inventoryRepository.assertAdmin(sessionUser);
   const item = await inventoryRepository.findProductInventory(productoId);
 
   if (!item) {

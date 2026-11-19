@@ -2,6 +2,7 @@
 async function listInventoryMovements(dependencies, sessionUser, query) {
   const { inventoryRepository, rules } = dependencies;
   const filtros = rules.normalizeMovementFilters(query);
+  await inventoryRepository.assertAdmin(sessionUser);
   const { movimientos, total, resumen } = await inventoryRepository.listMovements(filtros);
 
   return {

@@ -2,6 +2,7 @@
 async function exportInventoryMovements(dependencies, sessionUser, query) {
   const { inventoryRepository, rules } = dependencies;
   const filtros = rules.normalizeMovementFilters(query, { paginate: false });
+  await inventoryRepository.assertAdmin(sessionUser);
   const { movimientos } = await inventoryRepository.listMovements(filtros);
 
   return {

@@ -16,8 +16,10 @@ const report = ref<{
   metodos: { metodo_pago: string; ingresos: number; pedidos: number }[];
 } | null>(null);
 async function load() {
+  if (busy.value) return;
   busy.value = true;
   error.value = '';
+  report.value = null;
   try {
     report.value = (
       await apiGet<{ reporte: NonNullable<typeof report.value> }>(
@@ -39,11 +41,12 @@ onMounted(load);
     subtitle="Productos y servicios por separado, con un total consolidado. Fechas en horario de Bogotá."
     ><p v-if="error" role="alert" class="store-notice store-error">{{ error }}</p>
     <form class="store-card store-filters" @submit.prevent="load">
-      <label>Desde<input v-model="filters.desde" type="date" required /></label
-      ><label>Hasta<input v-model="filters.hasta" type="date" required /></label
+      <label>Desde<input v-model="filters.desde" type="date" :max="filters.hasta" :disabled="busy" required /></label
+      ><label>Hasta<input v-model="filters.hasta" type="date" :min="filters.desde" :disabled="busy" required /></label
       ><button :disabled="busy">Consultar</button
       ><a href="/admin/reportes">Ver reportes de servicios</a>
     </form>
+    <p v-if="busy" role="status">Consultando ingresos…</p>
     <template v-if="report"
       ><div class="store-metrics">
         <div class="store-card">

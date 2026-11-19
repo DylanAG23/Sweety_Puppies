@@ -3,6 +3,7 @@
 async function getInventoryOverview(dependencies, sessionUser, query) {
   const { inventoryRepository, rules } = dependencies;
   const filtros = rules.normalizeOverviewFilters(query);
+  await inventoryRepository.assertAdmin(sessionUser);
 
   const [items, movimientosHoy] = await Promise.all([
     inventoryRepository.listInventory(),

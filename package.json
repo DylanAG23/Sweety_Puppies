@@ -6,11 +6,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "start:production": "node scripts/start-production.cjs",
+    "build": "npm --prefix SwettyPuppies_Frontend run build",
+    "check:production": "node scripts/check-production.cjs",
+    "release": "npm run build && node scripts/prepare-release.cjs",
+    "smoke:deployment": "node scripts/smoke-deployment.cjs",
     "dev": "node --watch index.js",
     "test": "node --test \"tests/**/*.test.js\""
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
