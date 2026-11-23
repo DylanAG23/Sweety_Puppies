@@ -34,6 +34,8 @@ async function initiateCustomerRegistration(dependencies, payload) {
     message:
       emailResult.mode === 'local'
         ? 'Codigo generado en modo local para pruebas'
+        : emailResult.mode === 'disabled'
+          ? 'El registro por correo no esta disponible temporalmente.'
         : 'Te enviamos un código de verificación a tu correo',
     email: validated.email,
     expiresAt: expiracion.toISOString(),

@@ -50,6 +50,9 @@ test('produccion exige secretos separados, URL valida, Storage y correo operativ
       assert.doesNotThrow(assertStartupConfig);
       assert.equal(shouldExposeDevelopmentCodes(), false);
     });
+    await withEnv({ MAIL_MODE: 'disabled', MAIL_FROM: undefined, MAIL_USER: undefined, MAIL_APP_PASSWORD: undefined }, () => {
+      assert.doesNotThrow(assertStartupConfig);
+    });
   });
 });
 

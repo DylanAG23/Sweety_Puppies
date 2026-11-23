@@ -391,6 +391,14 @@ async function sendMail({ to, subject, html, text, fallbackLogLine, previewCode 
   const mailMode = (process.env.MAIL_MODE || 'local').toLowerCase();
   const mailUser = process.env.MAIL_USER;
   const mailAppPassword = process.env.MAIL_APP_PASSWORD;
+  if (mailMode === 'disabled') {
+    return {
+      delivered: false,
+      previewCode: null,
+      fallbackPath: null,
+      mode: 'disabled'
+    };
+  }
   const hasResendConfig =
     mailMode === 'remote' &&
     resendApiKey &&

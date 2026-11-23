@@ -168,8 +168,12 @@ function assertProductionConfig() {
   requireEnv('SUPABASE_URL');
   requireEnv('SUPABASE_KEY');
   requireEnv('BUCKET_NAME');
-  requireEnv('MAIL_FROM');
   const mode = getMailMode();
+  // Un despliegue temporal puede operar sin proveedor de correo. En ese caso
+  // las notificaciones no se envían; registro y recuperación quedan
+  // explícitamente no disponibles hasta configurar gmail o Resend.
+  if (mode === 'disabled') return;
+  requireEnv('MAIL_FROM');
   if (mode === 'remote') {
     if (requireEnv('RESEND_API_KEY').includes('reemplaza') || readEnv('MAIL_FROM').includes('reemplaza')) {
       throw new ConfigError('Completa RESEND_API_KEY y MAIL_FROM con la configuracion real del proveedor.');
